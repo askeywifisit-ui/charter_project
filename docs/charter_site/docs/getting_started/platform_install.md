@@ -122,18 +122,22 @@ tar -xzf /path/to/charter_tools_<ts>.tar.gz
 
 ## 5) DB（Postgres）建立與初始化
 
-平台依賴 Postgres；**不建議把 DB 密碼寫死在文件站**。
+平台依賴 Postgres。
 
-### 5.1 建立 role/db（示範）
+- **Lab 預設（11F_140 一致）**：DB user/pass 使用 `rg/rg`、DB name 使用 `rg`。
+- 注意：本頁只避免寫 **NOC** 帳密；DB `rg/rg` 屬於 lab 預設值（可依環境調整）。
 
-> 請把 `<DB_USER>` / `<DB_PASS>` / `<DB_NAME>` 換成你們要交付的值。
+### 5.1 建立 role/db（lab 預設：rg/rg）
 
 ```bash
 sudo -iu postgres
-psql -c "CREATE USER <DB_USER> WITH PASSWORD '<DB_PASS>';" || true
-psql -c "CREATE DATABASE <DB_NAME> OWNER <DB_USER>;" || true
-psql -c "GRANT ALL PRIVILEGES ON DATABASE <DB_NAME> TO <DB_USER>;" || true
+psql -c "CREATE USER rg WITH PASSWORD 'rg';" || true
+psql -c "CREATE DATABASE rg OWNER rg;" || true
+psql -c "GRANT ALL PRIVILEGES ON DATABASE rg TO rg;" || true
 exit
+
+# 驗證可登入
+psql -h 127.0.0.1 -U rg -d rg -c '\\conninfo'
 ```
 
 ### 5.2 Schema 初始化（乾淨環境必做）
