@@ -86,7 +86,7 @@ env:
   #======================================
   CPE_IP: 192.168.1.1         # CPE 管理 IP（通常 LAN side）
   SSH_USER: operator           # SSH 使用者
-  SSH_PASSWORD: '<fill>'    # SSH 密碼（敏感：建議改成 secrets 引用或外部注入）
+  SSH_PASSWORD: <fill>
 
   #======================================
   # 客戶 / NOC profiles（customer 環境）
@@ -102,7 +102,7 @@ env:
   # ^ 串口設備（依現場可能不同）
   CPE_BAUD: '115200'     # 串口 baud rate（常見 115200）
   CPE_USER: root         # console login 使用者
-  CPE_PASSWORD: ''       # console 密碼（空字串=無）
+  CPE_PASSWORD: <fill>
   CPE_IFACE: br-wan      # CPE 上 WAN 介面名稱（用於抓 WAN IPv6 / metrics）
 
   #======================================

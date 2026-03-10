@@ -51,7 +51,7 @@ env:
   # ---------- Serial / CPE console ----------
   CPE_BAUD: 115200
   CPE_USER: root
-  CPE_PASSWORD: null   # 讓程式去 cpe_info 撈密碼
+  CPE_PASSWORD: <fill>
   
   # ---------- NOC / LOGIN INFO ----------
   NOC_BASE: https://piranha-int.tau.dev-charter.net
@@ -61,7 +61,7 @@ env:
 
   # ---------- SSH / Cloud SSH 配置----------
   SSH_USER: operator
-  SSH_PASSWORD: "<fill>"
+  SSH_PASSWORD: <fill>
   SSH_TIMEOUT_MIN: 120
   SSH_REENABLE_EACH_CYCLE: 0
   SSH_HOST_LAN: 192.168.1.1

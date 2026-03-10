@@ -56,7 +56,7 @@ env:
   # - ENABLE_SSH_PRE_SCAN：是否在流程前先掃描確認 SSH ready
   # - SSH_TIMEOUT_MIN：整體 SSH 流程上限（分鐘）
   # =========================
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
 
   # =========================
   # [4) NOC / Cloud 參數]

@@ -91,7 +91,7 @@ env:
   CPE_SSH_TOOL: /home/da40/charter/tools/cpe_ssh.py
   SSH_HOST_LAN: 192.168.1.1
   SSH_USER: operator
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
 
   # Auto re-enable SSH if port 22 is closed (requires NOC profile)
   REQUIRE_SSH_READY: '1'

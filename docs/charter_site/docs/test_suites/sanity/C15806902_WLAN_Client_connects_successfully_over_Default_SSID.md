@@ -79,7 +79,7 @@ env:
   # ===============================
   SSH_HOST_LAN: "192.168.1.1"
   SSH_USER: "operator"
-  SSH_PASSWORD: "<fill>"
+  SSH_PASSWORD: <fill>
   SSH_TOOL_TIMEOUT: "15"
   SSH_TIMEOUT_MIN: "120"
 

@@ -70,7 +70,7 @@ env:
   # ===============================
   CPE_HOST: '192.168.1.1'
   CPE_SSH_USER: 'operator'
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
   CPE_SSH_PORT: '22'
   CPE_SSH_TIMEOUT_SEC: '30'
   SSH_READY_CMD: 'uptime'
@@ -78,7 +78,7 @@ env:
   # SSH readiness / enable (v7-style)
   SSH_SCAN_TIMEOUT_SEC: '30'
   SSH_SCAN_INTERVAL_SEC: '2'
-  SSH_PASSWORD_DEFAULT: '<fill>'
+  SSH_PASSWORD_DEFAULT: <fill>
   SSH_ENABLE_RETRIES: '2'
   WAIT_AFTER_SSH_ENABLE_SEC: '60'
 

@@ -64,7 +64,7 @@ env:
   # CPE access
   CPE_HOST: '192.168.1.1'
   CPE_SSH_USER: 'operator'
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
   # SSH login / enable password should come from secrets/profile; not hard-coded here.
   # Supported env names (any one):
   #   - SSH_PASSWORD (preferred)
@@ -78,7 +78,7 @@ env:
   SSH_SCAN_TIMEOUT_SEC: '30'
   SSH_SCAN_INTERVAL_SEC: '2'
   CPE_SSH_TIMEOUT_SEC: '30'
-  SSH_PASSWORD_DEFAULT: '<fill>'
+  SSH_PASSWORD_DEFAULT: <fill>
   SSH_ENABLE_RETRIES: '2'
   WAIT_AFTER_SSH_ENABLE_SEC: '60'
 

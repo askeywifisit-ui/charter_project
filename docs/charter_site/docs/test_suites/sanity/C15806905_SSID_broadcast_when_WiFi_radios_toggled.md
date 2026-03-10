@@ -94,10 +94,10 @@ env:
   # ===============================
   SSH_HOST_LAN: 192.168.1.1
   SSH_USER: operator
-  SSH_PASSWORD: "<fill>"
+  SSH_PASSWORD: <fill>
   SSH_TIMEOUT_MIN: '120'
   CPE_USER: operator
-  CPE_PASSWORD: '<fill>'
+  CPE_PASSWORD: <fill>
   CPE_SSH_TIMEOUT_SEC: '25'
   SSH_TOOL_TIMEOUT: '25'
 

@@ -76,7 +76,7 @@ env:
   # --- ssh_ready 掃描 ssh port 的總等待秒數（預設 30）---
   SSH_SCAN_TIMEOUT_SEC: 30
   SSH_USER: 'operator'
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
   SSH_TIMEOUT_MIN: '120'
 
   # --- health 前的 SSH port 檢查 ---

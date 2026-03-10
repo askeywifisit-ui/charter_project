@@ -55,7 +55,7 @@ env:
   CPE_HOST: 192.168.1.1
   CPE_SSH_PORT: '22'
   CPE_SSH_USER: operator
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
   SSH_READY_CMD: uptime
   SSH_SCAN_TIMEOUT_SEC: '60'
   SSH_SCAN_INTERVAL_SEC: '2'

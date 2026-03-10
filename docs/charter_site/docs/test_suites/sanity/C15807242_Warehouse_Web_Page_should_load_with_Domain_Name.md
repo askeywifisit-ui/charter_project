@@ -151,7 +151,7 @@ env:
   ENABLE_SSH_VIA_NOC: '1'
   SSH_ENABLE_TIMEOUT_MIN: '30'
   # Default operator password (same as sshAuthPasswd). Change in customer env if needed.
-  SSH_ENABLE_PASSWORD: '<fill>'
+  SSH_ENABLE_PASSWORD: <fill>
   # After enabling SSH via NOC, wait a bit for sshd to become ready (align with C15807240 behavior)
   SSH_ENABLE_WAIT_SEC: '30'
 
@@ -166,7 +166,7 @@ env:
   WLAN6_IFACES: 'wifi2'
   SSH_HOST: ''
   SSH_USER: operator
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
   SSH_TIMEOUT_SEC: '30'
   SSH_READY_RETRIES: '10'
   SSH_READY_SLEEP_SEC: '3'

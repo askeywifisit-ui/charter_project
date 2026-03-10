@@ -83,7 +83,7 @@ env:
 
   CPE_IP: 192.168.1.1
   SSH_USER: operator
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
   CPE_DEV: '/dev/ttyUSB0'
   CPE_BAUD: '115200'
 

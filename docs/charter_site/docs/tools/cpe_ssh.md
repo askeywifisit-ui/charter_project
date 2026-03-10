@@ -39,27 +39,27 @@
 ### 1) 最小連線測試
 ```bash
 python3 /home/da40/charter/tools/cpe_ssh.py \
-  --host 192.168.1.1 --user operator --password '<fill>' \
+  --host 192.168.1.1 --user operator --password "<fill>" \
   --cmd uptime --json
 ```
 
 ### 2) 取得 Wi‑Fi creds（SSID/PSK）
 ```bash
 python3 /home/da40/charter/tools/cpe_ssh.py \
-  --host 192.168.1.1 --user operator --password '<fill>' \
+  --host 192.168.1.1 --user operator --password "<fill>" \
   --cmd wifi-creds --which both --json
 ```
 
 ### 3) 抓 DHCP reserved / leased
 ```bash
-python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --user operator --password '<fill>' --cmd dhcp-reserved --json
-python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --user operator --password '<fill>' --cmd dhcp-leased   --json
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --user operator --password "<fill>" --cmd dhcp-reserved --json
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --user operator --password "<fill>" --cmd dhcp-leased   --json
 ```
 
 ### 4) pull-log（下載 CPE logpull 壓縮檔）
 ```bash
 python3 /home/da40/charter/tools/cpe_ssh.py \
-  --host 192.168.1.1 --user operator --password '<fill>' \
+  --host 192.168.1.1 --user operator --password "<fill>" \
   --cmd pull-log \
   --latest-from-dir /tmp/logpull --pattern '*.tar.gz' \
   --dest /tmp/cpe_log \

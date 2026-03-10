@@ -4,3 +4,6 @@
 **/dut.env
 **/*token*
 **/*secret*
+
+# mkdocs build output
+docs/charter_site/site/

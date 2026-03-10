@@ -76,7 +76,7 @@ env:
   # =========================
   CPE_IP: 192.168.1.1
   SSH_USER: operator
-  SSH_PASSWORD: '<fill>'
+  SSH_PASSWORD: <fill>
   CUSTOMER_ID: '682d4e5179b80027cd6fb27e'
   NOC_PROFILE: SPECTRUM_INT
   PROFILES_FILE: /home/da40/charter/.secrets/noc_profiles.json

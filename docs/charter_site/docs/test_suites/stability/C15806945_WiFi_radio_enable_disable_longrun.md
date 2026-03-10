@@ -52,7 +52,7 @@ env:
   CPE_DEV: /dev/ttyUSB0
   CPE_BAUD: 115200
   CPE_USER: root
-  CPE_PASSWORD: 'null'
+  CPE_PASSWORD: <fill>
   
   # ---------- NOC / LOGIN INFO ----------
   NOC_BASE: https://piranha-int.tau.dev-charter.net
@@ -63,7 +63,7 @@ env:
   PROFILES_FILE: /home/da40/charter/.secrets/noc_profiles.json
 
   SSH_USER: operator
-  SSH_PASSWORD: "<fill>"
+  SSH_PASSWORD: <fill>
   SSH_TIMEOUT_MIN: 120
   SSH_REENABLE_EACH_CYCLE: 0
   SSH_HOST_LAN: 192.168.1.1
