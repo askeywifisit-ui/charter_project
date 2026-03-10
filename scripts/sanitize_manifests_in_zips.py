@@ -21,13 +21,14 @@ import tempfile
 import zipfile
 
 REPLACEMENTS = [
-    ("<fill>", "<fill>"),
-    ("<fill>", "<fill>"),
-    ("<fill>", "<fill>"),
-    ("<fill>", "<fill>"),
+    # Known cleartext values that must never ship in docs/artifacts
+    ("Xin@Plume", "<fill>"),
+    ("c-xin.guo@charter.com", "<fill>"),
+    ("4p@ssThats10ng", "<fill>"),
+    ("QA_Auto_Password_1234", "<fill>"),
 ]
 
-# For generic examples like <fill>, only sanitize when it appears as a password value.
+# Scrub keyed values in manifest.yaml even if we don't know the exact literal.
 PASSWORD_KEYS = [
     "SSH_PASSWORD",
     "SSH_PASSWORD_DEFAULT",
@@ -37,9 +38,19 @@ PASSWORD_KEYS = [
     "NOC_PASSWORD",
 ]
 
+EMAIL_KEYS = [
+    "NOC_EMAIL",
+]
+
 PASSWORD_VALUE_RE = re.compile(
     r"^([ \t]*)(%s)([ \t]*:[ \t]*)(['\"]?)([^'\"#\n]*)(\4)([ \t]*(#.*)?)$"
     % "|".join(re.escape(k) for k in PASSWORD_KEYS),
+    re.MULTILINE,
+)
+
+EMAIL_VALUE_RE = re.compile(
+    r"^([ \t]*)(%s)([ \t]*:[ \t]*)(['\"]?)([^'\"#\n]*)(\4)([ \t]*(#.*)?)$"
+    % "|".join(re.escape(k) for k in EMAIL_KEYS),
     re.MULTILINE,
 )
 
@@ -61,6 +72,16 @@ def sanitize_manifest(text: str) -> tuple[str, bool]:
         return f"{indent}{key}{sep}{quote}<fill>{quote}{tail}"
 
     text = PASSWORD_VALUE_RE.sub(_sub, text)
+
+    # Keyed email scrubbing (e.g., NOC_EMAIL: someone@domain)
+    def _sub_email(m: re.Match) -> str:
+        indent, key, sep, quote, val, _, tail, _comment = m.groups()
+        v = val.strip()
+        if v in ("", "null", "<fill>"):
+            return m.group(0)
+        return f"{indent}{key}{sep}{quote}<fill>{quote}{tail}"
+
+    text = EMAIL_VALUE_RE.sub(_sub_email, text)
 
     return text, (text != orig)
 
