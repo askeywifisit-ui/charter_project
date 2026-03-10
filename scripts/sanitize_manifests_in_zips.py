@@ -62,6 +62,9 @@ def sanitize_manifest(text: str) -> tuple[str, bool]:
     for a, b in REPLACEMENTS:
         text = text.replace(a, b)
 
+    # Guard: remove any accidental regex backref artifacts (should never ship)
+    text = re.sub(r"^\\g<1>\\\"0\\\"\s*$", "", text, flags=re.MULTILINE)
+
     # Keyed password value scrubbing (e.g., SSH_PASSWORD: '<fill>')
     def _sub(m: re.Match) -> str:
         indent, key, sep, quote, val, _, tail, _comment = m.groups()

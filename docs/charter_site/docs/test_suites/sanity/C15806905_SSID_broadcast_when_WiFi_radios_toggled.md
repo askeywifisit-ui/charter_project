@@ -1,64 +1,63 @@
 # C15806905_SSID_broadcast_when_WiFi_radios_toggled
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=45` / `11F_140(current)=5204`
-- 風險等級（對 DUT 影響）：**HIGH**
+- Script ID（可能因 delete/import 變動）：`11F_140=5204`
+- 版本（manifest version）：`v16_platform_hint_manifest_fallback_warn`
+- Entrypoint：`cycle_wrapper.py:run`
+
+> 本頁由工具依 11F_140 最新 export zip 自動產生/更新（2026-03-10）。
 
 ## 目的（Purpose）
-Sanity 測試：驗證基本功能可用性。
+
+（以腳本內實作為準；此頁主要提供快速落地的安裝/執行資訊。）
+
 
 ## 前置條件（Preconditions）
-- CPE/Cloud 需可連線（Internet/Cloud Connected）
-- 需要的工具：`/home/da40/charter/tools`
 
-## 測試行為摘要（What it does）
-- 依腳本執行主要步驟並回報結果
+- 平台服務需正常（web/api/worker）
+- tools 需可用（`/home/da40/charter/tools`）
 
-## 主要參數（manifest env 重要值）
-- CYCLES: `1`
-- INTERVAL: `20`
-- STOP_ON_FAIL: `1`
 
-### 需依環境替換（給外部單位）
-請參考 **Environment Template**，常見需替換：
-- `TOOLS_PATH` / `PROFILES_FILE` / `NOC_PROFILE` / `CUSTOMER_ID`
+## 需依環境替換（給外部單位）
+
+以下參數通常因環境而異（請用 Environment Template / `.secrets` 注入）：
+
+- `PROFILES_FILE` / `NOC_PROFILE` / `CUSTOMER_ID`
 - `CPE_HOST` / `LAN_PARENT_IFACE` / `WIFI_IFACE` / `PING_IFACE`
+- 任何 `*_PASSWORD` / `*_EMAIL` 一律不得寫死（用 `<fill>` 或 secrets）
 
-## manifest.yaml（節錄）
+
+## Key env quick reference
+
+- `TOOLS_PATH`: `/home/da40/charter/tools`
+- `PROFILES_FILE`: `/home/da40/charter/.secrets/noc_profiles.json`
+- `NOC_PROFILE`: `SPECTRUM_INT`
+- `CUSTOMER_ID`: `682d4e5179b80027cd6fb27e`
+- `SSH_USER`: `operator`
+- `SSH_PASSWORD`: `<fill>`
+- `WIFI_IFACE`: `wlx6cb0ce1ff230`
+
+
+## manifest.yaml（節錄：env）
+
 ```yaml
 name: C15806905_SSID_broadcast_when_WiFi_radios_toggled
-version: v16_platform_hint_manifest_fallback_warn
 suite: sanity
+version: v16_platform_hint_manifest_fallback_warn
 entrypoint: cycle_wrapper.py:run
-entry: cycle_wrapper.py:run
 env:
-  # ===============================
-  # Wrapper / 長跑流程控制（參考 C00000003/C00000001）
-  # ===============================
   CYCLES: '1'
   CYCLE_INTERVAL: '20'
   STOP_ON_FAIL: '1'
   ORIGINAL_ENTRY: main_impl_orig.py:run
-
-  # ===============================
-  # Tools 路徑
-  # ===============================
   TOOLS_PATH: /home/da40/charter/tools
   CPE_INFO_TOOL: /home/da40/charter/tools/cpe_info
   CPE_SSH_TOOL: /home/da40/charter/tools/cpe_ssh.py
-
-  # ===============================
-  # Precondition: ready node-id（參考 C00000003）
-  # ===============================
   NODE_ID_READY_CHECK: '1'
   NODE_ID_MAX_RETRIES: '10'
   NODE_ID_RETRY_INTERVAL_SEC: '5'
-
-  # ===============================
-  # Wrapper 其他 precondition（本案例預設不啟用）
-  # ===============================
   CPE_READY_CHECK: '1'
-  CPE_INFO_STATUS_CMD: "cpe_info -status"
+  CPE_INFO_STATUS_CMD: cpe_info -status
   CPE_READY_MAX_RETRIES: '10'
   CPE_READY_RETRY_INTERVAL_SEC: '3'
   CPE_READY_REQUIRE_CLOUD: '1'
@@ -73,25 +72,16 @@ env:
   SSH_READY_RETRY: '40'
   SSH_READY_WAIT_SEC: '3'
   SSH_READY_CMD: health
-
-  # ===============================
-  # NOC profile (recommended)
-  # ===============================
   NOC_BASE: https://piranha-int.tau.dev-charter.net
   PROFILES_FILE: /home/da40/charter/.secrets/noc_profiles.json
   NOC_PROFILE: SPECTRUM_INT
-  CUSTOMER_ID: '682d4e5179b80027cd6fb27e'
-  # Optional override (if you don't want profile)
+  CUSTOMER_ID: 682d4e5179b80027cd6fb27e
   NOC_EMAIL: ''
   NOC_PASSWORD: ''
-  BEARER: '1'
+  BEARER: <fill>
   INSECURE: '0'
   NOC_TIMEOUT_SEC: '30'
   NOC_RETRIES: '3'
-
-  # ===============================
-  # CPE SSH (LAN)
-  # ===============================
   SSH_HOST_LAN: 192.168.1.1
   SSH_USER: operator
   SSH_PASSWORD: <fill>
@@ -100,75 +90,54 @@ env:
   CPE_PASSWORD: <fill>
   CPE_SSH_TIMEOUT_SEC: '25'
   SSH_TOOL_TIMEOUT: '25'
-
-  # ===============================
-  # WiFi client
-  # WIFI_IFACE is provided by systemd (charter-worker.service) on this platform
-  # ===============================
-  # WIFI_BAND optional: '', '2g', '5g'
-  WIFI_BAND: ""
-  WIFI_CRED_PREFER: "current"
+  WIFI_IFACE: wlx6cb0ce1ff230
+  WIFI_BAND: ''
+  WIFI_CRED_PREFER: current
   WIFI_DHCP_TIMEOUT_SEC: '35'
-
-  # wifi_iwd.py connect timeout (iwctl timeout). Default wifi_iwd is 40s; increase for stability.
   WIFI_IWD_TIMEOUT_SEC: '90'
-  # After enabling WiFi from disabled state, wait a bit before association to let beacons stabilize.
   WIFI_POST_ENABLE_GRACE_SEC: '6'
-  # Robust connect loop
   WIFI_CONNECT_RETRIES: '3'
   WIFI_CONNECT_RETRY_WAIT_SEC: '3'
   WIFI_TAKEOVER_ON_RETRY: '1'
-  # If band-preferred connect fails, allow fallback to any band (2.4/5/6) to avoid false failures.
   WIFI_FALLBACK_ANY_BAND: '1'
-
-  # SSID/PSK：預設會從 CPE 透過 SSH 讀取（cpe_ssh.py --cmd wifi-creds，參考 C00000003）
   WIFI_SSID: ''
-  # WIFI_PSK optional override (default: from CPE wifi-creds)
   WIFI_PSK: ''
-  # WIFI_PSK_ENV optional: read PSK from another env name
   WIFI_PSK_ENV: ''
-
-  # 防止 WiFi 連線影響 main default route
   WIFI_NO_MAIN_DEFAULT: '1'
   WIFI_PBR_TABLE: '101'
   WIFI_PBR_FROM_IP: '0'
-
-  # ===============================
-  # waits/polls
-  # ===============================
   WIFI_NOC_STATE_TIMEOUT_SEC: '180'
   WIFI_VIF_STATE_TIMEOUT_SEC: '180'
   WIFI_SCAN_TIMEOUT_SEC: '300'
   POLL_INTERVAL_SEC: '5'
-
-  # Router-side VIF check after WiFi disable:
-  # - default '0': if SSH reachability is lost (common when SSH is routed via the WiFi iface), skip this check and rely on client disconnect + scan absent.
-  # - set '1' to strictly require SSH VIF OFF verification.
   REQUIRE_SSH_VIF_OFF: '0'
-
-  # ===============================
-  # checks
-  # ===============================
   PING_TARGET: 192.168.1.1
   PING_COUNT: '2'
-```bash
-RID=1234
-curl -sS "$CHARTER_BASE/api/runs/$RID/log" > run_${RID}_log.json
+```
 
-# 若 fail-hook 有產生 cpe logs
+
+## Run（建議 API 方式）
+
+```bash
+export CHARTER_BASE="http://<CONTROL_PC_IP>:5173"
+SCRIPT_ID=<SCRIPT_ID_11F_140>
+curl -sS -X POST "$CHARTER_BASE/api/scripts/$SCRIPT_ID/run" | python3 -m json.tool
+```
+
+
+## Artifacts / Evidence
+
+```bash
+RID=<RUN_ID>
+curl -sS "$CHARTER_BASE/api/runs/$RID/log" > run_${RID}_log.json
 curl -sS "$CHARTER_BASE/api/runs/$RID/log-archives" | python3 -m json.tool
+# 若有 log archive：
 curl -fsSL "$CHARTER_BASE/api/runs/$RID/log-archive" -o run_${RID}_cpe_log.tar.gz
 ```
 
-## 清理（Cleanup）
 
+## Cleanup
 
-??? note "清理（Cleanup）— 點開看指令"
-    ```bash
-    # 清理已完成的 runs + workdir（避免磁碟累積）
-    curl -sS -X DELETE "$CHARTER_BASE/api/runs/purge?older_than_days=0" | python3 -m json.tool
-    ```
-
-## 常見失敗與排除
-- `noc-context timeout`：NOC endpoint 超時 → 增加 retry/backoff、確認出口網路/DNS
-- eventual consistency：API 200 但 CPE 狀態未同步 → 用 wait/poll 再 assert
+```bash
+curl -sS -X DELETE "$CHARTER_BASE/api/runs/purge?older_than_days=0" | python3 -m json.tool
+```
