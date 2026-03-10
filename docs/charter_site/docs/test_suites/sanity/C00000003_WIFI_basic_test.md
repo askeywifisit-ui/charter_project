@@ -1,7 +1,7 @@
 # C00000003_WIFI_basic_test
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=42` / `11F_140=5087`
+- Script ID（可能因 delete/import 變動）：`11F_131=42` / `11F_140=5164`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

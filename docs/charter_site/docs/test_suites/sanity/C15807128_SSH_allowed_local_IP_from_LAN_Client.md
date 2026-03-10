@@ -1,7 +1,7 @@
 # C15807128_SSH_allowed_local_IP_from_LAN_Client
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=50` / `11F_140=5095`
+- Script ID（可能因 delete/import 變動）：`11F_131=50` / `11F_140=5214`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

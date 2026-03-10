@@ -1,7 +1,7 @@
 # C15806902_WLAN_Client_connects_successfully_over_Default_SSID
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=44` / `11F_140=5089`
+- Script ID（可能因 delete/import 變動）：`11F_131=44` / `11F_140=5166`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

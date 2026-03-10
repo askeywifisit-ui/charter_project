@@ -1,7 +1,7 @@
 # C15807061_WAN_IPv6_Connectivity
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=48` / `11F_140=5093`
+- Script ID（可能因 delete/import 變動）：`11F_131=48` / `11F_140=5170`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

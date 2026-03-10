@@ -1,7 +1,7 @@
 # C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=56` / `11F_140=5101`
+- Script ID（可能因 delete/import 變動）：`11F_131=56` / `11F_140=5178`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

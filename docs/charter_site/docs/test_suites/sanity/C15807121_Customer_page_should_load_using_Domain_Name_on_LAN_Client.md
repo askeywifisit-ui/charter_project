@@ -1,7 +1,7 @@
 # C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=49` / `11F_140=5094`
+- Script ID（可能因 delete/import 變動）：`11F_131=49` / `11F_140=5171`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

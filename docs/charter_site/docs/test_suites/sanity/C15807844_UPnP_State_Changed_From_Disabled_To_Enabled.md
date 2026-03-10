@@ -1,7 +1,7 @@
 # C15807844_UPnP_State_Changed_From_Disabled_To_Enabled
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=61` / `11F_140=5106`
+- Script ID（可能因 delete/import 變動）：`11F_131=61` / `11F_140=5183`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

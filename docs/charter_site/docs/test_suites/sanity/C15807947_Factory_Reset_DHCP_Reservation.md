@@ -1,7 +1,7 @@
 # C15807947_Factory_Reset_DHCP_Reservation
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=66` / `11F_140=5111`
+- Script ID（可能因 delete/import 變動）：`11F_131=66` / `11F_140=5188`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

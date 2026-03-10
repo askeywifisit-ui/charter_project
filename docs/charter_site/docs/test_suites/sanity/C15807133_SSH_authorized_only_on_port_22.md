@@ -1,7 +1,7 @@
 # C15807133_SSH_authorized_only_on_port_22
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=54` / `11F_140=5099`
+- Script ID（可能因 delete/import 變動）：`11F_131=54` / `11F_140=5176`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

@@ -1,7 +1,7 @@
 # C15807944_Add_DHCP_Reservation
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=63` / `11F_140=5108`
+- Script ID（可能因 delete/import 變動）：`11F_131=63` / `11F_140=5185`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

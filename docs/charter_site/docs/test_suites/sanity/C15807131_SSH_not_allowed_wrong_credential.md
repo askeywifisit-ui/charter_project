@@ -1,7 +1,7 @@
 # C15807131_SSH_not_allowed_wrong_credential
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=53` / `11F_140=5098`
+- Script ID（可能因 delete/import 變動）：`11F_131=53` / `11F_140=5175`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

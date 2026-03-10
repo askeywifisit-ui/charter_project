@@ -1,7 +1,7 @@
 # C15807949_IP_reservation_for_WLAN_connected_clients
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=67` / `11F_140=5112`
+- Script ID（可能因 delete/import 變動）：`11F_131=67` / `11F_140=5210`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）

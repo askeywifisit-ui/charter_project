@@ -1,7 +1,7 @@
 # C15806953_Router_resolves_the_DNS_queries_using_IPv4
 
 - Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_131=46` / `11F_140=5091`
+- Script ID（可能因 delete/import 變動）：`11F_131=46` / `11F_140=5168`
 - 風險等級（對 DUT 影響）：**HIGH**
 
 ## 目的（Purpose）
