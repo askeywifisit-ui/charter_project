@@ -1,0 +1,6 @@
+**/.secrets/
+**/auth-profiles.json
+**/noc_profiles.json
+**/dut.env
+**/*token*
+**/*secret*

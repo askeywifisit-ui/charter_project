@@ -1,0 +1,154 @@
+# Charter Topology（Physical）
+
+本頁解讀目前 Charter 測試平台的實體拓撲（physical topology），並標註各網段用途與資料流向。
+
+## 人類速讀（必接 / 可選 / 參數速查）
+
+### 必接（最少三條線，才能跑大多數 sanity/stability）
+1) **TP（control PC）↔ CPE LAN**（`192.168.1.0/24`）
+2) **TP ↔ CPE console（serial）**（`CPE_DEV=/dev/ttyUSB*`）
+3) **TP ↔ PDU（電源控制）**（若要跑 power-cycle 類 stability）
+
+### 可選（只跑特定 case 才需要）
+- **TP Wi‑Fi NIC**：跑 WLAN client / SSID toggle / Wi‑Fi stability 才需要
+- **macvlan（LAN client 模擬）**：只有需要用不同 MAC 取得 DHCP lease 的 case 才需要
+- **IPv6 global（WAN）**：若環境沒有 global IPv6，以下建議列入 skip（不算平台移植失敗）：
+  - `C15807061_WAN_IPv6_Connectivity`
+  - `C4123494_IPv6_Stability_Test_from_LAN_Client`
+  - `C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client`
+
+### 平台參數速查（建議以 systemd env 為準；manifest 只放 defaults）
+- `WIFI_IFACE`：11F_131 常見 `wlan0`；11F_140 常見 `wlx6cb0ce1ff230`
+- `LAN_PARENT_IFACE` / `PING_IFACE`：以「連到 CPE LAN 的那張」為準（常見 `enx...`）
+- `CPE_DEV`：以實機 `/dev/ttyUSB*` 或 `/dev/serial/by-id/*` 為準
+- `PDU_SCRIPT` / `PDU_OUTLET_ID`：以實機 PDU 設定為準
+
+---
+
+## 拓撲圖
+
+### Lab Physical Topology（Mermaid，可維護）
+
+```mermaid
+flowchart TB
+
+%% Internet
+Internet((Internet))
+
+%% Gateway
+GW["External Gateway<br/>172.14.1.1<br/>DHCP Server"]
+
+%% TP Platform
+TP["TP Control Platform<br/>eno1 172.14.1.140<br/>eno2 192.168.1.2<br/>WiFi Client"]
+
+%% CPE
+CPE["CPE DUT<br/>WAN DHCP<br/>LAN 192.168.1.1<br/>WiFi AP"]
+
+%% PDU
+PDU["PDU<br/>172.14.1.135"]
+
+%% ASUS
+ASUS["ASUS Router<br/>WAN 172.14.1.169<br/>LAN 100.40.1.1"]
+
+%% OpenClaw
+OC["OpenClaw Host<br/>100.40.1.115"]
+
+%% Links
+Internet --> GW
+
+GW --- TP
+GW --- PDU
+GW --- ASUS
+GW --- CPE
+
+TP ---|Ethernet eno2| CPE
+TP -. WiFi .-> CPE
+
+PDU ==> |Power Cable| CPE
+
+ASUS --- OC
+
+%% Colors
+style GW fill:#86b0d9
+style TP fill:#2ecc71
+style CPE fill:#3b6fc4,color:#fff
+style PDU fill:#f28c38
+style ASUS fill:#f4d03f
+style OC fill:#d5d5d5
+```
+
+
+---
+
+
+## 1) 網段與角色
+
+### A. LAB 管理網段：`172.14.1.0/24`
+- **External Gateway / Router**
+  - WAN：`61.216.9.52`（Public）
+  - LAN：`172.14.1.1/24`（DHCP Server）
+  - 作用：LAB 的對外出口與 DHCP
+- **TP（Charter 測試平台 / control PC） eno1**
+  - IP：`172.14.1.140/24`
+  - default GW：`172.14.1.1`
+  - 作用：平台主機對外連線（NOC、Internet）
+- **CPE WAN（同一台盒子 / DUT 的 WAN 端）**
+  - DHCP client（從 172.14.1.0/24 取得）
+  - 例：`172.14.1.199/24`
+- **PDU（控制 CPE 電源）**
+  - IP：`172.14.1.135/24`
+  - 作用：power control（供 stability power-cycle 類腳本使用）
+- **ASUS Router（WAN）**
+  - IP：`172.14.1.169/24`
+  - GW：`172.14.1.1`
+  - 作用：提供另一個內部 NAT LAN（100.40.1.0/24）
+
+### B. 內部 NAT LAN：`100.40.1.0/24`
+- **ASUS LAN GW**：`100.40.1.1/24`（NAT/Router）
+- **OpenClaw Host**：`100.40.1.115/24`
+  - 作用：你現在開文件站（mkdocs）給其他人 review
+
+> 註：此段網段主要是「辦公/管理使用」，與 DUT 的 CPE LAN（192.168.1.0/24）是不同域。
+
+### C. DUT LAN：`192.168.1.0/24`（CPE LAN）
+- **CPE LAN**
+  - GW / DHCP：`192.168.1.1/24`
+  - 作用：DUT 提供給 LAN client / Wi‑Fi client 的內網
+- **TP eno2（有線連到 CPE LAN）**
+  - IP：`192.168.1.2/24`（固定）
+  - 介面命名提醒：文件用 `eno2` 代表「CPE LAN 那張網卡」；不同機器可能顯示為 `enx...`（USB NIC）或 `enp...`（PCIe NIC），請以實機為準。
+  - 作用：
+    - 作為 scripts 的 `LAN_PARENT_IFACE`（macvlan 模擬 LAN client）
+    - 對 CPE 做 LAN 側 SSH（常見：`192.168.1.1:22`）
+- **TP Wi‑Fi NIC（無線網卡）**
+  - DHCP client
+  - SSID：`SpectrumSetup-6A4D`
+  - 作用：Wi‑Fi sanity/stability（wifi_iwd/wifi_nm）
+
+---
+
+## 2) 典型資料流（scripts 常做的事）
+
+### (1) 平台對外連線（NOC/Internet）
+- TP eno1（172.14.1.140） → External Gateway（172.14.1.1）→ Internet/NOC
+
+### (2) 控制 DUT（LAN/SSH）
+- TP eno2（192.168.1.2） → CPE LAN（192.168.1.1:22）
+
+### (3) 模擬 LAN client（macvlan）
+- `lan_macvlan.py` 會掛在 `LAN_PARENT_IFACE`（本環境是 `eno2`），用不同 MAC 取得 DHCP lease
+
+### (4) Wi‑Fi client 測試
+- TP Wi‑Fi NIC → 連到 CPE 的 SSID → 取得 192.168.1.x → ping router/internet
+
+### (5) Power control（stability）
+- TP（或 tools） → PDU（172.14.1.135）→ 控制 CPE 電源（power-cycle）
+
+---
+
+## 3) 交付外部單位時要特別標註/替換
+- 三個網段可能完全不同：`172.14.1.0/24`、`192.168.1.0/24`、`100.40.1.0/24`
+- `LAN_PARENT_IFACE` / `WIFI_IFACE` / `PING_IFACE` 依對方 control PC 實際網卡決定
+- PDU 若不存在：stability 中 power-cycle 類 case 需禁跑或改實作
+
+> 搭配閱讀：Hand-off → 網卡判定指南 / NOC Profile & Secrets。

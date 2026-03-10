@@ -1,0 +1,22 @@
+/* Make documentation screenshots easier to read */
+
+/* Let content area be a bit wider on large screens */
+@media (min-width: 1220px) {
+  .md-grid {
+    max-width: 1200px;
+  }
+}
+
+/* Images inside the main article: full width and centered */
+.md-content article img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px auto 18px;
+  border-radius: 8px;
+}
+
+/* Slightly reduce the top nav bar height feel on screenshots pages */
+.md-content article {
+  font-size: 15px;
+}

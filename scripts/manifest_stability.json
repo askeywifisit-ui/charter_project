@@ -1,0 +1,61 @@
+{
+  "suite": "stability",
+  "count": 11,
+  "scripts": [
+    {
+      "id": 5113,
+      "name": "A2435635_Continuously_executing_speedtest",
+      "zip": "A2435635_Continuously_executing_speedtest.zip"
+    },
+    {
+      "id": 5114,
+      "name": "A2435637_Continuously_executing_FactoryReset",
+      "zip": "A2435637_Continuously_executing_FactoryReset.zip"
+    },
+    {
+      "id": 5115,
+      "name": "A2435638_Cycle_power_on_off_test",
+      "zip": "A2435638_Cycle_power_on_off_test.zip"
+    },
+    {
+      "id": 5116,
+      "name": "A2844344_Continuously_executing_reboot",
+      "zip": "A2844344_Continuously_executing_reboot.zip"
+    },
+    {
+      "id": 5117,
+      "name": "C15806945_WiFi_radio_enable_disable_longrun",
+      "zip": "C15806945_WiFi_radio_enable_disable_longrun.zip"
+    },
+    {
+      "id": 5118,
+      "name": "C24532530_UPNP_enable_disable_longrun",
+      "zip": "C24532530_UPNP_enable_disable_longrun.zip"
+    },
+    {
+      "id": 5119,
+      "name": "C24541454_Multiple_reboot_stress",
+      "zip": "C24541454_Multiple_reboot_stress.zip"
+    },
+    {
+      "id": 5120,
+      "name": "C24541455_Multiple_speedtest",
+      "zip": "C24541455_Multiple_speedtest.zip"
+    },
+    {
+      "id": 5121,
+      "name": "C4123492_IPv4_Stability_Test_from_LAN_Client",
+      "zip": "C4123492_IPv4_Stability_Test_from_LAN_Client.zip"
+    },
+    {
+      "id": 5125,
+      "name": "C4123494_IPv6_Stability_Test_from_LAN_Client",
+      "zip": "C4123494_IPv6_Stability_Test_from_LAN_Client.zip"
+    },
+    {
+      "id": 5123,
+      "name": "C6376350_WiFi_radio_enable_disable-xtime",
+      "zip": "C6376350_WiFi_radio_enable_disable-xtime.zip"
+    }
+  ]
+}

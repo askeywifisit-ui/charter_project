@@ -1,0 +1,146 @@
+{
+  "suite": "sanity",
+  "count": 28,
+  "scripts": [
+    {
+      "id": 5162,
+      "name": "C00000001_SSH_basic_test",
+      "zip": "C00000001_SSH_basic_test.zip"
+    },
+    {
+      "id": 5163,
+      "name": "C00000002_SSH_disable_test",
+      "zip": "C00000002_SSH_disable_test.zip"
+    },
+    {
+      "id": 5164,
+      "name": "C00000003_WIFI_basic_test",
+      "zip": "C00000003_WIFI_basic_test.zip"
+    },
+    {
+      "id": 5165,
+      "name": "C00000004_NOC_API_basic_test",
+      "zip": "C00000004_NOC_API_basic_test.zip"
+    },
+    {
+      "id": 5166,
+      "name": "C15806902_WLAN_Client_connects_successfully_over_Default_SSID",
+      "zip": "C15806902_WLAN_Client_connects_successfully_over_Default_SSID.zip"
+    },
+    {
+      "id": 5204,
+      "name": "C15806905_SSID_broadcast_when_WiFi_radios_toggled",
+      "zip": "C15806905_SSID_broadcast_when_WiFi_radios_toggled.zip"
+    },
+    {
+      "id": 5168,
+      "name": "C15806953_Router_resolves_the_DNS_queries_using_IPv4",
+      "zip": "C15806953_Router_resolves_the_DNS_queries_using_IPv4.zip"
+    },
+    {
+      "id": 5169,
+      "name": "C15807060_WAN_IPv4_Connectivity",
+      "zip": "C15807060_WAN_IPv4_Connectivity.zip"
+    },
+    {
+      "id": 5170,
+      "name": "C15807061_WAN_IPv6_Connectivity",
+      "zip": "C15807061_WAN_IPv6_Connectivity.zip"
+    },
+    {
+      "id": 5171,
+      "name": "C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client",
+      "zip": "C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client.zip"
+    },
+    {
+      "id": 5194,
+      "name": "C15807128_SSH_allowed_local_IP_from_LAN_Client",
+      "zip": "C15807128_SSH_allowed_local_IP_from_LAN_Client.zip"
+    },
+    {
+      "id": 5173,
+      "name": "C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile",
+      "zip": "C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile.zip"
+    },
+    {
+      "id": 5174,
+      "name": "C15807130_SSH_allowed_local_IP_from_WLAN_Client",
+      "zip": "C15807130_SSH_allowed_local_IP_from_WLAN_Client.zip"
+    },
+    {
+      "id": 5175,
+      "name": "C15807131_SSH_not_allowed_wrong_credential",
+      "zip": "C15807131_SSH_not_allowed_wrong_credential.zip"
+    },
+    {
+      "id": 5176,
+      "name": "C15807133_SSH_authorized_only_on_port_22",
+      "zip": "C15807133_SSH_authorized_only_on_port_22.zip"
+    },
+    {
+      "id": 5177,
+      "name": "C15807134_SSH_only_1_session_per_username",
+      "zip": "C15807134_SSH_only_1_session_per_username.zip"
+    },
+    {
+      "id": 5178,
+      "name": "C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client",
+      "zip": "C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client.zip"
+    },
+    {
+      "id": 5195,
+      "name": "C15807173_Test_Upnp_discovery",
+      "zip": "C15807173_Test_Upnp_discovery.zip"
+    },
+    {
+      "id": 5205,
+      "name": "C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN",
+      "zip": "C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN.zip"
+    },
+    {
+      "id": 5207,
+      "name": "C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN",
+      "zip": "C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN.zip"
+    },
+    {
+      "id": 5209,
+      "name": "C15807242_Warehouse_Web_Page_should_load_with_Domain_Name",
+      "zip": "C15807242_Warehouse_Web_Page_should_load_with_Domain_Name.zip"
+    },
+    {
+      "id": 5183,
+      "name": "C15807844_UPnP_State_Changed_From_Disabled_To_Enabled",
+      "zip": "C15807844_UPnP_State_Changed_From_Disabled_To_Enabled.zip"
+    },
+    {
+      "id": 5184,
+      "name": "C15807850_UPnP_State_Changed_From_Enabled_To_Disabled",
+      "zip": "C15807850_UPnP_State_Changed_From_Enabled_To_Disabled.zip"
+    },
+    {
+      "id": 5185,
+      "name": "C15807944_Add_DHCP_Reservation",
+      "zip": "C15807944_Add_DHCP_Reservation.zip"
+    },
+    {
+      "id": 5186,
+      "name": "C15807945_Update_DHCP_Reservation",
+      "zip": "C15807945_Update_DHCP_Reservation.zip"
+    },
+    {
+      "id": 5187,
+      "name": "C15807946_Delete_DHCP_Reservation",
+      "zip": "C15807946_Delete_DHCP_Reservation.zip"
+    },
+    {
+      "id": 5188,
+      "name": "C15807947_Factory_Reset_DHCP_Reservation",
+      "zip": "C15807947_Factory_Reset_DHCP_Reservation.zip"
+    },
+    {
+      "id": 5189,
+      "name": "C15807949_IP_reservation_for_WLAN_connected_clients",
+      "zip": "C15807949_IP_reservation_for_WLAN_connected_clients.zip"
+    }
+  ]
+}
