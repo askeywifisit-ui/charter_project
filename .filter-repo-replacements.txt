@@ -1,0 +1,6 @@
+# Replace sensitive cleartext strings in text blobs
+c-xin.guo@charter.com==><fill>
+Xin@Plume==><fill>
+4p@ssThats10ng==><fill>
+QA_Auto_Password_1234==><fill>
+123456789==><fill>
