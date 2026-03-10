@@ -9,8 +9,10 @@ Outputs:
 - docs/charter_site/docs/test_suites/<suite>/<name>.md
 
 Rules:
+- Audience: internal colleagues. Make it "follow steps and run" friendly.
 - DO NOT publish secrets. Any key that looks sensitive is rendered as <fill>.
 - Keep format consistent across pages.
+- Prefer short sections + collapsible full manifest.
 
 Usage:
   python3 scripts/generate_docs_from_11F_140_zips.py
@@ -103,6 +105,26 @@ def _yaml_dump_block(obj: dict) -> str:
     ).rstrip()
 
 
+def _purpose_from_name(name: str) -> str:
+    # Heuristic short purpose line for colleagues.
+    n = name.lower()
+    if "ssh" in n:
+        return "SSH 行為/權限驗證（allow/deny/port/session/credential 等）"
+    if "upnp" in n:
+        return "UPnP enable/disable 與狀態驗證"
+    if "dhcp" in n and "reservation" in n:
+        return "DHCP reservation CRUD/穩定性驗證"
+    if "wifi" in n or "wlan" in n or "ssid" in n:
+        return "Wi‑Fi/SSID 連線與 radio 行為驗證"
+    if "speedtest" in n:
+        return "速度測試/長跑穩定性驗證"
+    if "reboot" in n:
+        return "reboot/多次重啟壓力驗證"
+    if "factory" in n:
+        return "Factory Reset/回復出廠驗證"
+    return "（依腳本實作為準）"
+
+
 def _make_page(suite: str, name: str, script_id_140: int | None, manifest: dict) -> str:
     version = manifest.get("version", "")
     entrypoint = manifest.get("entrypoint", "")
@@ -111,9 +133,9 @@ def _make_page(suite: str, name: str, script_id_140: int | None, manifest: dict)
         env = {}
 
     # scrub env
-    env_scrubbed = {}
+    env_scrubbed: dict[str, object] = {}
     for k, v in env.items():
-        env_scrubbed[k] = _scrub_value(str(k), v)
+        env_scrubbed[str(k)] = _scrub_value(str(k), v)
 
     # Key env quick list (top 12, prefer common ones)
     preferred = [
@@ -130,35 +152,39 @@ def _make_page(suite: str, name: str, script_id_140: int | None, manifest: dict)
         "CPE_DEV",
         "TEST_PROFILE",
     ]
+
     key_env_lines = []
     for k in preferred:
         if k in env_scrubbed:
             key_env_lines.append(f"- `{k}`: `{env_scrubbed[k]}`")
 
+    # Compose a minimal env subset for display, and keep full env collapsible
+    env_subset = {k: env_scrubbed[k] for k in preferred if k in env_scrubbed}
+
     now = _dt.datetime.now().strftime("%Y-%m-%d")
     sid_line = f"`11F_140={script_id_140}`" if script_id_140 else "（尚未對應）"
+    purpose = _purpose_from_name(name)
 
     header = f"# {name}\n\n- Suite: **{suite}**\n- Script ID（可能因 delete/import 變動）：{sid_line}\n- 版本（manifest version）：`{version}`\n- Entrypoint：`{entrypoint}`\n\n> 本頁由工具依 11F_140 最新 export zip 自動產生/更新（{now}）。\n"
 
     body = "\n".join(
         [
-            "\n## 目的（Purpose）\n",
-            "（以腳本內實作為準；此頁主要提供快速落地的安裝/執行資訊。）\n",
-            "\n## 前置條件（Preconditions）\n",
-            "- 平台服務需正常（web/api/worker）\n- tools 需可用（`/home/da40/charter/tools`）\n",
-            "\n## 需依環境替換（給外部單位）\n",
-            "以下參數通常因環境而異（請用 Environment Template / `.secrets` 注入）：\n",
-            "- `PROFILES_FILE` / `NOC_PROFILE` / `CUSTOMER_ID`\n- `CPE_HOST` / `LAN_PARENT_IFACE` / `WIFI_IFACE` / `PING_IFACE`\n- 任何 `*_PASSWORD` / `*_EMAIL` 一律不得寫死（用 `<fill>` 或 secrets）\n",
-            "\n## Key env quick reference\n",
-            ("\n".join(key_env_lines) + "\n") if key_env_lines else "（無）\n",
-            "\n## manifest.yaml（節錄：env）\n",
-            "```yaml\n" + _yaml_dump_block({"name": name, "suite": suite, "version": version, "entrypoint": entrypoint, "env": env_scrubbed}) + "\n```\n",
-            "\n## Run（建議 API 方式）\n",
-            "```bash\nexport CHARTER_BASE=\"http://<CONTROL_PC_IP>:5173\"\nSCRIPT_ID=<SCRIPT_ID_11F_140>\ncurl -sS -X POST \"$CHARTER_BASE/api/scripts/$SCRIPT_ID/run\" | python3 -m json.tool\n```\n",
-            "\n## Artifacts / Evidence\n",
-            "```bash\nRID=<RUN_ID>\ncurl -sS \"$CHARTER_BASE/api/runs/$RID/log\" > run_${RID}_log.json\ncurl -sS \"$CHARTER_BASE/api/runs/$RID/log-archives\" | python3 -m json.tool\n# 若有 log archive：\ncurl -fsSL \"$CHARTER_BASE/api/runs/$RID/log-archive\" -o run_${RID}_cpe_log.tar.gz\n```\n",
+            "\n## 一句話說明\n",
+            f"- {purpose}\n",
+            "\n## 你需要準備什麼（Preconditions）\n",
+            "- 平台服務正常：web/api/worker\n- tools 可用：`/home/da40/charter/tools`\n- secrets 不要寫死在 manifest（NOC/SSH/Warehouse 等一律用 `<fill>`/`.secrets`）\n",
+            "\n## 你只要改哪些參數（Top env）\n",
+            ("\n".join(key_env_lines) + "\n") if key_env_lines else "（此腳本沒有常見可調 env）\n",
+            "\n## Run（API）\n",
+            "```bash\nexport CHARTER_BASE=\"http://<CONTROL_PC_IP>:5173\"\nSCRIPT_ID=<SCRIPT_ID_11F_140>\n# 建議先確認 worker 正常\ncurl -fsSL \"$CHARTER_BASE/api/runs/worker/status\" | python3 -m json.tool\n# 送出 run\ncurl -sS -X POST \"$CHARTER_BASE/api/scripts/$SCRIPT_ID/run\" | python3 -m json.tool\n```\n",
+            "\n## 怎麼看結果（Evidence）\n",
+            "```bash\nRID=<RUN_ID>\ncurl -sS \"$CHARTER_BASE/api/runs/$RID/log\" > run_${RID}_log.json\n# 若 fail-hook 有產生 cpe logs\ncurl -sS \"$CHARTER_BASE/api/runs/$RID/log-archives\" | python3 -m json.tool\ncurl -fsSL \"$CHARTER_BASE/api/runs/$RID/log-archive\" -o run_${RID}_cpe_log.tar.gz\n```\n",
             "\n## Cleanup\n",
-            "```bash\ncurl -sS -X DELETE \"$CHARTER_BASE/api/runs/purge?older_than_days=0\" | python3 -m json.tool\n```\n",
+            "```bash\n# 清理已完成的 runs + workdir（避免磁碟累積）\ncurl -sS -X DELETE \"$CHARTER_BASE/api/runs/purge?older_than_days=0\" | python3 -m json.tool\n```\n",
+            "\n??? note \"manifest.yaml（節錄：常用 env）\"\n",
+            "    ```yaml\n" + textwrap.indent(_yaml_dump_block({"env": env_subset}), "    ") + "\n    ```\n",
+            "\n??? note \"manifest.yaml（完整 env，已自動去敏）\"\n",
+            "    ```yaml\n" + textwrap.indent(_yaml_dump_block({"name": name, "suite": suite, "version": version, "entrypoint": entrypoint, "env": env_scrubbed}), "    ") + "\n    ```\n",
         ]
     )
 
