@@ -18,6 +18,7 @@
 4) 跑一個 sanity case（並可拉 log / 下載 archive）
 
 ## 相關頁面
+- [交付下載（GitHub links）](downloads.md)
 - [Environment Template（需替換項目）](../environment_template.md)
 - [交付環境表（對方要填）](handoff_env_form.md)
 - [驗證步驟（快速驗證）](handoff_validation.md)
