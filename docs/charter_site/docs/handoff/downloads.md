@@ -19,11 +19,11 @@
 ## 2) Web / API / Tools（平台程式與工具包）
 
 - API（tar.gz）：
-  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_api_20260310_150128.tar.gz>
+  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_api_20260310_201313.tar.gz>
 - Web（tar.gz）：
-  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_150128.tar.gz>
+  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_201313.tar.gz>
 - Tools（tar.gz）：
-  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_150128.tar.gz>
+  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz>
 - SHA256SUMS：
   - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/SHA256SUMS.txt>
 
