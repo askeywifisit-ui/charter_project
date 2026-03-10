@@ -5,5 +5,8 @@
 **/*token*
 **/*secret*
 
+# Allow docs pages that mention secrets conceptually (no actual secrets inside)
+!docs/charter_site/docs/handoff/noc_profile_secrets.md
+
 # mkdocs build output
 docs/charter_site/site/

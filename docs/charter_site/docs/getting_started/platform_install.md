@@ -42,7 +42,7 @@ UI 通常使用：`http://<CONTROL_PC_IP>:5173`
 - Web：`/home/da40/charter/apps/web/`
 - API/Worker：`/home/da40/charter/apps/api/`
 - Tools：`/home/da40/charter/tools/`
-- Secrets：`/home/da40/charter/.secrets/`（**不要進 repo**）
+- Secrets：`/home/da40/charter/.secrets/`（**不要進 repo**；例如 `noc_profiles.json`、`dut.env`）
 - Data：`/home/da40/charter/data/`（runs/work/scripts/venv）
 
 ---

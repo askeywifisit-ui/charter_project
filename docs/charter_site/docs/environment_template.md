@@ -22,6 +22,11 @@
 ## 2) 網路介面（有線/無線）— 必須明確註記
 不同單位常見差異：Control PC 的網卡命名不同、LAN/WAN 走向不同。
 
+> 實機對照（目前 11 LAB）：
+> - 11F_140：`LAN_PARENT_IFACE=eno2`、`WIFI_IFACE=wlx6cb0ce1ff230`
+> - 11F_131：`LAN_PARENT_IFACE=enx245ebe6507f7`、`WIFI_IFACE=wlan0`
+> 以上僅供參考，移植時仍以 `ip link / ip route` 為準。
+
 ### 2.1 有線（LAN parent iface）
 - `{{LAN_PARENT_IFACE}}`
   - 本環境例：`eno2`
