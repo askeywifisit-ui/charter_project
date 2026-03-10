@@ -257,6 +257,20 @@ systemctl status charter-worker.service --no-pager
 
 ---
 
+## 9.5) 安裝完成後：環境配置（必做）
+
+平台 service 起來後，下一步就是把「環境變動值」填齊（網卡/CPE/NOC profiles/secrets）。請依序看：
+
+1) [Environment Template（哪些欄位要替換）](../environment_template.md)
+2) [NOC profile / secrets（放哪裡、權限、template）](../handoff/noc_profile_secrets.md)
+3) [交付環境表（同事照填）](../handoff/handoff_env_form.md)
+4) [Network iface 指南（最常踩雷）](../handoff/network_iface_guide.md)
+5) 驗證：
+   - [Quick Start（10 分鐘確認平台可用）](quick_start.md)
+   - [驗證步驟（快速驗證）](../handoff/handoff_validation.md)
+
+---
+
 ## 10) 移植實戰規則（11F_140 → 11F_131 結論）
 
 > 這段是實戰結論，強烈建議遵循：
