@@ -23,7 +23,7 @@
 - Web（tar.gz）：
   - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_201313.tar.gz>
 - Tools（tar.gz）：
-  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz>
+  - （暫不提供公開連結；請由內部管道取得）
 - SHA256SUMS：
   - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/SHA256SUMS.txt>
 
