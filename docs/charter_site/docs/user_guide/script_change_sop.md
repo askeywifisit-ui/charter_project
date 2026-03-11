@@ -1,30 +1,36 @@
 # 腳本修改 SOP（Export → Modify → Import → Run → Evidence）
 
-> 給 OpenClaw 測試助理：你可以依這頁 **用 Charter API 控管測試平台**（查 scripts / export / delete / import / run / 抓 log/證據 / purge）。
+> 給 OpenClaw 測試助理：你可以依本頁流程，用 Charter API 協助我控管測試平台（查 scripts / export / delete / import / run / 抓 log/證據 / purge）。
 
-這頁是給內部同事的「一條龍流程」。
+本頁定位：**一條龍 SOP**。目的不是講 API 文件，而是讓同事第一次照做就能成功「改一個腳本、跑起來、拿到證據」。
 
-> 你只要照這頁做，就能：**備份 → 修改 zip → 避免 DUPLICATE → 匯入 → 跑 run → 抓 log/證據**。
+---
+
+## 成功標準（你做到這 3 件事就完成了）
+
+1) 你手上有 **備份 zip**：`backup_scripts/<NAME>_<SCRIPT_ID>.zip`
+2) 平台上有 **新 script（NEW_ID）**，且 Run 成功產生 `RID`
+3) 你已經抓到 **evidence log**：`run_<RID>_log.json`
 
 ---
 
 ## 你只要先搞懂的 4 個重點（第一次照做不會卡）
 
-1) **CHARTER_BASE 是哪裡？**
+### 1) CHARTER_BASE 是哪裡？
 - 就是 control PC 的 UI base，例如：`http://172.14.1.140:5173`
-- 如果不確定 control PC IP：請問維護者或看文件站的 Platform Links。
+- 不確定 control PC IP：看文件站 **Platform Links** 或問維護者。
 
-2) **SCRIPT_ID / OLD_ID / NEW_ID 的差別（最常搞混）**
+### 2) SCRIPT_ID / OLD_ID / NEW_ID 的差別（最常搞混）
 - `SCRIPT_ID`：你要 **export 備份** 的那筆
-- `OLD_ID`：你要 **刪掉** 的那筆（通常是舊的同名 script，用來避免 `DUPLICATE`）
+- `OLD_ID`：你要 **刪掉** 的那筆（通常就是舊的同名 script，用來避免 `DUPLICATE`）
 - `NEW_ID`：你 **import2 後新產生** 的那筆（要 run 請用它）
 
-3) **刪同名避免 DUPLICATE 是破壞性動作**
+### 3) 刪同名避免 DUPLICATE 是破壞性動作
 - 刪除會影響其他人（同名 script 會消失）
-- 標準流程是：**先 export 備份再刪**
+- 標準流程：**先 export 備份再刪**
 
-4) **zip 打包最常踩雷：根目錄不要多一層資料夾**
-- 重新打包後建議檢查：
+### 4) zip 打包最常踩雷：根目錄不要多一層資料夾
+重新打包後先檢查：
 
 ```bash
 unzip -l ${NAME}_patched.zip | head
@@ -35,11 +41,13 @@ unzip -l ${NAME}_patched.zip | head
 
 ## 0) 先填基本變數
 
+> 建議：先用最小 smoke case（sanity 的 basic 類）練一次流程。
+
 ```bash
-export CONTROL_PC_IP="<fill>"     # 例：172.14.1.140
+export CONTROL_PC_IP="<fill>"      # 例：172.14.1.140
 export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
-export SUITE="sanity"            # sanity 或 stability
-export NAME="<SCRIPT_NAME>"       # 例：C00000001_SSH_basic_test
+export SUITE="sanity"             # sanity 或 stability
+export NAME="<SCRIPT_NAME>"        # 例：C00000001_SSH_basic_test
 ```
 
 ---
@@ -89,6 +97,9 @@ unzip -q "backup_scripts/${NAME}_${SCRIPT_ID}.zip" -d "$WORKDIR"
 # 重新打包（注意：zip 根目錄不要多包一層資料夾）
 ( cd "$WORKDIR" && zip -qr "../${NAME}_patched.zip" . )
 ls -lh "./${NAME}_patched.zip"
+
+# 快速檢查 zip 根目錄
+unzip -l "./${NAME}_patched.zip" | head
 ```
 
 ---
@@ -155,7 +166,7 @@ PY
 
 echo "RID=$RID"
 
-# 抓 log
+# 抓 log（evidence）
 curl -sS "$CHARTER_BASE/api/runs/$RID/log" > run_${RID}_log.json
 ls -lh run_${RID}_log.json
 ```
