@@ -1,0 +1,18 @@
+[Unit]
+Description=Charter Web (Vite dev via run_web.sh)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/da40/charter/apps/web
+ExecStart=/usr/bin/env bash -lc '/home/da40/charter/apps/web/run_web.sh'
+Restart=on-failure
+# 這行讓 systemd 視收到 SIGINT / SIGTERM 為正常結束，不再報 ELIFECYCLE
+SuccessExitStatus=SIGINT SIGTERM
+# 可選：避免 log 太多 npm warning，可加入：
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

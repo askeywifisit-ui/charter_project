@@ -1,0 +1,9 @@
+[Unit]
+Description=Probe CPE info and persist to Postgres
+
+[Service]
+Type=oneshot
+User=da40
+Environment=DATABASE_URL=postgresql://rg:rg@localhost:5432/rg
+ExecStart=/home/da40/charter/apps/api/.venv/bin/python /home/da40/charter/apps/api/cpe_status_probe.py
+TimeoutStartSec=12
