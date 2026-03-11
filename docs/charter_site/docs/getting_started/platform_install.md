@@ -11,11 +11,19 @@
 > 這段把本頁的核心步驟濃縮成一個 block。你只要先把 4 個檔案放到 control PC，然後把路徑填上。
 
 ```bash
-# ===== 0) 交付檔案路徑（依你實際放哪裡調整） =====
-API_PKG=/path/to/charter_api_<ts>.tar.gz
-WEB_PKG=/path/to/charter_web_<ts>.tar.gz
-TOOLS_PKG=/path/to/charter_tools_<ts>.tar.gz
-UNITS_PKG=/path/to/charter_systemd_units_11F_140_20260311_105846.tar.gz
+# ===== 0) 交付檔案路徑（建議放在 /home/da40/charter/packages/） =====
+# 建議做法：把所有交付檔都放進同一個資料夾，避免路徑打錯。
+# 例（目前文件站 downloads 頁可拿到的檔名）：
+#   charter_api_20260310_201313.tar.gz
+#   charter_web_20260310_201313.tar.gz
+#   charter_tools_20260310_201313.tar.gz
+#   charter_systemd_units_11F_140_20260311_105846.tar.gz
+
+PKG_DIR=/home/da40/charter/packages
+API_PKG=${PKG_DIR}/charter_api_20260310_201313.tar.gz
+WEB_PKG=${PKG_DIR}/charter_web_20260310_201313.tar.gz
+TOOLS_PKG=${PKG_DIR}/charter_tools_20260310_201313.tar.gz
+UNITS_PKG=${PKG_DIR}/charter_systemd_units_11F_140_20260311_105846.tar.gz
 
 # ===== 1) OS 依賴 + DB =====
 sudo apt update
@@ -25,9 +33,13 @@ sudo apt install -y \
   git unzip curl jq
 sudo systemctl enable --now postgresql
 
-# ===== 2) 程式解壓到固定路徑 =====
+# ===== 2) 程式解壓到固定路徑（/home/da40/charter） =====
 sudo mkdir -p /home/da40/charter
 sudo chown -R da40:da40 /home/da40/charter
+
+# 建議交付檔放置位置
+sudo -u da40 mkdir -p "$PKG_DIR"
+
 cd /home/da40/charter
 sudo -u da40 tar -xzf "$API_PKG"
 sudo -u da40 tar -xzf "$WEB_PKG"
