@@ -1,5 +1,8 @@
 # 平台安裝 / 移植（systemd）— 內部同事版（專業說明 + 可直接照做）
 
+> 給 OpenClaw 測試助理：你可以依這頁的步驟 **協助安裝/移植 Charter 測試平台**（OS 依賴、解壓交付包、建立 DB、安裝 systemd units、enable 長駐、health check）。
+> 若環境無法對外（例如沒有 apt repo/沒有 sudo），請先回報缺少的前提條件再執行。
+
 這頁的目的：讓第一次接手的人，理解「為什麼要這樣做」並且照著做就能在新的 control PC 上把 Charter 平台 **裝好、長駐、可跑腳本**。
 
 > 安全原則：文件站不放 NOC email/password、SSH 密碼、warehouse 密碼。敏感值一律走 `.secrets/`。
