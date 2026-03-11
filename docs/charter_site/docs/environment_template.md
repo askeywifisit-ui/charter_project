@@ -226,8 +226,10 @@ ip route
 
 ## 4) PDU（電源控制，可選）
 
-> 若你的測試流程需要「自動 reboot / power cycle / recovery」，建議配置 PDU（可由腳本或平台呼叫 API 控制插座）。
-> 若未配置 PDU，部分 sanity 的前置流程可能會因 power-reset 不可用而 fail（需改成 skip/disable 該前置）。
+> 若你的測試流程需要「自動 reboot / power cycle / recovery」，建議配置 PDU（可由工具控制插座）。
+> 若未配置 PDU，部分 case 的前置流程可能會因 power-reset 不可用而 fail（需改成 skip/disable 該前置）。
+
+- 工具說明（已支援品牌/擴充方式/常用 CLI）：[PDU 電源控制](tools/pdu.md)
 
 ### 4.1 PDU API 位址與白名單
 
