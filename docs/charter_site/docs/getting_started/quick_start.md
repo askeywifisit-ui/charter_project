@@ -6,13 +6,18 @@
 
 ---
 
-## 0) 先填三個變數
+## 0) 先填三個變數（建議直接照這個填）
 
-```bash
-export CONTROL_PC_IP="<CONTROL_PC_IP>"   # 例如 172.14.1.140
-export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
-export SCRIPT_ID="<SCRIPT_ID_11F_140>"   # 選一個簡單的 sanity，例如 SSH basic
-```
+!!! tip "建議範例（11 LAB）"
+
+    ```bash
+    export CONTROL_PC_IP="172.14.1.140"
+    export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
+    # 最穩的 smoke（擇一）：
+    export SCRIPT_ID="<fill>"  # 例如 C00000001_SSH_basic_test 的 11F_140 script id
+    ```
+
+> `SCRIPT_ID` 建議用「最小 smoke case」；不要一開始就跑會 power-cycle 的 case。
 
 ---
 
@@ -39,12 +44,31 @@ curl -fsSL "${CHARTER_BASE}/api/runs/worker/status" | python3 -m json.tool
 
 若 worker 不正常：先看 `systemctl status charter-worker.service`。
 
+常用 log：
+```bash
+sudo journalctl -u charter-worker.service -n 200 --no-pager
+```
+
 ---
 
 ## 4) 列出 scripts（找 script_id）
 
+### 4.1 直接列出（大量）
 ```bash
 curl -fsSL "${CHARTER_BASE}/api/scripts?limit=2000" | python3 -m json.tool | head
+```
+
+### 4.2 只找 smoke case（推薦）
+```bash
+curl -fsSL "${CHARTER_BASE}/api/scripts?limit=2000" \
+  | python3 - <<'PY'
+import json,sys
+xs=json.load(sys.stdin)
+want={'C00000001_SSH_basic_test','C00000003_WIFI_basic_test'}
+for s in xs:
+    if s.get('suite')=='sanity' and s.get('name') in want:
+        print(f"{s.get('name')}\tID={s.get('id')}")
+PY
 ```
 
 ---
@@ -56,6 +80,8 @@ curl -sS -X POST "${CHARTER_BASE}/api/scripts/${SCRIPT_ID}/run" | python3 -m jso
 ```
 
 回傳會有 `run_id`（以下用 `RID`）。
+
+> 若回傳一直卡住或沒有 run_id：優先檢查 worker status。
 
 ---
 
