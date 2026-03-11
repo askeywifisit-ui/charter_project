@@ -6,6 +6,21 @@
 
 ---
 
+## 0) 這些參數要填到哪裡？（最重要）
+
+先講結論：環境參數不是全部都寫在 scripts 的 manifest。
+
+| 類型 | 建議放哪裡 | 例子 | 原因 |
+|---|---|---|---|
+| 平台固定（同一台 control PC 固定） | **systemd**（`/etc/systemd/system/charter-worker.service` 的 `Environment=` 或 drop-in） | `LAN_PARENT_IFACE` / `WIFI_IFACE` / `PING_IFACE` / `CPE_DEV` / `PDU_*` / `TEST_PROFILE` | 避免每個 script manifest 寫死，移植時只改一處 |
+| 敏感值（不可進 repo/文件站） | **`/home/da40/charter/.secrets/dut.env`**（worker 以 `EnvironmentFile=` 讀取） | `WAREHOUSE_PASSWORD` / `SSH_PASSWORD` / 各種 token | 權限控管、交付安全 |
+| NOC profiles（含 email/password） | **`/home/da40/charter/.secrets/noc_profiles.json`** | `PROFILES_FILE` 指向此檔、`NOC_PROFILE` 選 profile 名稱 | 避免在 manifest 寫死帳密 |
+| scripts 的非敏感參數（case 行為） | script zip 內的 **`manifest.yaml` env**（已在文件站用 `<fill>` 去敏） | `CYCLES`/`STOP_ON_FAIL`/timeout/retry | 每個 case 不同，適合留在 manifest |
+
+> 你如果只想快速讓平台跑起來：先把 systemd（worker）環境參數與 `.secrets/` 配好，scripts manifest 大多不用動。
+
+---
+
 ## 1) 平台（Control PC）
 - Control PC（目前環境）：`{{CONTROL_PC_IP}}`（例：`172.14.1.140`）
 - UI Base URL：`http://{{CONTROL_PC_IP}}:5173`
@@ -85,9 +100,15 @@ ip route
 ---
 
 ## 5) NOC / Cloud Profile（會因單位/環境不同而不同）
-- `{{NOC_PROFILE}}`（例：`SPECTRUM_INT`）
-- `{{PROFILES_FILE}}`（例：`/home/da40/charter/.secrets/noc_profiles.json`）
-- `{{CUSTOMER_ID}}`
+
+這段常見搞混點：
+- `NOC_EMAIL/NOC_PASSWORD` **不要寫在 manifest**。
+- 正確做法是：把 email/password 放在 `noc_profiles.json`，然後 scripts 只指定 `PROFILES_FILE + NOC_PROFILE + CUSTOMER_ID`。
+
+你通常需要設定三個值：
+- `{{NOC_PROFILE}}`（例：`SPECTRUM_INT`）→ **寫在 manifest env**（或由環境注入）
+- `{{PROFILES_FILE}}`（例：`/home/da40/charter/.secrets/noc_profiles.json`）→ **指向 secrets 檔案路徑**
+- `{{CUSTOMER_ID}}` → **寫在 manifest env**（或由環境注入）
 
 > 常見失敗：`noc-context timeout`（NOC endpoint 慢/網路不通），需要調整 timeout / retry。
 
