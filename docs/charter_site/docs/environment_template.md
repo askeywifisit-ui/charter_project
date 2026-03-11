@@ -25,79 +25,80 @@
 
 > 這段是給內部同仁最常用的「快速複製」。**不含任何密碼**。
 
-### A) systemd（charter-worker.service）平台固定參數
+!!! tip "A) systemd（charter-worker.service）平台固定參數"
 
-把下列參數設定在 **worker 的 systemd Environment**（建議用 drop-in override，不要直接改原始 service 檔）。
+    把下列參數設定在 **worker 的 systemd Environment**（建議用 drop-in override，不要直接改原始 service 檔）。
 
-11F_140 實機值：
+    11F_140 實機值：
 
-```bash
-# 11F_140 (172.14.1.140) 平台固定參數
-WIFI_IFACE=wlx6cb0ce1ff230
-LAN_PARENT_IFACE=eno2
-PING_IFACE=eno2
-CPE_DEV=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0
-PDU_SCRIPT=/home/da40/charter/tools/pdu_outlet1.py
-PDU_OUTLET_ID=1
-TEST_PROFILE=lab
-```
+    ```bash
+    # 11F_140 (172.14.1.140) 平台固定參數
+    WIFI_IFACE=wlx6cb0ce1ff230
+    LAN_PARENT_IFACE=eno2
+    PING_IFACE=eno2
+    CPE_DEV=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0
+    PDU_SCRIPT=/home/da40/charter/tools/pdu_outlet1.py
+    PDU_OUTLET_ID=1
+    TEST_PROFILE=lab
+    ```
 
-**建議寫法（對方 control PC 上直接貼）**：
+    **建議寫法（對方 control PC 上直接貼）**：
 
-```bash
-sudo mkdir -p /etc/systemd/system/charter-worker.service.d
-sudo tee /etc/systemd/system/charter-worker.service.d/override.conf >/dev/null <<'EOF'
-[Service]
-# platform-fixed params (edit for your machine)
-Environment=WIFI_IFACE=wlx6cb0ce1ff230
-Environment=LAN_PARENT_IFACE=eno2
-Environment=PING_IFACE=eno2
-Environment=CPE_DEV=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0
-Environment=PDU_SCRIPT=/home/da40/charter/tools/pdu_outlet1.py
-Environment=PDU_OUTLET_ID=1
-Environment=TEST_PROFILE=lab
-# optional DUT overrides
-EnvironmentFile=-/home/da40/charter/.secrets/dut.env
-EOF
+    ```bash
+    sudo mkdir -p /etc/systemd/system/charter-worker.service.d
+    sudo tee /etc/systemd/system/charter-worker.service.d/override.conf >/dev/null <<'EOF'
+    [Service]
+    # platform-fixed params (edit for your machine)
+    Environment=WIFI_IFACE=wlx6cb0ce1ff230
+    Environment=LAN_PARENT_IFACE=eno2
+    Environment=PING_IFACE=eno2
+    Environment=CPE_DEV=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0
+    Environment=PDU_SCRIPT=/home/da40/charter/tools/pdu_outlet1.py
+    Environment=PDU_OUTLET_ID=1
+    Environment=TEST_PROFILE=lab
+    # optional DUT overrides
+    EnvironmentFile=-/home/da40/charter/.secrets/dut.env
+    EOF
 
-sudo systemctl daemon-reload
-sudo systemctl restart charter-worker.service
-sudo systemctl status charter-worker.service --no-pager
-```
+    sudo systemctl daemon-reload
+    sudo systemctl restart charter-worker.service
+    sudo systemctl status charter-worker.service --no-pager
+    ```
 
-### B) `.secrets/dut.env`（敏感值：只給 template）
+!!! warning "B) .secrets/dut.env（敏感值：只給 template）"
 
-請在對方 control PC 建立：`/home/da40/charter/.secrets/dut.env`（權限 600）。
+    請在對方 control PC 建立：`/home/da40/charter/.secrets/dut.env`（權限 600）。
 
-```bash
-sudo install -d -m 700 -o da40 -g da40 /home/da40/charter/.secrets
-sudo -u da40 tee /home/da40/charter/.secrets/dut.env >/dev/null <<'EOF'
-# Put secrets here (DO NOT commit)
-# Example:
-# WAREHOUSE_PASSWORD=<fill>
-# SSH_PASSWORD=<fill>
-EOF
-chmod 600 /home/da40/charter/.secrets/dut.env
-```
+    ```bash
+    sudo install -d -m 700 -o da40 -g da40 /home/da40/charter/.secrets
+    sudo -u da40 tee /home/da40/charter/.secrets/dut.env >/dev/null <<'EOF'
+    # Put secrets here (DO NOT commit)
+    # Example:
+    # WAREHOUSE_PASSWORD=<fill>
+    # SSH_PASSWORD=<fill>
+    EOF
+    chmod 600 /home/da40/charter/.secrets/dut.env
+    ```
 
-### C) `noc_profiles.json`（NOC email/password 放這裡，不進 manifest）
+!!! info "C) noc_profiles.json（NOC email/password 放這裡，不進 manifest）"
 
-檔案位置（固定）：`/home/da40/charter/.secrets/noc_profiles.json`
+    檔案位置（固定）：`/home/da40/charter/.secrets/noc_profiles.json`
 
-```json
-{
-  "SPECTRUM_INT": {
-    "base": "https://piranha-int.tau.dev-charter.net",
-    "email": "<fill>",
-    "password": "<fill>"
-  }
-}
-```
+    ```json
+    {
+      "SPECTRUM_INT": {
+        "base": "https://piranha-int.tau.dev-charter.net",
+        "email": "<fill>",
+        "password": "<fill>"
+      }
+    }
+    ```
 
-scripts 只需要指：
-- `PROFILES_FILE=/home/da40/charter/.secrets/noc_profiles.json`
-- `NOC_PROFILE=SPECTRUM_INT`
-- `CUSTOMER_ID=<fill>`
+    scripts 只需要指：
+
+    - `PROFILES_FILE=/home/da40/charter/.secrets/noc_profiles.json`
+    - `NOC_PROFILE=SPECTRUM_INT`
+    - `CUSTOMER_ID=<fill>`
 
 ---
 
