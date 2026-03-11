@@ -1,0 +1,11 @@
+[INFO] Stopping existing listeners on :8000: 64303
+64416
+[INFO] Stopping existing mkdocs processes: 64877
+64899
+[INFO] Stopping existing cloudflared tunnels: 64357
+64422
+[INFO] Starting mkdocs serve on http://127.0.0.1:8000/ (SITE_DIR=/Users/csit/.openclaw/workspace/charter_delivery_repo/docs/charter_site)
+[INFO] mkdocs is up (pid=64933) and content looks correct
+[INFO] Starting cloudflared quick tunnel -> http://127.0.0.1:8000
+[OK] Public URL: https://ron-titled-andrew-opened.trycloudflare.com
+      (mkdocs pid=64933, cloudflared pid=64990)
