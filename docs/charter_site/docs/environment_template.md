@@ -130,6 +130,12 @@
 
     請在對方 control PC 建立：`/home/da40/charter/.secrets/dut.env`（權限 600）。
 
+    **規則（同事最常搞混）**
+
+    - `SSH_PASSWORD` / `WAREHOUSE_PASSWORD` 這類敏感值：**請放在 `dut.env`**，不要寫在 script `manifest.yaml`。
+    - 文件站上 manifest 看到的 `<fill>`：只是佔位符，目的是避免把密碼放進 repo/文件站。
+    - 若你同時在 `dut.env` 與 `manifest.yaml` 都有設定：請以平台策略「**systemd/.secrets 優先，manifest 只當 defaults**」為準（避免 manifest 覆蓋正確環境值）。
+
     ```bash
     sudo install -d -m 700 -o da40 -g da40 /home/da40/charter/.secrets
     sudo -u da40 tee /home/da40/charter/.secrets/dut.env >/dev/null <<'EOF'
