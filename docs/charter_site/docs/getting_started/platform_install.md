@@ -180,57 +180,49 @@ chmod 600 /home/da40/charter/.secrets/*
 
 ## 7) systemd units（長駐與開機自動恢復）
 
-### 7.1 需要的 unit 清單
+### 7.1 systemd units（對方 control PC：照貼就能啟動）
 
-把以下檔案移植到新機器：
+> **對方 control PC 不能連 11F_140 的情境**：請用「unit 打包 tar.gz」方式。
+> 目標：把 unit 放到 `/etc/systemd/system/`，然後 `enable --now` 讓平台長駐、reboot 後自動恢復。
 
-- `/etc/systemd/system/charter-api.service`
-- `/etc/systemd/system/charter-worker.service`
-- `/etc/systemd/system/charter-web.service`
-- `/etc/systemd/system/cpe-metrics-agent.service`
-- `/etc/systemd/system/cpe-status-probe.service`
-- `/etc/systemd/system/cpe-status-probe.timer`
-- `/etc/systemd/system/pbr-watchdog.service`
-
-以及（如有）drop-in：
-- `/etc/systemd/system/charter-api.service.d/*.conf`
-- `/etc/systemd/system/charter-worker.service.d/*.conf`
-
-#### 下載方式（推薦：對方 control PC 無法連到 11F_140 的情境）
-
-> 前提：對方 control PC 無法直接 ssh/scp 到 11F_140。
-> 做法：你先把 unit 打包成 `tar.gz` 丟給對方（內部管道），對方只要解壓到 `/etc/systemd/system/`。
-
-A) **打包（你這邊做一次）**
+#### Step 1：把 unit tar.gz 放到對方 control PC
 
 交付檔名（11F_140 範本）：
-- `packages/charter_systemd_units_11F_140_20260311_105846.tar.gz`
+- `charter_systemd_units_11F_140_20260311_105846.tar.gz`
 
-B) **對方 control PC：解壓 + 套用（可直接 copy/paste）**
+> 你可以用任何內部管道傳檔（USB/SMB/SCP/內網檔案站）。
+
+#### Step 2：對方 control PC（直接 copy/paste）
 
 ```bash
-# 1) 把 tar.gz 放到 control PC（路徑自行調整）
+# (A) 解壓 unit 到 /etc/systemd/system
 PKG=/path/to/charter_systemd_units_11F_140_20260311_105846.tar.gz
-
-# 2) 解壓到 /etc/systemd/system
 sudo tar -xzf "$PKG" -C /etc/systemd
 
-# 3) 重載 unit
+# (B) 重載 systemd
 sudo systemctl daemon-reload
 
-# 4) 啟用並啟動（reboot 後自動恢復）
-sudo systemctl enable --now charter-api.service
-sudo systemctl enable --now charter-worker.service
-sudo systemctl enable --now cpe-metrics-agent.service
-sudo systemctl enable --now cpe-status-probe.timer
-sudo systemctl enable --now charter-web.service
-sudo systemctl enable --now pbr-watchdog.service
+# (C) 啟用並啟動（reboot 後自動恢復）
+sudo systemctl enable --now charter-api.service \
+  charter-worker.service \
+  cpe-metrics-agent.service \
+  cpe-status-probe.timer \
+  charter-web.service \
+  pbr-watchdog.service
 
-# 5) 檢查狀態
+# (D) 看狀態（至少確認 api/worker/web）
 sudo systemctl status charter-api.service charter-worker.service charter-web.service --no-pager
 ```
 
-> 若對方要「先不要 enable」也可以用 `start` 取代 `enable --now`，但 reboot 後不會自動起來。
+> 如果你只 `start` 而不 `enable`：reboot 後不會自動起來。
+
+#### Step 3：對方 control PC（健康檢查）
+
+```bash
+curl -fsSL http://127.0.0.1:8080/health
+curl -fsSL http://127.0.0.1:5173/api/health
+curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
+```
 
 ??? note "（可選）單檔下載：點一下就下載 unit 檔"
 
@@ -247,22 +239,21 @@ sudo systemctl status charter-api.service charter-worker.service charter-web.ser
 
     下載後放到：`/etc/systemd/system/`（drop-in 放到對應的 `.service.d/`），再 `systemctl daemon-reload`。
 
-#### 11F_140（172.14.1.140）實機範例（可直接 copy 對照）
+??? note "（可選）11F_140 實機 unit 節錄（只做對照）"
 
-> 注意：此處只放「unit 結構與非敏感環境參數」，不放任何 NOC email/password、SSH 密碼、warehouse 密碼等。
+    這段是給內部同仁對照用，**不是**給對方 control PC copy/paste（因為對方通常連不到 11F_140）。
 
-```bash
-# 在 11F_140 查看完整 unit（含 drop-in）
-sudo systemctl cat charter-worker.service
-sudo systemctl cat charter-api.service
-sudo systemctl cat charter-web.service
-sudo systemctl cat cpe-metrics-agent.service
-sudo systemctl cat cpe-status-probe.service
-sudo systemctl cat cpe-status-probe.timer
-sudo systemctl cat pbr-watchdog.service
-```
+    ```bash
+    sudo systemctl cat charter-worker.service
+    sudo systemctl cat charter-api.service
+    sudo systemctl cat charter-web.service
+    sudo systemctl cat cpe-metrics-agent.service
+    sudo systemctl cat cpe-status-probe.service
+    sudo systemctl cat cpe-status-probe.timer
+    sudo systemctl cat pbr-watchdog.service
+    ```
 
-以下是 11F_140（2026-03-10 抓取）的重點內容（節錄）：
+    以下是 11F_140（2026-03-10 抓取）的重點內容（節錄）：
 
 ??? note "11F_140：charter-worker.service（節錄）"
 
