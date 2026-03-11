@@ -196,6 +196,70 @@ chmod 600 /home/da40/charter/.secrets/*
 - `/etc/systemd/system/charter-api.service.d/*.conf`
 - `/etc/systemd/system/charter-worker.service.d/*.conf`
 
+#### 11F_140（172.14.1.140）實機範例（可直接 copy 對照）
+
+> 注意：此處只放「unit 結構與非敏感環境參數」，不放任何 NOC email/password、SSH 密碼、warehouse 密碼等。
+
+```bash
+# 在 11F_140 查看完整 unit（含 drop-in）
+sudo systemctl cat charter-worker.service
+sudo systemctl cat charter-api.service
+sudo systemctl cat charter-web.service
+sudo systemctl cat cpe-metrics-agent.service
+sudo systemctl cat cpe-status-probe.service
+sudo systemctl cat cpe-status-probe.timer
+sudo systemctl cat pbr-watchdog.service
+```
+
+以下是 11F_140（2026-03-10 抓取）的重點內容（節錄）：
+
+??? note "11F_140：charter-worker.service（節錄）"
+
+    ```ini
+    [Service]
+    User=da40
+    WorkingDirectory=/home/da40/charter/apps/api
+    Environment=DATABASE_URL=postgresql+psycopg2://rg:rg@localhost:5432/rg
+
+    # platform-fixed params（移植時通常要改）
+    Environment=WIFI_IFACE=wlx6cb0ce1ff230
+    Environment=LAN_PARENT_IFACE=eno2
+    Environment=PING_IFACE=eno2
+    Environment=CPE_DEV=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0
+    Environment=PDU_SCRIPT=/home/da40/charter/tools/pdu_outlet1.py
+    Environment=PDU_OUTLET_ID=1
+    Environment=TEST_PROFILE=lab
+
+    # optional DUT overrides（敏感值放這裡，不放在 manifest）
+    EnvironmentFile=-/home/da40/charter/.secrets/dut.env
+
+    ExecStart=/home/da40/charter/apps/api/.venv/bin/python /home/da40/charter/apps/api/worker.py
+    Restart=always
+    RestartSec=2
+    ```
+
+??? note "11F_140：charter-api.service（節錄 + drop-in db）"
+
+    ```ini
+    [Service]
+    WorkingDirectory=/home/da40/charter/apps/api
+    ExecStart=/home/da40/charter/apps/api/.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
+
+    # drop-in（例：/etc/systemd/system/charter-api.service.d/10-db.conf）
+    Environment=DATABASE_URL=postgresql+psycopg2://rg:rg@127.0.0.1:5432/rg
+    Environment=PSQL_URL=postgresql://rg:rg@127.0.0.1:5432/rg
+    ```
+
+??? note "11F_140：charter-web.service（節錄）"
+
+    ```ini
+    [Service]
+    WorkingDirectory=/home/da40/charter/apps/web
+    ExecStart=/usr/bin/env bash -lc '/home/da40/charter/apps/web/run_web.sh'
+    Restart=on-failure
+    SuccessExitStatus=SIGINT SIGTERM
+    ```
+
 ### 7.2 服務啟動順序（建議）
 
 ```bash
