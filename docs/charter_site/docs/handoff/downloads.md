@@ -23,7 +23,7 @@
 - Web（tar.gz）：
   - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_201313.tar.gz>
 - Tools（tar.gz）：
-  - （暫不提供公開連結；請由內部管道取得）
+  - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz>
 - Systemd units（tar.gz；11F_140 範本，可給不同單位直接解壓套用）：
   - <https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_systemd_units_11F_140_20260311_105846.tar.gz>
 - SHA256SUMS：
