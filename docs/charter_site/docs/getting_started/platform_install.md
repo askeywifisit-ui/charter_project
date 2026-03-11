@@ -232,20 +232,20 @@ sudo systemctl status charter-api.service charter-worker.service charter-web.ser
 
 > 若對方要「先不要 enable」也可以用 `start` 取代 `enable --now`，但 reboot 後不會自動起來。
 
-C) **直接從文件站下載單一 unit 檔（點連結就下載）**
+??? note "（可選）單檔下載：點一下就下載 unit 檔"
 
-> 適合：你只想拿某一個 `.service`，不想整包解壓。
+    適合：你只想拿某一個 `.service`，不想整包解壓。
 
-- [`charter-api.service`](../assets/systemd/11F_140/etc/systemd/system/charter-api.service)
-- [`charter-worker.service`](../assets/systemd/11F_140/etc/systemd/system/charter-worker.service)
-- [`charter-web.service`](../assets/systemd/11F_140/etc/systemd/system/charter-web.service)
-- [`cpe-metrics-agent.service`](../assets/systemd/11F_140/etc/systemd/system/cpe-metrics-agent.service)
-- [`cpe-status-probe.service`](../assets/systemd/11F_140/etc/systemd/system/cpe-status-probe.service)
-- [`cpe-status-probe.timer`](../assets/systemd/11F_140/etc/systemd/system/cpe-status-probe.timer)
-- [`pbr-watchdog.service`](../assets/systemd/11F_140/etc/systemd/system/pbr-watchdog.service)
-- drop-in：[`charter-api.service.d/10-db.conf`](../assets/systemd/11F_140/etc/systemd/system/charter-api.service.d/10-db.conf)
+    - [`charter-api.service`](../assets/systemd/11F_140/etc/systemd/system/charter-api.service)
+    - [`charter-worker.service`](../assets/systemd/11F_140/etc/systemd/system/charter-worker.service)
+    - [`charter-web.service`](../assets/systemd/11F_140/etc/systemd/system/charter-web.service)
+    - [`cpe-metrics-agent.service`](../assets/systemd/11F_140/etc/systemd/system/cpe-metrics-agent.service)
+    - [`cpe-status-probe.service`](../assets/systemd/11F_140/etc/systemd/system/cpe-status-probe.service)
+    - [`cpe-status-probe.timer`](../assets/systemd/11F_140/etc/systemd/system/cpe-status-probe.timer)
+    - [`pbr-watchdog.service`](../assets/systemd/11F_140/etc/systemd/system/pbr-watchdog.service)
+    - drop-in：[`charter-api.service.d/10-db.conf`](../assets/systemd/11F_140/etc/systemd/system/charter-api.service.d/10-db.conf)
 
-> 下載後放到：`/etc/systemd/system/`（drop-in 放到對應的 `.service.d/`），再 `systemctl daemon-reload`。
+    下載後放到：`/etc/systemd/system/`（drop-in 放到對應的 `.service.d/`），再 `systemctl daemon-reload`。
 
 #### 11F_140（172.14.1.140）實機範例（可直接 copy 對照）
 
