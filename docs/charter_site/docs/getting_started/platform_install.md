@@ -1,47 +1,59 @@
-# 平台安裝 / 移植（systemd）— 同事照做版
+# 平台安裝 / 移植（systemd）— 內部同事版（專業說明 + 可直接照做）
 
-這頁的唯一目的：讓「第一次接手的人」照著做，就能把 Charter 平台在一台新的 control PC 上 **裝好 + 開機自動恢復（systemd 長駐）+ 跑得動腳本**。
+這頁的目的：讓第一次接手的人，理解「為什麼要這樣做」並且照著做就能在新的 control PC 上把 Charter 平台 **裝好、長駐、可跑腳本**。
 
-> 安全原則：**文件站不放 NOC email/password、SSH 密碼、warehouse 密碼。**
+> 安全原則：文件站不放 NOC email/password、SSH 密碼、warehouse 密碼。敏感值一律走 `.secrets/`。
 
 ---
 
-## TL;DR（只想快點跑起來的人看這裡）
+## 成功標準（你做到這 3 件事就算平台 OK）
 
-你要做到三件事：
-
-1) 把 **程式**放到 `/home/da40/charter/`（web/api/tools）
-2) 把 **DB（Postgres）**準備好（lab 預設 `rg/rg`）
-3) 把 **systemd units**放到 `/etc/systemd/system/`，然後 `enable --now`
-
-完成後用這三個 health check 驗證：
-
+1) **API OK**
 ```bash
 curl -fsSL http://127.0.0.1:8080/health
+```
+
+2) **Web 同源 API OK**（UI 會用這個路徑呼叫 API）
+```bash
 curl -fsSL http://127.0.0.1:5173/api/health
+```
+
+3) **Worker OK**（否則 scripts 會 queued 卡住）
+```bash
 curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 ```
 
 ---
 
-## 0) 你要先準備什麼（Checklist）
+## 平台架構（你在啟動什麼？）
+
+| 元件 | systemd unit | 你需要它做什麼 |
+|---|---|---|
+| API | `charter-api.service` | 提供 `/api/...`（健康檢查、scripts/runs API） |
+| Worker | `charter-worker.service` | 解壓 scripts zip、建立 venv、執行腳本、產出 log/archive |
+| Web | `charter-web.service` | UI（並同源 proxy 到 `/api/...`） |
+| Metrics（可選但建議） | `cpe-metrics-agent.service` | 定期採集 CPE 指標送到 API |
+| Probe（可選但建議） | `cpe-status-probe.timer` | 定期探測 CPE 狀態寫 DB |
+| Watchdog（視環境） | `pbr-watchdog.service` | PBR/route 守護，避免測試路由飄 |
+
+---
+
+## 你要先拿到什麼（交付物 / Checklist）
 
 請先確認你手上有：
 
-- **API 包**：`charter_api_<ts>.tar.gz`
-- **Web 包**：`charter_web_<ts>.tar.gz`
-- **Tools 包**：`charter_tools_<ts>.tar.gz`
-- **Systemd units 包（11F_140 範本）**：`charter_systemd_units_11F_140_20260311_105846.tar.gz`
-- OS：Ubuntu 22.04（建議）
-- 帳號：`da40`（可 sudo）
+- API：`charter_api_<ts>.tar.gz`
+- Web：`charter_web_<ts>.tar.gz`
+- Tools：`charter_tools_<ts>.tar.gz`
+- Systemd units（11F_140 範本）：`charter_systemd_units_11F_140_20260311_105846.tar.gz`
 
-> 如果是「不同單位」：另外要準備 `.secrets/`（NOC profiles / DUT env），看：
+> 不同單位/不同環境一定會需要另外準備 `.secrets/`（NOC profiles / DUT env）：
 > - [Environment Template](../environment_template.md)
 > - [NOC Profile / Secrets](../handoff/noc_profile_secrets.md)
 
 ---
 
-## 1) 安裝 OS 依賴（Ubuntu 22.04）
+## 1) OS 依賴（Ubuntu 22.04）
 
 ```bash
 sudo apt update
@@ -54,7 +66,6 @@ sudo systemctl enable --now postgresql
 ```
 
 Web 需要 Node + pnpm：
-
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
@@ -64,7 +75,7 @@ node -v
 pnpm -v
 ```
 
-（可選）若要用 serial：
+（可選）serial 權限：
 ```bash
 sudo usermod -aG dialout da40
 # 登出再登入才生效
@@ -72,7 +83,9 @@ sudo usermod -aG dialout da40
 
 ---
 
-## 2) 解壓程式到固定路徑（/home/da40/charter）
+## 2) 程式放置（固定路徑：/home/da40/charter）
+
+> systemd unit 會用 `WorkingDirectory/ExecStart` 指到這些路徑，所以路徑對齊是第一優先。
 
 ```bash
 sudo mkdir -p /home/da40/charter
@@ -85,14 +98,18 @@ tar -xzf /path/to/charter_web_<ts>.tar.gz
 tar -xzf /path/to/charter_tools_<ts>.tar.gz
 ```
 
-完成後你至少要看得到：
+檢查（缺一個都會起不來）：
 - `/home/da40/charter/apps/api/`
 - `/home/da40/charter/apps/web/`
 - `/home/da40/charter/tools/`
 
 ---
 
-## 3) DB 建立（lab 預設：rg/rg）
+## 3) DB（為什麼要建？）
+
+平台用 Postgres 存 scripts/runs/worker 狀態等資料。
+
+Lab 預設沿用 11F_140：`rg/rg`（內部環境 OK）。
 
 ```bash
 sudo -iu postgres
@@ -104,14 +121,15 @@ exit
 psql -h 127.0.0.1 -U rg -d rg -c '\\conninfo'
 ```
 
-> 注意：乾淨環境通常還需要 schema（表）初始化；若你跑起來後 API/worker 報 table 不存在，請走「schema-only 匯入」或「完整 DB 還原」。
+> 若你看到錯誤像「table does not exist」：代表 DB schema 沒初始化。
+> 解法：做 schema-only 匯入或完整 DB 還原（見交付流程）。
 
 ---
 
-## 4) 安裝 systemd units（對方 control PC：照貼就能啟動）
+## 4) systemd 長駐（對方 control PC：一段 copy/paste）
 
 > 情境：對方 control PC **不能**連 11F_140。
-> 你只要把 units tar.gz 拿到手，照下面貼上即可。
+> 作法：拿到 units tar.gz 後，解壓到 `/etc/systemd/system`，再 `enable --now`。
 
 ```bash
 # (A) 解壓 unit 到 /etc/systemd/system
@@ -129,22 +147,19 @@ sudo systemctl enable --now charter-api.service \
   charter-web.service \
   pbr-watchdog.service
 
-# (D) 看狀態（至少確認 api/worker/web）
+# (D) 立即驗收（至少確認 api/worker/web）
 sudo systemctl status charter-api.service charter-worker.service charter-web.service --no-pager
 ```
 
+為什麼要 `enable`：因為只 `start` 的話，reboot 後不會自動起來。
+
 ---
 
-## 5) 健康檢查（必做）
+## 5) 驗收（必做，避免「看起來有 UI 但其實 worker 壞了」）
 
 ```bash
-# API health
 curl -fsSL http://127.0.0.1:8080/health
-
-# Web 同源 API health
 curl -fsSL http://127.0.0.1:5173/api/health
-
-# Worker
 curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 ```
 
@@ -152,7 +167,7 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 
 ## 6) 下一步：環境配置（不同單位一定要看）
 
-平台 service 起來後，下一步就是把「環境變動值」填齊（網卡/CPE/NOC profiles/secrets）。請依序看：
+平台 service 起來後，下一步就是把「環境變動值」填齊（網卡/CPE/NOC profiles/secrets）。
 
 1) [Environment Template（哪些欄位要替換）](../environment_template.md)
 2) [NOC profile / secrets（放哪裡、權限、template）](../handoff/noc_profile_secrets.md)
@@ -164,11 +179,13 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 
 ---
 
-## 7) 常見問題（同事最常卡）
+## 7) Troubleshooting（同事最常卡的 5 個點）
 
-- UI 打得開但 `/api/...` timeout：先看 `systemctl status charter-api.service`。
-- run queued 卡住：先看 `systemctl status charter-worker.service` + worker status API。
-- 1015/429（trycloudflare）：請改用內網 IP（`http://<control_pc_ip>:8000`）或 named tunnel 固定網址。
+- UI 有，但 `/api/...` timeout：`systemctl status charter-api.service` + `journalctl -u charter-api.service -n 200 --no-pager`
+- run queued 卡住：`systemctl status charter-worker.service` + worker status API
+- Web 起不來：`systemctl status charter-web.service`（常見是 node/pnpm 沒裝或 run_web.sh 權限）
+- DB 連不上：確認 `DATABASE_URL/PSQL_URL`（unit drop-in）與 Postgres running
+- PBR/路由飄：先暫停 watchdog 釐清（或依環境調整 IF/SRC/GW/SUB）
 
 ---
 
@@ -192,7 +209,7 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
     2) daemon-reload
     3) start：api → worker → metrics → probe.timer → web → watchdog
 
-??? note "（可選）11F_140 unit 節錄（只做對照，不給對方 copy）"
+??? note "（可選）11F_140 unit 節錄（只做對照）"
 
     ```bash
     sudo systemctl cat charter-worker.service
