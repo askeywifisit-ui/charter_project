@@ -196,6 +196,39 @@ chmod 600 /home/da40/charter/.secrets/*
 - `/etc/systemd/system/charter-api.service.d/*.conf`
 - `/etc/systemd/system/charter-worker.service.d/*.conf`
 
+#### 下載方式（推薦）
+
+A) **直接從 11F_140 scp 下來**（最不會版本不一致）：
+
+```bash
+SRC_HOST=172.14.1.140
+OUTDIR=./systemd_units_from_${SRC_HOST}
+mkdir -p "$OUTDIR"
+
+scp root@${SRC_HOST}:/etc/systemd/system/charter-api.service "$OUTDIR/"
+scp root@${SRC_HOST}:/etc/systemd/system/charter-worker.service "$OUTDIR/"
+scp root@${SRC_HOST}:/etc/systemd/system/charter-web.service "$OUTDIR/"
+scp root@${SRC_HOST}:/etc/systemd/system/cpe-metrics-agent.service "$OUTDIR/"
+scp root@${SRC_HOST}:/etc/systemd/system/cpe-status-probe.service "$OUTDIR/"
+scp root@${SRC_HOST}:/etc/systemd/system/cpe-status-probe.timer "$OUTDIR/"
+scp root@${SRC_HOST}:/etc/systemd/system/pbr-watchdog.service "$OUTDIR/"
+
+# drop-in（若存在）
+scp -r root@${SRC_HOST}:/etc/systemd/system/charter-api.service.d "$OUTDIR/" 2>/dev/null || true
+scp -r root@${SRC_HOST}:/etc/systemd/system/charter-worker.service.d "$OUTDIR/" 2>/dev/null || true
+```
+
+B) **從 GitHub 下載 11F_140 範本**（需有 repo 權限；給不同單位快速起手式）：
+
+- `systemd/11F_140/etc/systemd/system/charter-api.service`
+- `systemd/11F_140/etc/systemd/system/charter-worker.service`
+- `systemd/11F_140/etc/systemd/system/charter-web.service`
+- `systemd/11F_140/etc/systemd/system/cpe-metrics-agent.service`
+- `systemd/11F_140/etc/systemd/system/cpe-status-probe.service`
+- `systemd/11F_140/etc/systemd/system/cpe-status-probe.timer`
+- `systemd/11F_140/etc/systemd/system/pbr-watchdog.service`
+- drop-in：`systemd/11F_140/etc/systemd/system/charter-api.service.d/10-db.conf`
+
 #### 11F_140（172.14.1.140）實機範例（可直接 copy 對照）
 
 > 注意：此處只放「unit 結構與非敏感環境參數」，不放任何 NOC email/password、SSH 密碼、warehouse 密碼等。

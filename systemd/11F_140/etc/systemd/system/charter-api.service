@@ -1,0 +1,17 @@
+[Unit]
+Description=Charter API (FastAPI + Uvicorn)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/da40/charter/apps/api
+# 用 python -m 方式啟動，避免 uvicorn 腳本 shebang 失效
+ExecStart=/home/da40/charter/apps/api/.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
+Restart=always
+RestartSec=2
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

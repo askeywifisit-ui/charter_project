@@ -1,0 +1,11 @@
+[Unit]
+Description=Run cpe-status-probe.service periodically
+
+[Timer]
+OnBootSec=2s
+OnUnitActiveSec=5s
+AccuracySec=1s
+Unit=cpe-status-probe.service
+
+[Install]
+WantedBy=timers.target
