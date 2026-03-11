@@ -74,7 +74,7 @@
     sudo -u da40 tee /home/da40/charter/.secrets/dut.env >/dev/null <<'EOF'
     # Put secrets here (DO NOT commit)
     # Common keys (fill in your environment):
-    WAREHOUSE_ID=<fill>
+    WAREHOUSE_ID=ThylacineGone
     WAREHOUSE_PASSWORD=<fill>
     SSH_PASSWORD=<fill>
     # (Optional) if you want to override via secrets instead of manifest:
