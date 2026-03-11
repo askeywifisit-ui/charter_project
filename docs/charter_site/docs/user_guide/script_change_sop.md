@@ -1,10 +1,35 @@
 # 腳本修改 SOP（Export → Modify → Import → Run → Evidence）
 
-> 給 OpenClaw 測試助理：你可以直接讀懂這頁，並依這個 SOP **用 Charter API 協助我控制測試平台**（查 scripts / export / delete / import / run / 抓 log / purge）。
+> 給 OpenClaw 測試助理：你可以依這頁 **用 Charter API 控管測試平台**（查 scripts / export / delete / import / run / 抓 log/證據 / purge）。
 
 這頁是給內部同事的「一條龍流程」。
 
 > 你只要照這頁做，就能：**備份 → 修改 zip → 避免 DUPLICATE → 匯入 → 跑 run → 抓 log/證據**。
+
+---
+
+## 你只要先搞懂的 4 個重點（第一次照做不會卡）
+
+1) **CHARTER_BASE 是哪裡？**
+- 就是 control PC 的 UI base，例如：`http://172.14.1.140:5173`
+- 如果不確定 control PC IP：請問維護者或看文件站的 Platform Links。
+
+2) **SCRIPT_ID / OLD_ID / NEW_ID 的差別（最常搞混）**
+- `SCRIPT_ID`：你要 **export 備份** 的那筆
+- `OLD_ID`：你要 **刪掉** 的那筆（通常是舊的同名 script，用來避免 `DUPLICATE`）
+- `NEW_ID`：你 **import2 後新產生** 的那筆（要 run 請用它）
+
+3) **刪同名避免 DUPLICATE 是破壞性動作**
+- 刪除會影響其他人（同名 script 會消失）
+- 標準流程是：**先 export 備份再刪**
+
+4) **zip 打包最常踩雷：根目錄不要多一層資料夾**
+- 重新打包後建議檢查：
+
+```bash
+unzip -l ${NAME}_patched.zip | head
+# 你應該看到 manifest.yaml / requirements.txt / main.py... 在 zip 根目錄
+```
 
 ---
 
