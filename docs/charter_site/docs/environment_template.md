@@ -88,6 +88,31 @@
 
     如果你不確定：請把 `ip link` + `ip route` 的輸出貼給維護者，通常 10 秒就能判定。
 
+    **PS：PDU_SCRIPT / PDU_OUTLET_ID 要怎麼查（找正確的 PDU 子程式與 outlet）**
+
+    只有在你的測試流程需要 power-cycle / recovery 時才需要 PDU。
+
+    - `PDU_SCRIPT`：control PC 上的 PDU 控制程式路徑（常見：`/home/da40/charter/tools/pdu_outlet1.py` 或 `pdu_outlet2.py`）
+    - `PDU_OUTLET_ID`：實際接到 CPE 電源的插座編號（1/2/3... 依現場）
+
+    對方 control PC 可以用下面方式確認：
+
+    ```bash
+    # 1) 確認 tools 目錄有 PDU 腳本
+    ls -la /home/da40/charter/tools/pdu_outlet*.py
+
+    # 2) 看腳本用法（通常會寫 PDU IP / API endpoint / port / auth 來源）
+    python3 /home/da40/charter/tools/pdu_outlet1.py --help || true
+
+    # 3) 若你們有 PDU endpoint（例：HTTP API），請先確認 control PC 能連到
+    #    （把 <PDU_IP> 換成你們現場的 PDU IP）
+    # curl -sS -I http://<PDU_IP>/api/status | head
+    ```
+
+    如果現場沒有 PDU：
+    - 請把 `PDU_SCRIPT/PDU_OUTLET_ID` 從 systemd env 移除或留空
+    - 並確認會依賴 power-cycle 的 case 是否要 skip/disable
+
     **PS：CPE_DEV 要怎麼查（找正確的 USB serial port）**
 
     在對方 control PC 上插好 console/USB 後，建議用 stable path：`/dev/serial/by-id/...`（比 `/dev/ttyUSB0` 穩定）。
