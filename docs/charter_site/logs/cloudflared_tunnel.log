@@ -1,21 +1,21 @@
-2026-03-11T05:08:12Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
-2026-03-11T05:08:12Z INF Requesting new quick Tunnel on trycloudflare.com...
-2026-03-11T05:08:16Z INF +--------------------------------------------------------------------------------------------+
-2026-03-11T05:08:16Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
-2026-03-11T05:08:16Z INF |  https://necessity-salem-female-digit.trycloudflare.com                                    |
-2026-03-11T05:08:16Z INF +--------------------------------------------------------------------------------------------+
-2026-03-11T05:08:16Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
-2026-03-11T05:08:16Z INF Version 2026.2.0 (Checksum 9ea6a24cda1453322855c3782783652ac763cb41ba2946957fc8bcc4878915b6)
-2026-03-11T05:08:16Z INF GOOS: darwin, GOVersion: go1.26.0, GoArch: amd64
-2026-03-11T05:08:16Z INF Settings: map[ha-connections:1 loglevel:info no-autoupdate:true protocol:quic url:http://127.0.0.1:8000]
-2026-03-11T05:08:16Z INF cloudflared will not automatically update if installed by a package manager.
-2026-03-11T05:08:16Z INF Generated Connector ID: 8cdadf6d-131a-4ca1-bbab-04675fc3834b
-2026-03-11T05:08:16Z INF Initial protocol quic
-2026-03-11T05:08:16Z INF ICMP proxy will use 100.40.1.115 as source for IPv4
-2026-03-11T05:08:16Z INF ICMP proxy will use fe80::147a:195a:37a5:619d in zone en1 as source for IPv6
-2026-03-11T05:08:16Z INF Created ICMP proxy listening on 100.40.1.115:0
-2026-03-11T05:08:16Z INF ICMP proxy will use 100.40.1.115 as source for IPv4
-2026-03-11T05:08:16Z INF ICMP proxy will use fe80::147a:195a:37a5:619d in zone en1 as source for IPv6
-2026-03-11T05:08:16Z INF Starting metrics server on 127.0.0.1:20242/metrics
-2026-03-11T05:08:16Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.227
-2026-03-11T05:08:16Z INF Registered tunnel connection connIndex=0 connection=43e3ce68-ecbd-45ba-bcd1-a0dad44a08b3 event=0 ip=198.41.192.227 location=khh01 protocol=quic
+2026-03-11T10:41:06Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
+2026-03-11T10:41:06Z INF Requesting new quick Tunnel on trycloudflare.com...
+2026-03-11T10:41:13Z INF +--------------------------------------------------------------------------------------------+
+2026-03-11T10:41:13Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+2026-03-11T10:41:13Z INF |  https://boulder-absolute-graham-paths.trycloudflare.com                                   |
+2026-03-11T10:41:13Z INF +--------------------------------------------------------------------------------------------+
+2026-03-11T10:41:13Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
+2026-03-11T10:41:13Z INF Version 2026.2.0 (Checksum 9ea6a24cda1453322855c3782783652ac763cb41ba2946957fc8bcc4878915b6)
+2026-03-11T10:41:13Z INF GOOS: darwin, GOVersion: go1.26.0, GoArch: amd64
+2026-03-11T10:41:13Z INF Settings: map[ha-connections:1 no-autoupdate:true protocol:quic url:http://127.0.0.1:8000]
+2026-03-11T10:41:13Z INF cloudflared will not automatically update if installed by a package manager.
+2026-03-11T10:41:13Z INF Generated Connector ID: 1884666a-7bc8-4993-b4d0-8623c7f90307
+2026-03-11T10:41:13Z INF Initial protocol quic
+2026-03-11T10:41:13Z INF ICMP proxy will use 100.40.1.115 as source for IPv4
+2026-03-11T10:41:13Z INF ICMP proxy will use fe80::147a:195a:37a5:619d in zone en1 as source for IPv6
+2026-03-11T10:41:13Z INF Created ICMP proxy listening on 100.40.1.115:0
+2026-03-11T10:41:13Z INF ICMP proxy will use 100.40.1.115 as source for IPv4
+2026-03-11T10:41:13Z INF ICMP proxy will use fe80::147a:195a:37a5:619d in zone en1 as source for IPv6
+2026-03-11T10:41:13Z INF Starting metrics server on 127.0.0.1:20242/metrics
+2026-03-11T10:41:13Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.67
+2026-03-11T10:41:13Z INF Registered tunnel connection connIndex=0 connection=56bb4135-e17b-4f43-9703-902686f3abfc event=0 ip=198.41.192.67 location=khh01 protocol=quic

@@ -1,9 +1,9 @@
 # Stability Suite — Test Cases（目前平台）
 
 > 這頁是 **case 目錄**（列出有哪些 stability scripts），不是教學。
-> - 如何跑/看結果：請看 [User Guide → Runs 操作](../user_guide/runs/)
+> - 如何跑/看結果：請看 [User Guide → Runs 操作](../user_guide/runs.md)
 > - 如何調整 cycles/interval（長跑前必做）：請看 [Runbook → Cycles 調整](../runbook/cycles_edit/)
-> - 交付/換環境：請看 [Hand-off（交付外部單位）](../handoff/)
+> - 交付/換環境：請看 [Hand-off（交付外部單位）](../handoff/index.md)
 
 > 來源：`GET /api/scripts?suite=stability`
 

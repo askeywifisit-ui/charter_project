@@ -1,62 +1,96 @@
-# Scripts 管理
+# Scripts 管理（匯入 / 匯出 / 修改 / 刪除）
 
-> 原則（DA40 偏好）：**API 優先**，Selenium 只做 UI 呈現/互動驗證。
+本頁是「腳本管理」SOP：讓同事用最短路徑完成 **匯入/匯出/修改/刪除/避免 DUPLICATE**。
 
-## 匯入（Import）
-- 建議路徑：`POST /api/scripts/import2`
-- 規則：**同名（suite+name）先刪再匯入**，避免 `skipped:DUPLICATE`
+> 原則（DA40 偏好）：**API 優先**，UI 只用來觀察/輔助操作。
 
-## 匯出（Export）
-- `GET /api/scripts/{script_id}/export`
+---
 
-## 刪除（Delete）
-- `DELETE /api/scripts/{script_id}`
+## TL;DR（最常用 3 件事）
 
-## 腳本 zip 格式（概要）
+1) **匯入前：同名先刪再匯入**（避免 `skipped:DUPLICATE`）
+2) **修改前：先 Export 備份**
+3) **出問題先看 Runs log，再看 worker log**（`journalctl -u charter-worker.service ...`）
+
+---
+
+## 1) API 操作（推薦）
+
+> 適合：批次處理、寫自動化、避免 UI 誤點。
+
+### 1.1 匯入（Import）
+- Endpoint：`POST /api/scripts/import2`
+- 重點規則：**同名（suite+name）先刪再匯入**
+
+### 1.2 匯出（Export）
+- Endpoint：`GET /api/scripts/{script_id}/export`
+
+### 1.3 刪除（Delete）
+- Endpoint：`DELETE /api/scripts/{script_id}`
+
+---
+
+## 2) 腳本 zip 結構（你在改什麼？）
+
+一個 script zip 常見包含：
 - `manifest.yaml`
 - `requirements.txt`
 - `main.py` / `main_impl.py`
 - entrypoint（常見）：`cycle_wrapper.py:run`
 
-> 外部單位替換項目請見：Environment Template。
+> 換環境需要改哪些參數：請看 [Environment Template](../environment_template.md)
 
 ---
 
-## UI 操作（含截圖）
+## 3) UI 操作（給第一次接觸平台的同事）
 
-> 提示：以下截圖 **可點擊放大**（建議用於確認按鈕位置與狀態）。
+> 提示：以下截圖可點擊放大。
 
-> 目的：讓第一次接觸平台的人，能在 UI 上快速完成「匯入 / 匯出 / 執行 / 修改」並知道常見踩坑點。
-
-### 1) 匯入腳本（Test Suites → Import）
+### 3.1 匯入腳本（Test Suites → Import）
 
 - 建議流程：選 suite → 拖放 zip → Register → 確認 Success/Failed 計數
 
 ![Test Suites Import（11F_140 範例 / Pro）](../assets/ui/suites_11F_140_pro.jpg)
 
-**注意（最常見踩坑）**：同名（suite + name）請先刪再匯入，否則可能出現 `skipped:DUPLICATE`。
+**最常見踩坑**：同名（suite + name）請先刪再匯入，否則可能出現 `skipped:DUPLICATE`。
 
-### 2) Scripts 列表（篩選 / 單支操作 / 批次操作）
+### 3.2 Scripts 列表（篩選 / 單支操作 / 批次操作）
 
 - 上方可用 suite filter + 搜尋（依 script name）
 - 每支腳本右側提供：Run / Export / Modify / Delete
 
 ![Test Scripts（11F_140 範例 / Pro）](../assets/ui/scripts_11F_140_pro.jpg)
 
-### 3) 匯出腳本（Export）
+### 3.3 匯出腳本（Export）
 
 - UI 入口：Test Scripts → 目標 script → Export
 - API 方式（推薦用於自動化/批次）：`GET /api/scripts/{script_id}/export`
 
-### 4) 修改腳本（Modify）
+### 3.4 修改腳本（Modify）
 
-- 建議流程：先 Export 備份 → 修改 zip（manifest/code）→ 刪同名 → Import → Run 驗證
-- 原則：平台參數以 systemd env 為準；`manifest.yaml` 只提供 defaults
+**標準流程（建議照做）**：
+1) Export 備份
+2) 修改 zip（manifest/code）
+3) 刪同名（suite+name）
+4) Import
+5) Run 驗證
 
-### 5) Runs（觀察 queue / log / stop / delete）
+> 重要：平台固定參數以 systemd / `.secrets` 為準；`manifest.yaml` 只提供 defaults。
 
-![Test Runs（11F_140 範例 / Pro）](../assets/ui/runs_11F_140_pro.jpg)
+---
 
-- 常用：Refresh / Cleanup
-- 失敗分析：點進 log 先定位 fail step/event，再做 root cause 分類與修正（見 Runbook/Capabilities）
+## 4) 常見問題（FAQ）
 
+### Q1：為什麼 Import 後顯示 skipped:DUPLICATE？
+A：同名（suite+name）已存在。請先 Delete 舊的，再 Import。
+
+### Q2：修改後跑起來怪怪的，怎麼排查？
+A：
+1) 先看 Runs log（UI 或 API 取 `/api/runs/{id}/log`）
+2) 再看 worker log：
+```bash
+sudo journalctl -u charter-worker.service -n 200 --no-pager
+```
+
+### Q3：換環境後哪裡要改？
+A：請看 [Environment Template](../environment_template.md)（哪個參數放 systemd / `.secrets` / manifest）。

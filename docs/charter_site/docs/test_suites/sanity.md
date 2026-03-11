@@ -1,9 +1,9 @@
 # Sanity Suite — Test Cases（目前平台）
 
 > 這頁是 **case 目錄**（列出有哪些 sanity scripts），不是教學。
-> - 如何跑/看結果：請看 [User Guide → Runs 操作](../user_guide/runs/)
-> - 如何匯入/備份/避免 DUPLICATE：請看 [User Guide → Scripts 管理](../user_guide/scripts/)
-> - 交付/換環境：請看 [Hand-off（交付外部單位）](../handoff/)
+> - 如何跑/看結果：請看 [User Guide → Runs 操作](../user_guide/runs.md)
+> - 如何匯入/備份/避免 DUPLICATE：請看 [User Guide → Scripts 管理](../user_guide/scripts.md)
+> - 交付/換環境：請看 [Hand-off（交付外部單位）](../handoff/index.md)
 
 > 來源：`GET /api/scripts?suite=sanity`
 
