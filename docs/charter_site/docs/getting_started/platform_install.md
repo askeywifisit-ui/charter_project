@@ -51,8 +51,7 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 
 ### 這 4 個檔案從哪裡拿？
 
-- **內部同事**：走你們的內部管道（共享資料夾/檔案站/USB/IM），拿到檔案後放在 control PC 任意路徑即可。
-- **不同單位交付**：請參考：[交付下載（downloads）](../handoff/downloads.md)（其中 tools 若不提供公開連結，請走內部管道）。
+- 請參考：[交付下載（downloads）](../handoff/downloads.md)
 
 > 不同單位/不同環境一定還需要準備 `.secrets/`（NOC profiles / DUT env），否則腳本會在 NOC/SSH/warehouse 相關步驟失敗：
 > - [Environment Template](../environment_template.md)
