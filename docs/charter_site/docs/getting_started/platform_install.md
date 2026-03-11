@@ -196,38 +196,45 @@ chmod 600 /home/da40/charter/.secrets/*
 - `/etc/systemd/system/charter-api.service.d/*.conf`
 - `/etc/systemd/system/charter-worker.service.d/*.conf`
 
-#### 下載方式（推薦）
+#### 下載方式（推薦：對方 control PC 無法連到 11F_140 的情境）
 
-A) **直接從 11F_140 scp 下來**（最不會版本不一致）：
+> 前提：對方 control PC 無法直接 ssh/scp 到 11F_140。
+> 做法：你先把 unit 打包成 `tar.gz` 丟給對方（內部管道），對方只要解壓到 `/etc/systemd/system/`。
+
+A) **打包（你這邊做一次）**
+
+交付檔名（11F_140 範本）：
+- `packages/charter_systemd_units_11F_140_20260311_105846.tar.gz`
+
+B) **對方 control PC：解壓 + 套用（可直接 copy/paste）**
 
 ```bash
-SRC_HOST=172.14.1.140
-OUTDIR=./systemd_units_from_${SRC_HOST}
-mkdir -p "$OUTDIR"
+# 1) 把 tar.gz 放到 control PC（路徑自行調整）
+PKG=/path/to/charter_systemd_units_11F_140_20260311_105846.tar.gz
 
-scp root@${SRC_HOST}:/etc/systemd/system/charter-api.service "$OUTDIR/"
-scp root@${SRC_HOST}:/etc/systemd/system/charter-worker.service "$OUTDIR/"
-scp root@${SRC_HOST}:/etc/systemd/system/charter-web.service "$OUTDIR/"
-scp root@${SRC_HOST}:/etc/systemd/system/cpe-metrics-agent.service "$OUTDIR/"
-scp root@${SRC_HOST}:/etc/systemd/system/cpe-status-probe.service "$OUTDIR/"
-scp root@${SRC_HOST}:/etc/systemd/system/cpe-status-probe.timer "$OUTDIR/"
-scp root@${SRC_HOST}:/etc/systemd/system/pbr-watchdog.service "$OUTDIR/"
+# 2) 解壓到 /etc/systemd/system
+sudo tar -xzf "$PKG" -C /etc/systemd
 
-# drop-in（若存在）
-scp -r root@${SRC_HOST}:/etc/systemd/system/charter-api.service.d "$OUTDIR/" 2>/dev/null || true
-scp -r root@${SRC_HOST}:/etc/systemd/system/charter-worker.service.d "$OUTDIR/" 2>/dev/null || true
+# 3) 重載 unit
+sudo systemctl daemon-reload
+
+# 4) 啟用並啟動（reboot 後自動恢復）
+sudo systemctl enable --now charter-api.service
+sudo systemctl enable --now charter-worker.service
+sudo systemctl enable --now cpe-metrics-agent.service
+sudo systemctl enable --now cpe-status-probe.timer
+sudo systemctl enable --now charter-web.service
+sudo systemctl enable --now pbr-watchdog.service
+
+# 5) 檢查狀態
+sudo systemctl status charter-api.service charter-worker.service charter-web.service --no-pager
 ```
 
-B) **從 GitHub 下載 11F_140 範本**（需有 repo 權限；給不同單位快速起手式）：
+> 若對方要「先不要 enable」也可以用 `start` 取代 `enable --now`，但 reboot 後不會自動起來。
 
-- `systemd/11F_140/etc/systemd/system/charter-api.service`
-- `systemd/11F_140/etc/systemd/system/charter-worker.service`
-- `systemd/11F_140/etc/systemd/system/charter-web.service`
-- `systemd/11F_140/etc/systemd/system/cpe-metrics-agent.service`
-- `systemd/11F_140/etc/systemd/system/cpe-status-probe.service`
-- `systemd/11F_140/etc/systemd/system/cpe-status-probe.timer`
-- `systemd/11F_140/etc/systemd/system/pbr-watchdog.service`
-- drop-in：`systemd/11F_140/etc/systemd/system/charter-api.service.d/10-db.conf`
+C) **從 GitHub 下載（需 repo 權限；備用）**
+
+- unit 檔已放在 repo：`systemd/11F_140/etc/systemd/system/`（不含任何 NOC email/password）
 
 #### 11F_140（172.14.1.140）實機範例（可直接 copy 對照）
 
