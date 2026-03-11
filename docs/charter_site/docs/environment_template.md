@@ -65,6 +65,24 @@
     sudo systemctl status charter-worker.service --no-pager
     ```
 
+    **PS：CPE_DEV 要怎麼查（找正確的 USB serial port）**
+
+    在對方 control PC 上插好 console/USB 後，建議用 stable path：`/dev/serial/by-id/...`（比 `/dev/ttyUSB0` 穩定）。
+
+    ```bash
+    # 1) 看有哪些 serial by-id
+    ls -la /dev/serial/by-id/ || true
+
+    # 2) 找到新插入的 tty（通常是 ttyUSB0/ttyUSB1）
+    dmesg | tail -n 80 | egrep -i "ttyusb|ftdi|serial" || true
+
+    # 3) 快速確認連到哪個 /dev/ttyUSB*
+    readlink -f /dev/serial/by-id/* || true
+    ```
+
+    你要把找到的那一條 by-id 路徑填到：
+    - `Environment=CPE_DEV=...`
+
 !!! warning "B) .secrets/dut.env（敏感值：只給 template）"
 
     請在對方 control PC 建立：`/home/da40/charter/.secrets/dut.env`（權限 600）。
