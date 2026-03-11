@@ -32,9 +32,11 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 | API | `charter-api.service` | 提供 `/api/...`（健康檢查、scripts/runs API） |
 | Worker | `charter-worker.service` | 解壓 scripts zip、建立 venv、執行腳本、產出 log/archive |
 | Web | `charter-web.service` | UI（並同源 proxy 到 `/api/...`） |
-| Metrics（可選但建議） | `cpe-metrics-agent.service` | 定期採集 CPE 指標送到 API |
-| Probe（可選但建議） | `cpe-status-probe.timer` | 定期探測 CPE 狀態寫 DB |
-| Watchdog（視環境） | `pbr-watchdog.service` | PBR/route 守護，避免測試路由飄 |
+| Metrics（必需） | `cpe-metrics-agent.service` | 定期採集 CPE 指標送到 API（Dashboard/健康資訊依賴） |
+| Probe（必需） | `cpe-status-probe.timer` | 定期探測 CPE 狀態寫 DB（平台狀態/排查依賴） |
+| Watchdog（必需） | `pbr-watchdog.service` | PBR/route 守護，避免測試路由飄（確保測試流量走對） |
+
+> 我們目前的標準平台交付/操作流程：上述 6 個 unit 都視為「必需」並預設 `enable --now`。
 
 ---
 
