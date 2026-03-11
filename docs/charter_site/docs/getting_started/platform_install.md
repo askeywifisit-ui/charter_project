@@ -96,23 +96,30 @@ sudo usermod -aG dialout da40
 
 ## 2) 程式放置（固定路徑：/home/da40/charter）
 
-> systemd unit 會用 `WorkingDirectory/ExecStart` 指到這些路徑，所以路徑對齊是第一優先。
+> 這段同事最常要「直接複製貼上」：下面提供一個完整 block。
+> 你只要把 3 個檔案路徑填好（API/Web/Tools 的 tar.gz），貼上執行即可。
 
 ```bash
+# 0) 先填交付檔案路徑（依你實際放哪裡調整）
+API_PKG=/path/to/charter_api_<ts>.tar.gz
+WEB_PKG=/path/to/charter_web_<ts>.tar.gz
+TOOLS_PKG=/path/to/charter_tools_<ts>.tar.gz
+
+# 1) 建目錄 + 權限
 sudo mkdir -p /home/da40/charter
 sudo chown -R da40:da40 /home/da40/charter
-
 cd /home/da40/charter
 
-tar -xzf /path/to/charter_api_<ts>.tar.gz
-tar -xzf /path/to/charter_web_<ts>.tar.gz
-tar -xzf /path/to/charter_tools_<ts>.tar.gz
+# 2) 解壓
+sudo -u da40 tar -xzf "$API_PKG"
+sudo -u da40 tar -xzf "$WEB_PKG"
+sudo -u da40 tar -xzf "$TOOLS_PKG"
+
+# 3) 驗收（缺一個都會起不來）
+ls -la /home/da40/charter/apps/api/ /home/da40/charter/apps/web/ /home/da40/charter/tools/
 ```
 
-檢查（缺一個都會起不來）：
-- `/home/da40/charter/apps/api/`
-- `/home/da40/charter/apps/web/`
-- `/home/da40/charter/tools/`
+為什麼要固定路徑：systemd unit 會用 `WorkingDirectory/ExecStart` 指到這些目錄，所以路徑對齊是第一優先。
 
 ---
 
