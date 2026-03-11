@@ -220,6 +220,23 @@ sudo systemctl enable --now pbr-watchdog.service
 
 ---
 
+## 7.3 一鍵重啟（restart.all.charter.sh）
+
+11 LAB 現行 control PC 提供一鍵重啟腳本：
+
+- `/home/da40/charter/restart.all.charter.sh`
+
+它做的事（重點摘要）：
+1) stop：`web → probe.timer → metrics → worker → api → watchdog`
+2) `systemctl daemon-reload`
+3) start：`api → worker → metrics → probe.timer → web → watchdog`
+4) `systemctl status ...`
+5) `./log.color.charter.sh`
+
+> 交付給不同單位時：如果他們的 unit 名稱/路徑不同，請同步修改此腳本；或直接讓同事使用本頁的 `systemctl enable --now ...` 啟動順序。
+
+---
+
 ## 8) 健康檢查（移植後必跑）
 
 ### 8.1 API / Web
