@@ -8,6 +8,8 @@
 
 ## TL;DR（最常用 3 件事）
 
+> 想看一條龍流程：請直接看 [腳本修改 SOP（入口）](script_change_sop.md)
+
 1) **匯入前：同名先刪再匯入**（避免 `skipped:DUPLICATE`）
 2) **修改前：先 Export 備份**
 3) **出問題先看 Runs log，再看 worker log**（`journalctl -u charter-worker.service ...`）

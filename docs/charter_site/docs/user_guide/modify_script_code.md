@@ -1,5 +1,7 @@
 # Modify Script Code（修改 zip 內 Python 程式碼的標準流程）
 
+> 入口（同事照做版）：[腳本修改 SOP（Export → Modify → Import → Run → Evidence）](script_change_sop.md)
+
 平台目前提供的「可直接修改」能力主要是 **manifest**（`PUT /api/scripts/{id}/manifest`）。
 
 若要修改 zip 內的 Python 程式碼（例如 `main_impl.py` / `cycle_wrapper.py`），建議採用以下標準流程：
