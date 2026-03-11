@@ -65,6 +65,29 @@
     sudo systemctl status charter-worker.service --no-pager
     ```
 
+    **PS：WIFI_IFACE / LAN_PARENT_IFACE / PING_IFACE 要怎麼查（找正確的網卡）**
+
+    這三個值一定要用「你那台 control PC」的正確介面名稱：
+    - `WIFI_IFACE`：Wi‑Fi 測試用介面（常見：`wlan0` 或 `wlx...`）
+    - `LAN_PARENT_IFACE`：LAN client 模擬用的 parent iface（常見：`eno2` 或 `enx...`）
+    - `PING_IFACE`：需要指定 ping/route 走哪張卡時才用（通常跟 `LAN_PARENT_IFACE` 一樣）
+
+    在對方 control PC 上用下面指令查：
+
+    ```bash
+    # 1) 列出所有網卡名稱
+    ip -o link show | sed -E 's/^[0-9]+: /- /'
+
+    # 2) 看 192.168.1.0/24（CPE LAN）是掛在哪張卡（通常就是 LAN_PARENT_IFACE）
+    ip -o route show | egrep '192\.168\.1\.' || true
+
+    # 3) 看 Wi‑Fi 介面（存在的話通常會看到 wlan0 / wlx...）
+    iw dev 2>/dev/null || true
+    nmcli dev status 2>/dev/null || true
+    ```
+
+    如果你不確定：請把 `ip link` + `ip route` 的輸出貼給維護者，通常 10 秒就能判定。
+
     **PS：CPE_DEV 要怎麼查（找正確的 USB serial port）**
 
     在對方 control PC 上插好 console/USB 後，建議用 stable path：`/dev/serial/by-id/...`（比 `/dev/ttyUSB0` 穩定）。
