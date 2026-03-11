@@ -120,8 +120,6 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 - Tools：`charter_tools_<ts>.tar.gz`
 - Systemd units（11F_140 範本）：`charter_systemd_units_11F_140_20260311_105846.tar.gz`
 
-> 下載入口（同事最常用）：[交付下載（downloads）](../handoff/downloads.md)
-
 ### 這 4 個檔案從哪裡拿？
 
 - 請參考：[交付下載（downloads）](../handoff/downloads.md)
