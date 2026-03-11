@@ -6,6 +6,58 @@
 
 ---
 
+## 一鍵安裝（同事最常用：照貼就能跑）
+
+> 這段把本頁的核心步驟濃縮成一個 block。你只要先把 4 個檔案放到 control PC，然後把路徑填上。
+
+```bash
+# ===== 0) 交付檔案路徑（依你實際放哪裡調整） =====
+API_PKG=/path/to/charter_api_<ts>.tar.gz
+WEB_PKG=/path/to/charter_web_<ts>.tar.gz
+TOOLS_PKG=/path/to/charter_tools_<ts>.tar.gz
+UNITS_PKG=/path/to/charter_systemd_units_11F_140_20260311_105846.tar.gz
+
+# ===== 1) OS 依賴 + DB =====
+sudo apt update
+sudo apt install -y \
+  python3 python3-venv python3-pip \
+  postgresql postgresql-contrib \
+  git unzip curl jq
+sudo systemctl enable --now postgresql
+
+# ===== 2) 程式解壓到固定路徑 =====
+sudo mkdir -p /home/da40/charter
+sudo chown -R da40:da40 /home/da40/charter
+cd /home/da40/charter
+sudo -u da40 tar -xzf "$API_PKG"
+sudo -u da40 tar -xzf "$WEB_PKG"
+sudo -u da40 tar -xzf "$TOOLS_PKG"
+
+# ===== 3) DB（lab 預設 rg/rg） =====
+sudo -iu postgres psql -c "CREATE USER rg WITH PASSWORD 'rg';" || true
+sudo -iu postgres psql -c "CREATE DATABASE rg OWNER rg;" || true
+sudo -iu postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rg TO rg;" || true
+
+# ===== 4) 安裝 systemd units + enable 長駐 =====
+sudo tar -xzf "$UNITS_PKG" -C /etc/systemd
+sudo systemctl daemon-reload
+sudo systemctl enable --now charter-api.service \
+  charter-worker.service \
+  cpe-metrics-agent.service \
+  cpe-status-probe.timer \
+  charter-web.service \
+  pbr-watchdog.service
+
+# ===== 5) 驗收 =====
+curl -fsSL http://127.0.0.1:8080/health
+curl -fsSL http://127.0.0.1:5173/api/health
+curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
+```
+
+> 若第 5 步失敗：請往下看 Troubleshooting。
+
+---
+
 ## 成功標準（你做到這 3 件事就算平台 OK）
 
 1) **API OK**
@@ -41,6 +93,8 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 ---
 
 ## 你要先拿到什麼（交付物 / Checklist）
+
+> 下載入口：請先看 [交付下載（downloads）](../handoff/downloads.md)
 
 先講白話：你只要拿到「4 個檔案」，其他都是照步驟解壓/啟動。
 
