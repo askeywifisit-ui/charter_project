@@ -80,3 +80,22 @@ python3 /home/da40/charter/tools/pdu_outlet1.py reset
 3) **Serial 靜默（mute）行為**
 - 兩支工具都有「全域 serial mute 檔」機制（避免 reboot/power-cycle 時 console 噪音干擾）
 - 相關檔案：`/home/da40/charter/var/serial.mute`
+
+---
+
+## 6) 如果採購其他廠牌 PDU：怎麼擴充？
+
+可以。
+
+流程建議：
+1) 跟 PDU 廠商取得 **API 規格**（HTTP endpoint、auth、outlet 編號方式、回應格式）。
+2) 交由 OpenClaw 測試助理依現有介面模式新增一支工具，例如：`pdu_outlet3.py`（或 `pdu_outlet_<brand>.py`）。
+3) 放入 control PC 的 tools 目錄：`/home/da40/charter/tools/`，並在平台（systemd worker env）設定：
+   - `PDU_SCRIPT=/home/da40/charter/tools/pdu_outlet3.py`
+   - `PDU_OUTLET_ID=<fill>`
+
+建議新工具至少提供與既有工具一致的介面（方便 scripts 重用）：
+- CLI：`on / off / reset / status`
+- Env：`PDU_IP / PDU_USER / PDU_PASS / PDU_OUTLET_ID / PDU_TIMEOUT`（必要時新增 vendor-specific env，但要有預設值）
+
+> `PDU_PASS` 屬敏感值，仍請放 `.secrets/dut.env`，不要寫在文件站或 manifest。
