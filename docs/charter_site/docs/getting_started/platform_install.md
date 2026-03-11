@@ -40,14 +40,21 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 
 ## 你要先拿到什麼（交付物 / Checklist）
 
-請先確認你手上有：
+先講白話：你只要拿到「4 個檔案」，其他都是照步驟解壓/啟動。
+
+你需要這 4 個交付檔：
 
 - API：`charter_api_<ts>.tar.gz`
 - Web：`charter_web_<ts>.tar.gz`
 - Tools：`charter_tools_<ts>.tar.gz`
 - Systemd units（11F_140 範本）：`charter_systemd_units_11F_140_20260311_105846.tar.gz`
 
-> 不同單位/不同環境一定會需要另外準備 `.secrets/`（NOC profiles / DUT env）：
+### 這 4 個檔案從哪裡拿？
+
+- **內部同事**：走你們的內部管道（共享資料夾/檔案站/USB/IM），拿到檔案後放在 control PC 任意路徑即可。
+- **不同單位交付**：請參考：[交付下載（downloads）](../handoff/downloads.md)（其中 tools 若不提供公開連結，請走內部管道）。
+
+> 不同單位/不同環境一定還需要準備 `.secrets/`（NOC profiles / DUT env），否則腳本會在 NOC/SSH/warehouse 相關步驟失敗：
 > - [Environment Template](../environment_template.md)
 > - [NOC Profile / Secrets](../handoff/noc_profile_secrets.md)
 
