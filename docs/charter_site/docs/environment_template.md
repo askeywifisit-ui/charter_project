@@ -65,71 +65,66 @@
     sudo systemctl status charter-worker.service --no-pager
     ```
 
-    **PS：WIFI_IFACE / LAN_PARENT_IFACE / PING_IFACE 要怎麼查（找正確的網卡）**
+    ??? note "PS：WIFI_IFACE / LAN_PARENT_IFACE / PING_IFACE 要怎麼查（找正確的網卡）"
 
-    這三個值一定要用「你那台 control PC」的正確介面名稱：
-    - `WIFI_IFACE`：Wi‑Fi 測試用介面（常見：`wlan0` 或 `wlx...`）
-    - `LAN_PARENT_IFACE`：LAN client 模擬用的 parent iface（常見：`eno2` 或 `enx...`）
-    - `PING_IFACE`：需要指定 ping/route 走哪張卡時才用（通常跟 `LAN_PARENT_IFACE` 一樣）
+        這三個值一定要用「你那台 control PC」的正確介面名稱：
+        - `WIFI_IFACE`：Wi‑Fi 測試用介面（常見：`wlan0` 或 `wlx...`）
+        - `LAN_PARENT_IFACE`：LAN client 模擬用的 parent iface（常見：`eno2` 或 `enx...`）
+        - `PING_IFACE`：需要指定 ping/route 走哪張卡時才用（通常跟 `LAN_PARENT_IFACE` 一樣）
 
-    在對方 control PC 上用下面指令查：
+        ```bash
+        # 1) 列出所有網卡名稱
+        ip -o link show | sed -E 's/^[0-9]+: /- /'
 
-    ```bash
-    # 1) 列出所有網卡名稱
-    ip -o link show | sed -E 's/^[0-9]+: /- /'
+        # 2) 看 192.168.1.0/24（CPE LAN）是掛在哪張卡（通常就是 LAN_PARENT_IFACE）
+        ip -o route show | egrep '192\.168\.1\.' || true
 
-    # 2) 看 192.168.1.0/24（CPE LAN）是掛在哪張卡（通常就是 LAN_PARENT_IFACE）
-    ip -o route show | egrep '192\.168\.1\.' || true
+        # 3) 看 Wi‑Fi 介面（存在的話通常會看到 wlan0 / wlx...）
+        iw dev 2>/dev/null || true
+        nmcli dev status 2>/dev/null || true
+        ```
 
-    # 3) 看 Wi‑Fi 介面（存在的話通常會看到 wlan0 / wlx...）
-    iw dev 2>/dev/null || true
-    nmcli dev status 2>/dev/null || true
-    ```
+        如果你不確定：請把 `ip link` + `ip route` 的輸出貼給維護者，通常 10 秒就能判定。
 
-    如果你不確定：請把 `ip link` + `ip route` 的輸出貼給維護者，通常 10 秒就能判定。
+    ??? note "PS：PDU_SCRIPT / PDU_OUTLET_ID 要怎麼查（找正確的 PDU 子程式與 outlet）"
 
-    **PS：PDU_SCRIPT / PDU_OUTLET_ID 要怎麼查（找正確的 PDU 子程式與 outlet）**
+        只有在你的測試流程需要 power-cycle / recovery 時才需要 PDU。
 
-    只有在你的測試流程需要 power-cycle / recovery 時才需要 PDU。
+        - `PDU_SCRIPT`：control PC 上的 PDU 控制程式路徑（常見：`/home/da40/charter/tools/pdu_outlet1.py` 或 `pdu_outlet2.py`）
+        - `PDU_OUTLET_ID`：實際接到 CPE 電源的插座編號（1/2/3... 依現場）
 
-    - `PDU_SCRIPT`：control PC 上的 PDU 控制程式路徑（常見：`/home/da40/charter/tools/pdu_outlet1.py` 或 `pdu_outlet2.py`）
-    - `PDU_OUTLET_ID`：實際接到 CPE 電源的插座編號（1/2/3... 依現場）
+        ```bash
+        # 1) 確認 tools 目錄有 PDU 腳本
+        ls -la /home/da40/charter/tools/pdu_outlet*.py
 
-    對方 control PC 可以用下面方式確認：
+        # 2) 看腳本用法（通常會寫 PDU IP / API endpoint / port / auth 來源）
+        python3 /home/da40/charter/tools/pdu_outlet1.py --help || true
 
-    ```bash
-    # 1) 確認 tools 目錄有 PDU 腳本
-    ls -la /home/da40/charter/tools/pdu_outlet*.py
+        # 3) 若你們有 PDU endpoint（例：HTTP API），請先確認 control PC 能連到
+        #    （把 <PDU_IP> 換成你們現場的 PDU IP）
+        # curl -sS -I http://<PDU_IP>/api/status | head
+        ```
 
-    # 2) 看腳本用法（通常會寫 PDU IP / API endpoint / port / auth 來源）
-    python3 /home/da40/charter/tools/pdu_outlet1.py --help || true
+        如果現場沒有 PDU：
+        - 請把 `PDU_SCRIPT/PDU_OUTLET_ID` 從 systemd env 移除或留空
+        - 並確認會依賴 power-cycle 的 case 是否要 skip/disable
 
-    # 3) 若你們有 PDU endpoint（例：HTTP API），請先確認 control PC 能連到
-    #    （把 <PDU_IP> 換成你們現場的 PDU IP）
-    # curl -sS -I http://<PDU_IP>/api/status | head
-    ```
+    ??? note "PS：CPE_DEV 要怎麼查（找正確的 USB serial port）"
 
-    如果現場沒有 PDU：
-    - 請把 `PDU_SCRIPT/PDU_OUTLET_ID` 從 systemd env 移除或留空
-    - 並確認會依賴 power-cycle 的 case 是否要 skip/disable
+        建議用 stable path：`/dev/serial/by-id/...`（比 `/dev/ttyUSB0` 穩定）。
 
-    **PS：CPE_DEV 要怎麼查（找正確的 USB serial port）**
+        ```bash
+        # 1) 看有哪些 serial by-id
+        ls -la /dev/serial/by-id/ || true
 
-    在對方 control PC 上插好 console/USB 後，建議用 stable path：`/dev/serial/by-id/...`（比 `/dev/ttyUSB0` 穩定）。
+        # 2) 找到新插入的 tty（通常是 ttyUSB0/ttyUSB1）
+        dmesg | tail -n 80 | egrep -i "ttyusb|ftdi|serial" || true
 
-    ```bash
-    # 1) 看有哪些 serial by-id
-    ls -la /dev/serial/by-id/ || true
+        # 3) 快速確認連到哪個 /dev/ttyUSB*
+        readlink -f /dev/serial/by-id/* || true
+        ```
 
-    # 2) 找到新插入的 tty（通常是 ttyUSB0/ttyUSB1）
-    dmesg | tail -n 80 | egrep -i "ttyusb|ftdi|serial" || true
-
-    # 3) 快速確認連到哪個 /dev/ttyUSB*
-    readlink -f /dev/serial/by-id/* || true
-    ```
-
-    你要把找到的那一條 by-id 路徑填到：
-    - `Environment=CPE_DEV=...`
+        你要把找到的那一條 by-id 路徑填到：`Environment=CPE_DEV=...`
 
 !!! warning "B) .secrets/dut.env（敏感值：只給 template）"
 
