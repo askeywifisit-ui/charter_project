@@ -17,7 +17,6 @@
     export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
     ```
 
-> 這頁不建議你手填 `SCRIPT_ID`。**用名稱查回 script_id** 比較穩（script_id 會因 delete/import 變動）。
 
 ---
 
