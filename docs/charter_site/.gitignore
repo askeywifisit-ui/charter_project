@@ -1,0 +1,8 @@
+# mkdocs build output
+site/
+
+# local logs
+logs/
+
+# mac
+.DS_Store

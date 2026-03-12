@@ -141,6 +141,7 @@ nav:
       - 測試助理 Setup: openclaw_setup/openclaw_test_assistant_setup.md
       - OpenClaw 能做什麼（Charter）: openclaw_setup/openclaw_capabilities.md
   - Runbook:
+      - Demo 場景（工程向）: runbook/demo_scenario_openclaw.md
       - Agent Runbook（給 AI）: runbook/agent_runbook.md
       - 常用維運: runbook/operations.md
       - Cycles 調整（OpenClaw 測試助理）: runbook/cycles_edit.md

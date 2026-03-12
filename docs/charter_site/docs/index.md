@@ -16,6 +16,8 @@
   - Import DUPLICATE： [Scripts 管理](user_guide/scripts.md)
 
 > 需要「Agent 可執行版」： [Agent Runbook（給 AI）](runbook/agent_runbook.md)
+>
+> Demo（工程向 15–20 分鐘）：[Runbook → Demo 場景（工程向）](runbook/demo_scenario_openclaw.md)
 
 ---
 
