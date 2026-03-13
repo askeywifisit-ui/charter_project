@@ -42,9 +42,24 @@ C) **測試環境假設（重要）**
 
 ## 1) OpenClaw 協助產生腳本（建議工作流）
 
+### 1.1 先找「可參考的既有腳本」（推薦）
+
+在從 0 寫新腳本前，建議先確認平台上是否已有 **相似 test case** 可以參考。
+
+做法：
+- 用 suite + 關鍵字搜尋 scripts（例如同一個 PRD family、相同功能：UPnP/Wi‑Fi/DHCP/warehouse）。
+- 若找到相似腳本：先 export zip，讓 OpenClaw 測試助理以「相似腳本 + 新 test step」來產生新腳本（速度更快、風險更低）。
+
+（提示）相似腳本參考優先順序：
+1) 同 PRD family（同前綴，如 `C15807xxx`）
+2) 同功能模組（例如 warehouse / NOC / Wi‑Fi）
+3) 同驗證手段（API 優先；需要 SSH/serial/PDU 的也盡量沿用既有做法）
+
+### 1.2 再用 Test Plan 產生新腳本
+
 你可以直接對 OpenClaw 測試助理說：
 
-- 「請依這份 test plan 產生一支新的 Charter script zip，name=`<NAME>`，suite=`sanity`，包含 manifest + main_impl.py，並遵守：API 優先、可重跑、log 一行 JSON。」
+- 「請先找平台上是否有相似腳本可參考；若有，請以『相似腳本 + 這份 test steps』產生新的 Charter script zip。name=`<NAME>`，suite=`sanity`，包含 manifest + main_impl.py，並遵守：API 優先、可重跑、log 一行 JSON。」
 
 助理產出的內容通常包含：
 - `manifest.yaml`
