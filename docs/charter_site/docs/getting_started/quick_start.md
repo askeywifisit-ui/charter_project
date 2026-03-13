@@ -83,9 +83,31 @@ for name in want:
 PY
 ```
 
-把你要跑的那支 script_id 記下來：
+把你要跑的那支 script_id 記下來（或直接用下面「自動取 ID 再 Run」的做法）：
 ```bash
 SCRIPT_ID=<FILL>
+```
+
+### 4.3（推薦）自動取 script_id 再 Run（避免手抄打錯）
+
+範例：跑 `C00000004_NOC_API_basic_test`
+
+```bash
+NAME="C00000004_NOC_API_basic_test"
+
+curl -fsSL "${CHARTER_BASE}/api/scripts?limit=2000" -o /tmp/scripts.json
+
+SCRIPT_ID=$(python3 - <<'PY'
+import json
+xs=json.load(open('/tmp/scripts.json'))
+name="C00000004_NOC_API_basic_test"
+hit=[s for s in xs if s.get('suite')=='sanity' and s.get('name')==name]
+print(hit[0]['id'] if hit else "")
+PY
+)
+
+echo "SCRIPT_ID=$SCRIPT_ID"
+curl -sS -X POST "${CHARTER_BASE}/api/scripts/${SCRIPT_ID}/run" | python3 -m json.tool
 ```
 
 ---
