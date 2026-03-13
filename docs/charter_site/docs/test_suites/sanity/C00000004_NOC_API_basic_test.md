@@ -6,7 +6,7 @@
 
 ## 來源與下載
 
-- GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/sanity/C00000004_NOC_API_basic_test.md>
+- GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
 - 腳本 zip（直接下載）：<../assets/scripts/sanity/C00000004_NOC_API_basic_test.zip>
 

@@ -6,7 +6,7 @@
 
 ## 來源與下載
 
-- GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/stability/C24541454_Multiple_reboot_stress.md>
+- GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/stability>
 
 - 腳本 zip（直接下載）：<../assets/scripts/stability/C24541454_Multiple_reboot_stress.zip>
 

@@ -6,7 +6,7 @@
 
 ## 來源與下載
 
-- GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/sanity/C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client.md>
+- GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
 - 腳本 zip（直接下載）：<../assets/scripts/sanity/C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client.zip>
 
