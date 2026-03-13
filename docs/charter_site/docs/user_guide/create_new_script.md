@@ -47,7 +47,14 @@
 
 ---
 
-## 2) 產生腳本內容（由 OpenClaw 測試助理協助）
+## 2) 產生腳本內容（建議由 OpenClaw 測試助理協助）
+
+建議用 OpenClaw 測試助理來做「新腳本產生」工作：
+- 能先找相似腳本當骨架（C00000001~04 或同模組腳本）
+- 能依 test steps 自動補齊 manifest/env、timeouts、retry/backoff 與 log（evidence）格式
+- 能依 DA40 習慣維持：**API 優先**、敏感值不進 zip、可重跑/可取證
+
+你只要提供：`PRD_ID + Test_case_name + Test Steps`（以及是否允許 reboot/PDU/FR），助理就能產出可 import 的 zip。
 
 新腳本 zip 建議包含：
 - `manifest.yaml`
