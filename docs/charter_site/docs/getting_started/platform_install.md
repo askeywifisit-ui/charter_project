@@ -101,12 +101,33 @@ sudo systemctl enable --now charter-api.service \
 # （建議）快速確認 unit 內容是否是你剛解的版本
 systemctl cat charter-worker.service | head -n 30
 
-# ===== 5) 驗收 =====
+# ===== 5) Secrets / 環境參數（很多 case 會卡在這） =====
+# 安全原則：文件站不放帳密；敏感值一律放在 /home/da40/charter/.secrets/
+# 最常見的兩個檔案：
+# - dut.env：DUT/平台「會變動」的環境參數（例如 iface、CPE_DEV、PDU 等）
+# - noc_profiles.json：NOC profiles（帳密/endpoint 等），給腳本/worker 使用
+
+sudo -u da40 mkdir -p /home/da40/charter/.secrets
+sudo -u da40 touch /home/da40/charter/.secrets/dut.env
+sudo -u da40 touch /home/da40/charter/.secrets/noc_profiles.json
+
+# 確認檔案存在
+ls -la /home/da40/charter/.secrets
+
+# （提醒）實際內容怎麼填：請看 Environment Template / NOC Profile Secrets
+
+# ===== 6) 驗收 =====
 # 建議先看 service 狀態（比 curl 更快定位問題）
 sudo systemctl --no-pager --full status \
   charter-api.service charter-worker.service charter-web.service \
   cpe-metrics-agent.service pbr-watchdog.service \
   cpe-status-probe.timer || true
+
+# 解壓目錄驗收（避免解到錯層）
+ls -la /home/da40/charter/apps/api /home/da40/charter/apps/web /home/da40/charter/tools
+
+# DB 連線驗收（避免 DB 起了但帳密/連線字串不一致）
+psql -h 127.0.0.1 -U rg -d rg -c '\\conninfo' || true
 
 curl -fsSL http://127.0.0.1:8080/health
 curl -fsSL http://127.0.0.1:5173/api/health
@@ -300,6 +321,7 @@ curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
 
 1) [Environment Template（哪些欄位要替換）](../environment_template.md)
 2) [NOC profile / secrets（放哪裡、權限、template）](../handoff/noc_profile_secrets.md)
+   - 你在 control PC 上應該看到：`/home/da40/charter/.secrets/dut.env`、`/home/da40/charter/.secrets/noc_profiles.json`
 3) [交付環境表（同事照填）](../handoff/handoff_env_form.md)
 4) [Network iface 指南（最常踩雷）](../handoff/network_iface_guide.md)
 5) 驗證：
