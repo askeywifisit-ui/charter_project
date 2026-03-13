@@ -32,6 +32,19 @@
 
 若平台上已有相似腳本：先 export zip，讓助理以「相似腳本 + 新 test steps」產生新腳本（更快、更穩）。
 
+### 建議優先參考的基礎架構（C00000001 ~ C00000004）
+
+這幾支是最常被拿來當「新腳本骨架」的基礎 case：
+
+- `C00000001_SSH_basic_test`：SSH/連線與基本 precondition（適合需要 SSH 的 case）
+- `C00000002_SSH_disable_test`：SSH disable/收尾流程（適合需要驗證關閉/復原）
+- `C00000003_WIFI_basic_test`：Wi‑Fi 連線、拿 IP、ping router/internet 的 smoke 骨架
+- `C00000004_NOC_API_basic_test`：NOC API flow / location context / 基本查詢的骨架
+
+建議做法：
+1) 先 export 其中一支最相近的 zip
+2) 以該 zip 的 `manifest.yaml env` 與 logging 風格為模板，再把你的 test steps 塞進 `main_impl.py`
+
 ---
 
 ## 2) 產生腳本內容（由 OpenClaw 測試助理協助）
