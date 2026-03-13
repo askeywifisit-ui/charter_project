@@ -8,8 +8,8 @@
 
 - GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/sanity/C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client.md>
 
-- GitHub scripts（zip）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/sanity/C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client.zip>
-  - 目錄：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/sanity>
+- GitHub scripts（zip，需 repo 權限）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/sanity/C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client.zip>
+  - 目錄（需 repo 權限）：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/sanity>
 
 ### Export script zip（API）
 

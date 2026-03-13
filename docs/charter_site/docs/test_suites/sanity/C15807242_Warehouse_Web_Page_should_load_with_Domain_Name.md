@@ -8,8 +8,8 @@
 
 - GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/sanity/C15807242_Warehouse_Web_Page_should_load_with_Domain_Name.md>
 
-- GitHub scripts（zip）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/sanity/C15807242_Warehouse_Web_Page_should_load_with_Domain_Name.zip>
-  - 目錄：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/sanity>
+- GitHub scripts（zip，需 repo 權限）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/sanity/C15807242_Warehouse_Web_Page_should_load_with_Domain_Name.zip>
+  - 目錄（需 repo 權限）：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/sanity>
 
 ### Export script zip（API）
 

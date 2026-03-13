@@ -8,8 +8,8 @@
 
 - GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/stability/A2844344_Continuously_executing_reboot.md>
 
-- GitHub scripts（zip）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/stability/A2844344_Continuously_executing_reboot.zip>
-  - 目錄：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/stability>
+- GitHub scripts（zip，需 repo 權限）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/stability/A2844344_Continuously_executing_reboot.zip>
+  - 目錄（需 repo 權限）：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/stability>
 
 ### Export script zip（API）
 
