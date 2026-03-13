@@ -8,8 +8,6 @@
 
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
-- 腳本 zip（直接下載）：<../assets/scripts/sanity/C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile.zip>
-
 
 ### Export script zip（API）
 

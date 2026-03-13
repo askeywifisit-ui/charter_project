@@ -8,8 +8,6 @@
 
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/stability>
 
-- 腳本 zip（直接下載）：<../assets/scripts/stability/A2844344_Continuously_executing_reboot.zip>
-
 
 ### Export script zip（API）
 

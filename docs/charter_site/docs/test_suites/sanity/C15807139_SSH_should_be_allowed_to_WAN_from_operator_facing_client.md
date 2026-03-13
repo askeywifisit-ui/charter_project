@@ -8,8 +8,6 @@
 
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
-- 腳本 zip（直接下載）：<../assets/scripts/sanity/C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client.zip>
-
 
 ### Export script zip（API）
 

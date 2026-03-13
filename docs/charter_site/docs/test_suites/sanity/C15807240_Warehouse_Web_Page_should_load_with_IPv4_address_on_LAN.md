@@ -8,8 +8,6 @@
 
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
-- 腳本 zip（直接下載）：<../assets/scripts/sanity/C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN.zip>
-
 
 ### Export script zip（API）
 

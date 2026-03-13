@@ -8,8 +8,6 @@
 
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
-- 腳本 zip（直接下載）：<../assets/scripts/sanity/C15806905_SSID_broadcast_when_WiFi_radios_toggled.zip>
-
 
 ### Export script zip（API）
 

@@ -8,8 +8,6 @@
 
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/stability>
 
-- 腳本 zip（直接下載）：<../assets/scripts/stability/C24541454_Multiple_reboot_stress.zip>
-
 
 ### Export script zip（API）
 

@@ -8,8 +8,6 @@
 
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
-- 腳本 zip（直接下載）：<../assets/scripts/sanity/C15807844_UPnP_State_Changed_From_Disabled_To_Enabled.zip>
-
 
 ### Export script zip（API）
 
