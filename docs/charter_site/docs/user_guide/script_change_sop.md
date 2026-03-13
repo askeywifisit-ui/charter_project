@@ -118,6 +118,35 @@ unzip -l "./${NAME}_patched.zip" | head
 ## 4) 匯入前：刪除同名（避免 DUPLICATE）
 
 > 規則：**同 suite + 同 name** 必須先刪再匯入。
+>
+> ⚠️ 這段開始會動到平台資料（破壞性）。第一次照做前，建議先做下面的 Dry-run 檢查清單。
+
+### 4.0 Dry-run（安全檢查清單 / 不會改動平台）
+
+```bash
+# 0) 變數自檢（必做）
+echo "CHARTER_BASE=[$CHARTER_BASE] SUITE=[$SUITE] NAME=[$NAME]"
+curl -fsSL "$CHARTER_BASE/api/health"; echo
+
+# 1) 確認手上 patched zip 存在
+ls -lh "./${NAME}_patched.zip"
+
+# 2) 重新確認平台上「同名 script」有哪些（你等等要刪的是哪一筆）
+curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+python3 - <<'PY'
+import json,os
+xs=json.load(open('/tmp/scripts.json'))
+name=os.environ.get('NAME')
+suite=os.environ.get('SUITE')
+ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
+print('matches:',len(ms))
+for s in ms:
+    print('id=', s.get('id'), 'suite=', s.get('suite'), 'name=', s.get('name'))
+PY
+
+# 3) 確認 worker 正常（否則 run 會 queued）
+curl -fsSL "$CHARTER_BASE/api/runs/worker/status" | python3 -m json.tool
+```
 
 ```bash
 # 先查同名（確認只有你要刪的那筆）
@@ -134,7 +163,23 @@ for s in ms:
 PY
 
 # 刪除（破壞性）
+# 建議：先 export 備份完成，再刪。
 OLD_ID=<OLD_ID>
+
+# （最後確認）你要刪的是哪一筆
+curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+python3 - <<'PY'
+import json,os
+xs=json.load(open('/tmp/scripts.json'))
+name=os.environ.get('NAME')
+suite=os.environ.get('SUITE')
+ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
+print('matches:',len(ms))
+for s in ms:
+    print('id=', s.get('id'), 'suite=', s.get('suite'), 'name=', s.get('name'))
+PY
+
+echo "Deleting OLD_ID=$OLD_ID"  # 讓同事看清楚再按 Enter
 curl -sS -X DELETE "$CHARTER_BASE/api/scripts/$OLD_ID" | python3 -m json.tool
 ```
 
