@@ -8,11 +8,11 @@
 
 ---
 
-## 成功標準（你做到這 3 件事就完成了）
+## 成功標準（完成以下 3 項即可）
 
-1) 你手上有 **備份 zip**：`backup_scripts/<NAME>_<SCRIPT_ID>.zip`
-2) 平台上有 **新 script（NEW_ID）**，且 Run 成功產生 `RID`
-3) 你已經抓到 **evidence log**：`run_<RID>_log.json`
+1. 已完成備份：`backup_scripts/${NAME}_${SCRIPT_ID}.zip`
+2. 已完成重新匯入並可執行：已取得 `NEW_ID`，且 Run 成功產生 `RID`
+3. 已完成取證：已下載 `run_${RID}_log.json`
 
 ---
 
