@@ -46,7 +46,7 @@ extra_css:
 
 nav:
   - Overview:
-      - README: index.md
+      - Charter 平台概覽（README）: index.md
       - Platform Links（平台入口）: platform_links.md
       - Environment Template（給外部單位）: environment_template.md
   - Getting Started:
