@@ -81,7 +81,15 @@ sudo -iu postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rg TO rg;" || true
 # 詳細見本頁下方「DB（為什麼要建？）」段落。
 
 # ===== 4) 安裝 systemd units + enable 長駐 =====
+# 這包 units（11F_140 範本）要解到 **/etc/systemd/system/** 才會生效。
+# 我們用 `-C /etc/systemd` 是因為 tar 內通常帶 `systemd/system/*.service` 路徑，
+# 解完會落在：/etc/systemd/system/
+
 sudo tar -xzf "$UNITS_PKG" -C /etc/systemd
+
+# （建議）確認 units 已經出現在正確位置
+ls -la /etc/systemd/system/charter-*.service /etc/systemd/system/pbr-watchdog.service 2>/dev/null || true
+
 sudo systemctl daemon-reload
 sudo systemctl enable --now charter-api.service \
   charter-worker.service \
@@ -89,6 +97,9 @@ sudo systemctl enable --now charter-api.service \
   cpe-status-probe.timer \
   charter-web.service \
   pbr-watchdog.service
+
+# （建議）快速確認 unit 內容是否是你剛解的版本
+systemctl cat charter-worker.service | head -n 30
 
 # ===== 5) 驗收 =====
 # 建議先看 service 狀態（比 curl 更快定位問題）
