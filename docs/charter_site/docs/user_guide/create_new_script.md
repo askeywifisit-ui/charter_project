@@ -14,6 +14,48 @@
 
 ---
 
+## Sanity / Stability（suite 選擇與腳本架構）
+
+### 何時放 sanity？何時放 stability？
+
+- **sanity**：功能/流程驗證（一次性），通常 1~10 分鐘內跑完；重點是「可重跑、可取證、Fail 好定位」。
+- **stability**：長跑/壓力/反覆循環（reboot/power-cycle/speedtest…）；重點是「循環控制、週期回報、容錯與恢復」。
+
+### Manifest（env）架構建議
+
+**Sanity（一次跑完）範例：**
+```yaml
+suite: sanity
+entrypoint: main_impl.py:run
+
+env:
+  # 以單次流程為主；不要硬塞 cycles
+  TIMEOUT_SEC: '60'
+  RETRIES: '3'
+  RETRY_INTERVAL_SEC: '3'
+```
+
+**Stability（循環/長跑）範例：**
+```yaml
+suite: stability
+entrypoint: cycle_wrapper.py:run
+
+env:
+  # 必備：循環控制
+  CYCLES: '48'
+  CYCLE_INTERVAL: '600'
+  STOP_ON_FAIL: '0'
+  # 把真正測試入口交給 wrapper
+  ORIGINAL_ENTRY: main_impl.py:run
+
+  # 建議：每輪/每段輸出摘要（給人看）
+  REPORT_EVERY_N_CYCLES: '1'
+```
+
+> 原則：**API 優先**；敏感值不進 zip（NOC/warehouse/SSH 密碼走 `.secrets/` 或 `dut.env`）。
+
+---
+
 ## 0) 輸入資料（交給 OpenClaw 測試助理）
 
 最少提供：
