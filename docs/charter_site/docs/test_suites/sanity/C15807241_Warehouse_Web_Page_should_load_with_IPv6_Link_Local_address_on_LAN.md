@@ -75,7 +75,7 @@ curl -sS -X DELETE "$CHARTER_BASE/api/runs/purge?older_than_days=0" | python3 -m
     ```
 
 
-??? note "manifest.yaml（完整 env，已自動去敏）"
+??? note "manifest.yaml（流程參數完整；帳密/API key 已遮蔽）"
 
     ```yaml
     name: C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN
