@@ -39,16 +39,22 @@ unzip -l ${NAME}_patched.zip | head
 
 ---
 
-## 0) 先填基本變數
+## 0) 先填基本變數（務必先做）
 
 > 建議：先用最小 smoke case（sanity 的 basic 類）練一次流程。
 
 ```bash
-export CONTROL_PC_IP="<fill>"      # 例：172.14.1.140
+export CONTROL_PC_IP="<fill>"       # 例：172.14.1.140
 export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
-export SUITE="sanity"             # sanity 或 stability
-export NAME="<SCRIPT_NAME>"        # 例：C00000001_SSH_basic_test
+export SUITE="sanity"              # sanity 或 stability
+export NAME="<SCRIPT_NAME>"         # 例：C00000001_SSH_basic_test
+
+# （快速自檢）確認變數有值，且 API 可達
+echo "CHARTER_BASE=[$CHARTER_BASE] SUITE=[$SUITE] NAME=[$NAME]"
+curl -fsSL "$CHARTER_BASE/api/health"; echo
 ```
+
+> 若你看到 `curl: (3) URL using bad/illegal format`：幾乎都是 `CHARTER_BASE` 沒 export 或字串少了 `http://`。
 
 ---
 
