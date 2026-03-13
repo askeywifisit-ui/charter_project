@@ -11,7 +11,17 @@
 
 ## 一鍵安裝（同事最常用：照貼就能跑）
 
-> 這段把本頁的核心步驟濃縮成一個 block。你只要先把 4 個檔案放到 control PC，然後把路徑填上。
+> 這段把本頁的核心步驟濃縮成一個 block。
+>
+> ⚠️ 先確認 2 個前提（常見少這步就會卡住）：
+> 1) control PC 上已存在使用者 `da40`（否則 `chown da40:da40` 會失敗）
+> 2) 4 個交付檔案已放到同一個資料夾、檔名正確（避免解壓路徑/檔名打錯）
+>
+> 若不確定：先跑
+> ```bash
+> id da40 || echo "missing user da40"
+> ls -lh /home/da40/charter/packages || true
+> ```
 
 ```bash
 # ===== 0) 交付檔案路徑（建議放在 /home/da40/charter/packages/） =====
@@ -29,12 +39,24 @@ TOOLS_PKG=${PKG_DIR}/charter_tools_20260310_201313.tar.gz
 UNITS_PKG=${PKG_DIR}/charter_systemd_units_11F_140_20260311_105846.tar.gz
 
 # ===== 1) OS 依賴 + DB =====
+# （若你們環境 apt 會被擋：先處理 proxy/內網 mirror，否則後面一定卡住）
 sudo apt update
 sudo apt install -y \
   python3 python3-venv python3-pip \
   postgresql postgresql-contrib \
   git unzip curl jq
 sudo systemctl enable --now postgresql
+
+# ===== 1.1) Web runtime（視交付包型態） =====
+# 若 charter-web.service 是「直接 serve build 結果」：可能不需要 node/pnpm。
+# 若 charter-web.service 會跑 pnpm/dev server 或需要 node runtime：必須安裝。
+# 建議：安裝一次省事（不會壞處）。
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm install -g pnpm
+
+node -v
+pnpm -v
 
 # ===== 2) 程式解壓到固定路徑（/home/da40/charter） =====
 sudo mkdir -p /home/da40/charter
@@ -53,6 +75,11 @@ sudo -iu postgres psql -c "CREATE USER rg WITH PASSWORD 'rg';" || true
 sudo -iu postgres psql -c "CREATE DATABASE rg OWNER rg;" || true
 sudo -iu postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rg TO rg;" || true
 
+# （重要）DB schema 初始化：
+# - 若你的交付包/流程包含 migrations/seed，請在這裡跑。
+# - 若沒有 schema，平台 UI 可能打得開但 runs/scripts 會異常。
+# 詳細見本頁下方「DB（為什麼要建？）」段落。
+
 # ===== 4) 安裝 systemd units + enable 長駐 =====
 sudo tar -xzf "$UNITS_PKG" -C /etc/systemd
 sudo systemctl daemon-reload
@@ -64,6 +91,12 @@ sudo systemctl enable --now charter-api.service \
   pbr-watchdog.service
 
 # ===== 5) 驗收 =====
+# 建議先看 service 狀態（比 curl 更快定位問題）
+sudo systemctl --no-pager --full status \
+  charter-api.service charter-worker.service charter-web.service \
+  cpe-metrics-agent.service pbr-watchdog.service \
+  cpe-status-probe.timer || true
+
 curl -fsSL http://127.0.0.1:8080/health
 curl -fsSL http://127.0.0.1:5173/api/health
 curl -fsSL http://127.0.0.1:5173/api/runs/worker/status | python3 -m json.tool
