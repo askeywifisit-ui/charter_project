@@ -8,6 +8,9 @@
 
 - GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/stability/C6376350_WiFi_radio_enable_disable-xtime.md>
 
+- GitHub scripts（zip）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/stability/C6376350_WiFi_radio_enable_disable-xtime.zip>
+  - 目錄：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/stability>
+
 ### Export script zip（API）
 
 > 說明：`script_id` 可能因 delete/import 變動；建議以 `suite+name` 查到 id 後再 export。
