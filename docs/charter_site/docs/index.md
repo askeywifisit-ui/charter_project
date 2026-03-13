@@ -4,7 +4,7 @@
 
 > 文件站本身只是「呈現方式」；內容主體是 Charter 測試平台的知識與流程。
 
-## 人類版 Quick Start（先看這裡）
+## Quick Start（建議先看）
 
 - **平台入口 / 常用頁面**
   - [Platform Links（平台入口）](platform_links.md)
