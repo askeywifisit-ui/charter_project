@@ -50,8 +50,8 @@ nav:
       - Platform Links（平台入口）: platform_links.md
       - Environment Template（給外部單位）: environment_template.md
   - Getting Started:
-      - Quick Start: getting_started/quick_start.md
       - 平台安裝/移植（systemd）: getting_started/platform_install.md
+      - Quick Start: getting_started/quick_start.md
   - User Guide:
       - 腳本修改 SOP（入口）: user_guide/script_change_sop.md
       - Scripts 管理: user_guide/scripts.md
