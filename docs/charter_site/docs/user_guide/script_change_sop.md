@@ -1,6 +1,8 @@
 # 腳本修改 SOP（Export → Modify → Import → Run → Evidence）
 
-> 給 OpenClaw 測試助理：你可以依本頁流程，用 Charter API 協助我控管測試平台（查 scripts / export / delete / import / run / 抓 log/證據 / purge）。
+!!! tip "給 OpenClaw 測試助理"
+
+    你可以依本頁流程，用 Charter API 協助我控管測試平台（查 scripts / export / delete / import / run / 抓 log/證據 / purge）。
 
 本頁定位：**一條龍 SOP**。目的不是講 API 文件，而是讓同事第一次照做就能成功「改一個腳本、跑起來、拿到證據」。
 
