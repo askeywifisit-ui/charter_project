@@ -53,9 +53,9 @@ nav:
       - Quick Start: getting_started/quick_start.md
   - User Guide:
       - 腳本修改 SOP（入口）: user_guide/script_change_sop.md
-      - 新增腳本（Create New Script）: user_guide/create_new_script.md
       - Scripts 管理: user_guide/scripts.md
       - Modify Script Code（改 code）: user_guide/modify_script_code.md
+      - 新增腳本（Create New Script）: user_guide/create_new_script.md
       - Runs 操作: user_guide/runs.md
   - Test Suites:
       - Sanity:
