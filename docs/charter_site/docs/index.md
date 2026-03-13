@@ -13,8 +13,8 @@
   - [Physical Topology（線怎麼接）](architecture/topology.md)
 
 - **最常見 3 個問題**
-  - Wi‑Fi / route / iface： [Troubleshooting](runbook/troubleshooting.md)
-  - OAuth/Token / provider： [Troubleshooting](runbook/troubleshooting.md)
+  - Wi‑Fi / route / iface（測試機網路面）： [Troubleshooting](runbook/troubleshooting.md#4-wi-fi--route--iface-相關問題測試機網路面)
+  - OAuth / Token / provider（OpenClaw）： [Troubleshooting](runbook/troubleshooting.md#5-oauth--token--provideropenclaw)
   - Import DUPLICATE： [Scripts 管理](user_guide/scripts.md)
 
 > 需要「Agent 可執行版」： [Agent Runbook（給 AI）](runbook/agent_runbook.md)
