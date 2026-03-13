@@ -8,8 +8,8 @@
 
 - GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/stability/A2435635_Continuously_executing_speedtest.md>
 
-- GitHub scripts（zip，需 repo 權限）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/stability/A2435635_Continuously_executing_speedtest.zip>
-  - 目錄（需 repo 權限）：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/stability>
+- 腳本 zip（直接下載）：<../assets/scripts/stability/A2435635_Continuously_executing_speedtest.zip>
+
 
 ### Export script zip（API）
 

@@ -8,8 +8,8 @@
 
 - GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/stability/C4123494_IPv6_Stability_Test_from_LAN_Client.md>
 
-- GitHub scripts（zip，需 repo 權限）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/stability/C4123494_IPv6_Stability_Test_from_LAN_Client.zip>
-  - 目錄（需 repo 權限）：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/stability>
+- 腳本 zip（直接下載）：<../assets/scripts/stability/C4123494_IPv6_Stability_Test_from_LAN_Client.zip>
+
 
 ### Export script zip（API）
 

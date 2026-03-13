@@ -8,8 +8,8 @@
 
 - GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/stability/C15806945_WiFi_radio_enable_disable_longrun.md>
 
-- GitHub scripts（zip，需 repo 權限）：<https://raw.githubusercontent.com/askeywifisit-ui/charter_project/main/scripts/stability/C15806945_WiFi_radio_enable_disable_longrun.zip>
-  - 目錄（需 repo 權限）：<https://github.com/askeywifisit-ui/charter_project/blob/main/scripts/stability>
+- 腳本 zip（直接下載）：<../assets/scripts/stability/C15806945_WiFi_radio_enable_disable_longrun.zip>
+
 
 ### Export script zip（API）
 
