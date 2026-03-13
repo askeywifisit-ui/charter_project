@@ -54,11 +54,16 @@ export NAME="<SCRIPT_NAME>"        # 例：C00000001_SSH_basic_test
 
 ## 1) 找 script_id（用名稱查）
 
+> ⚠️ 不建議用「curl | python heredoc」直接 pipe 解析：貼到 terminal 時常因縮排/編碼導致 python 提早退出，進而觸發 `curl: (23) Failure writing output`。
+>
+> 以下提供一個 **穩定版**（先存檔再解析），同事照貼成功率最高。
+
 ```bash
-curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" \
-  | python3 - <<'PY'
-import json,os,sys
-xs=json.load(sys.stdin)
+curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+
+python3 - <<'PY'
+import json,os
+xs=json.load(open('/tmp/scripts.json'))
 name=os.environ.get('NAME')
 suite=os.environ.get('SUITE')
 ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
@@ -110,10 +115,11 @@ unzip -l "./${NAME}_patched.zip" | head
 
 ```bash
 # 先查同名（確認只有你要刪的那筆）
-curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" \
-  | python3 - <<'PY'
-import json,os,sys
-xs=json.load(sys.stdin)
+curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+
+python3 - <<'PY'
+import json,os
+xs=json.load(open('/tmp/scripts.json'))
 name=os.environ.get('NAME')
 suite=os.environ.get('SUITE')
 ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
@@ -143,10 +149,11 @@ curl -sS -X POST "$CHARTER_BASE/api/scripts/import2" \
 
 ```bash
 # 找回新的 script_id
-NEW_ID=$(curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" \
-  | python3 - <<'PY'
-import json,os,sys
-xs=json.load(sys.stdin)
+curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+
+NEW_ID=$(python3 - <<'PY'
+import json,os
+xs=json.load(open('/tmp/scripts.json'))
 name=os.environ.get('NAME')
 suite=os.environ.get('SUITE')
 ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
