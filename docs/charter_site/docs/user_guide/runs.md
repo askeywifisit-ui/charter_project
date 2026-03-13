@@ -6,7 +6,7 @@
 
 ---
 
-## TL;DR（最常用 4 件事）
+## 快速摘要（最常用 4 件事）
 
 1) 找到最新 run：`GET /api/runs?limit=...`
 2) 抓 log 當 evidence：`GET /api/runs/<rid>/log`
