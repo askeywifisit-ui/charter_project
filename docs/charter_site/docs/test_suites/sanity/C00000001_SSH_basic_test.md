@@ -9,6 +9,10 @@
 - GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
 
 
+## 腳本在做什麼（依 script 內容摘要）
+- 一句話：NOTE: sshonly variant: disables NOC API tests (speedtest/wifi/lte/dns) to focus on SSH readiness.
+- 主要步驟：請參考下方「Run（API）」與「manifest.yaml（節錄）」段落（此腳本未提供可穩定解析的 step 標記）。
+
 ### Export script zip（API）
 
 > 說明：`script_id` 可能因 delete/import 變動；建議以 `suite+name` 查到 id 後再 export。
