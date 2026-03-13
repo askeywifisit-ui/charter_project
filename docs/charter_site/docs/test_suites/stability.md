@@ -1,5 +1,41 @@
 # Stability Suite — Test Cases（目前平台）
 
+
+
+---
+
+## 來源與下載
+
+- GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/stability.md>
+
+### Export script zip（API）
+
+> 說明：`script_id` 可能因 delete/import 變動；建議以 `suite+name` 查到 id 後再 export。
+
+```bash
+export CONTROL_PC_IP="172.14.1.140"
+export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
+export SUITE="<fill>"
+export NAME="stability"
+
+curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+
+SCRIPT_ID=$(python3 - <<'PY'
+import json,os
+xs=json.load(open('/tmp/scripts.json'))
+name=os.environ.get('NAME')
+suite=os.environ.get('SUITE')
+ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
+print(ms[0]['id'] if ms else "")
+PY
+)
+
+echo "SCRIPT_ID=$SCRIPT_ID"
+mkdir -p backup_scripts
+curl -fsSL "$CHARTER_BASE/api/scripts/$SCRIPT_ID/export" \
+  -o "backup_scripts/${NAME}_${SCRIPT_ID}.zip"
+ls -lh "backup_scripts/${NAME}_${SCRIPT_ID}.zip"
+```
 > 這頁是 **case 目錄**（列出有哪些 stability scripts），不是教學。
 > - 如何跑/看結果：請看 [User Guide → Runs 操作](../user_guide/runs.md)
 > - 如何調整 cycles/interval（長跑前必做）：請看 [Runbook → Cycles 調整](../runbook/cycles_edit/)

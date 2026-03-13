@@ -1,5 +1,41 @@
 # C15806902_WLAN_Client_connects_successfully_over_Default_SSID
 
+
+
+---
+
+## 來源與下載
+
+- GitHub 文件來源：<https://github.com/askeywifisit-ui/charter_project/blob/main/docs/charter_site/docs/test_suites/sanity/C15806902_WLAN_Client_connects_successfully_over_Default_SSID.md>
+
+### Export script zip（API）
+
+> 說明：`script_id` 可能因 delete/import 變動；建議以 `suite+name` 查到 id 後再 export。
+
+```bash
+export CONTROL_PC_IP="172.14.1.140"
+export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
+export SUITE="sanity"
+export NAME="C15806902_WLAN_Client_connects_successfully_over_Default_SSID"
+
+curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+
+SCRIPT_ID=$(python3 - <<'PY'
+import json,os
+xs=json.load(open('/tmp/scripts.json'))
+name=os.environ.get('NAME')
+suite=os.environ.get('SUITE')
+ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
+print(ms[0]['id'] if ms else "")
+PY
+)
+
+echo "SCRIPT_ID=$SCRIPT_ID"
+mkdir -p backup_scripts
+curl -fsSL "$CHARTER_BASE/api/scripts/$SCRIPT_ID/export" \
+  -o "backup_scripts/${NAME}_${SCRIPT_ID}.zip"
+ls -lh "backup_scripts/${NAME}_${SCRIPT_ID}.zip"
+```
 - Suite: **sanity**
 - Script ID（可能因 delete/import 變動）：`11F_140=5166`
 - 版本（manifest version）：`v9.4-force-ping4-ip`
