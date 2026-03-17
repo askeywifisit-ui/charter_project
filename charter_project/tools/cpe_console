@@ -1,0 +1,197 @@
+#!/usr/bin/env python3
+import os, re, sys, time, tty, termios, select, subprocess, glob, signal, urllib.parse
+import serial
+
+# ========= 設定（可用環境變數覆蓋） =========
+BAUD           = int(os.getenv("BAUD", "115200"))
+LOGIN          = os.getenv("LOGIN", "root")
+PROMPT_TAG     = os.getenv("PROMPT_TAG", "SBE1V1K")      # 登入後提示需含此關鍵字
+PROMPT_TIMEOUT = float(os.getenv("PROMPT_TIMEOUT", "25"))
+READ_TIMEOUT   = float(os.getenv("READ_TIMEOUT", "0.15"))
+RTSCTS         = os.getenv("RTSCTS", "0") == "1"
+DTR_ON         = os.getenv("DTR_ON",  "1") == "1"
+RTS_ON         = os.getenv("RTS_ON",  "1") == "1"
+WEB_URL        = os.getenv("WEB_URL","https://192.168.1.1/cgi-bin/index.cgi")
+DEBUG          = os.getenv("DEBUG", "0") == "1"
+
+PORT_ARG = sys.argv[1] if len(sys.argv) > 1 else "auto"
+
+# ========= 抓 Serial Number 當密碼 =========
+def get_sn_from_web():
+    urls = [WEB_URL]
+    try:
+        u = urllib.parse.urlsplit(WEB_URL)
+        if   u.scheme == "https": urls.append(urllib.parse.urlunsplit(("http",  u.netloc,u.path,u.query,u.fragment)))
+        elif u.scheme == "http":  urls.append(urllib.parse.urlunsplit(("https", u.netloc,u.path,u.query,u.fragment)))
+    except Exception:
+        pass
+    for url in urls:
+        try:
+            html = subprocess.check_output(["curl","-4fsSkm","3", url], timeout=4).decode("utf-8","ignore")
+        except Exception:
+            continue
+        m = re.search(r'(?is)<div class="data_name">\s*serial number\s*</div>\s*<div[^>]*>\s*([A-Za-z0-9]{6,})\s*</div>', html)
+        if m:
+            return m.group(1).strip()
+    return None
+
+# ========= 串口挑選/開啟 =========
+def list_candidates():
+    byid = sorted(glob.glob("/dev/serial/by-id/*"))
+    usb  = sorted(glob.glob("/dev/ttyUSB*") + glob.glob("/dev/ttyACM*"))
+    com  = [p for p in ("/dev/ttyS0","/dev/ttyS1") if os.path.exists(p)]
+    return byid + usb + com
+
+def choose_port():
+    for dev in list_candidates():
+        p = os.path.realpath(dev)
+        try:
+            ser = serial.Serial(p, BAUD, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE,
+                                xonxoff=False, rtscts=RTSCTS, dsrdtr=False,
+                                timeout=READ_TIMEOUT, write_timeout=1)
+            try:
+                ser.reset_input_buffer(); ser.reset_output_buffer()
+                ser.dtr = DTR_ON; ser.rts = RTS_ON
+                ser.write(b"\r\n"); ser.flush(); time.sleep(0.12)
+                if ser.in_waiting: return dev
+            finally:
+                ser.close()
+        except Exception:
+            pass
+    c = list_candidates()
+    return c[0] if c else None
+
+def open_serial(port):
+    real = os.path.realpath(port)
+    ser = serial.Serial(real, BAUD, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE,
+                        xonxoff=False, rtscts=RTSCTS, dsrdtr=False,
+                        timeout=READ_TIMEOUT, write_timeout=1)
+    ser.reset_input_buffer(); ser.reset_output_buffer()
+    ser.dtr = DTR_ON; ser.rts = RTS_ON
+    return ser, real
+
+# ========= I/O 工具 =========
+ansi = r"\x1b\[[0-9;]*[A-Za-z]"
+tail = r"[#$>]\s*$"
+PROMPT_RE = re.compile(rf"(?:{ansi})*.*{re.escape(PROMPT_TAG)}.*(?:{ansi})*.*{tail}", re.I|re.S)
+
+def slow_send_line(ser, s, delay=0.02):
+    for ch in (s + "\r\n"):
+        ser.write(ch.encode()); ser.flush(); time.sleep(delay)
+
+def bridge(ser, banner=""):
+    if banner:
+        sys.stderr.write(banner + "\n")
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    tty.setraw(fd)
+    try:
+        while True:
+            r, _, _ = select.select([fd, ser.fileno()], [], [], 1.0)
+            if fd in r:
+                data = os.read(fd, 4096)
+                if not data: break
+                if b"\x1d" in data: break  # Ctrl-] 退出
+                ser.write(data); ser.flush()
+            if ser.fileno() in r:
+                d = ser.read(4096)
+                if d: os.write(sys.stdout.fileno(), d)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+
+# ========= 自動登入（事件驅動狀態機） =========
+def auto_login_state_machine(ser, pw):
+    sent_user = False
+    sent_pass = False
+    start = time.time()
+    buf = ""
+
+    # 先喚醒
+    for _ in range(6):
+        ser.write(b"\r\n"); ser.flush(); time.sleep(0.08)
+
+    while time.time() - start < PROMPT_TIMEOUT:
+        # 讀
+        r, _, _ = select.select([ser.fileno()], [], [], READ_TIMEOUT)
+        if r:
+            chunk = ser.read(4096).decode("utf-8","ignore")
+            if chunk:
+                if DEBUG: sys.stderr.write(chunk)
+                sys.stdout.write(chunk); sys.stdout.flush()
+                buf += chunk
+
+                # 任何時刻只要看到提示就成功
+                if PROMPT_RE.search(buf):
+                    return True, "prompt-detected"
+
+                # 偵測錯誤
+                if re.search(r"login incorrect|authentication failure", buf, re.I):
+                    return False, "auth-failed"
+
+                # 有些機器會要求先按 Enter
+                if re.search(r"please\s+press\s+enter", buf, re.I):
+                    ser.write(b"\r\n"); ser.flush(); continue
+
+                # 只要偵測到 login/username，且尚未送過使用者，就立刻送
+                if not sent_user and re.search(r"(?:^|\n).*?(login:|username:)\s*$", buf, re.I):
+                    slow_send_line(ser, LOGIN)
+                    sent_user = True
+                    buf = ""  # 清掉舊畫面，避免重複觸發
+                    continue
+
+                # 只要偵測到 password，且尚未送過密碼，就立刻送
+                if not sent_pass and re.search(r"(?:^|\n).*?password:\s*$", buf, re.I):
+                    slow_send_line(ser, pw)
+                    sent_pass = True
+                    buf = ""
+                    continue
+
+                # 某些主機在打完 user 後會瞬間把 "login: root\nPassword:" 一起塞進來
+                # 如果已送 user 且看到 Password:，但還沒送 pass，就補送
+                if sent_user and not sent_pass and re.search(r"password:\s*$", buf, re.I):
+                    slow_send_line(ser, pw)
+                    sent_pass = True
+                    buf = ""
+                    continue
+        else:
+            # 每隔一下敲 Enter，避免畫面睡著
+            ser.write(b"\r\n"); ser.flush()
+
+    return False, "timeout"
+
+def main():
+    # 選埠
+    port = PORT_ARG if PORT_ARG != "auto" else (choose_port() or "")
+    if not port:
+        print("[ERROR] 找不到任何可用序列埠", file=sys.stderr); sys.exit(1)
+    real = os.path.realpath(port)
+    print(f"[cpe_console] 使用埠：{port} -> {real}（{BAUD} bps）")
+
+    # 開啟埠
+    try:
+        ser, _ = open_serial(port)
+    except Exception as e:
+        print(f"[ERROR] 無法開啟序列埠：{e}", file=sys.stderr); sys.exit(1)
+
+    # 先從 Web 抓密碼
+    pw = get_sn_from_web()
+    if pw:
+        print(f"[auto] 從網頁取得 Serial Number：{pw}")
+        ok, why = auto_login_state_machine(ser, pw)
+        if ok:
+            print("\n[OK] 自動登入成功（已匹配提示字）")
+            bridge(ser, banner="[手動] 已登入，開始互動（退出：Ctrl-]）")
+            ser.close(); return
+        else:
+            print(f"\n[auto] 自動登入失敗：{why} → 進入手動模式", file=sys.stderr)
+    else:
+        print("[auto] 抓不到 Serial Number → 進入手動模式", file=sys.stderr)
+
+    # 手動模式：把畫面帶到 login 並交給使用者
+    for _ in range(3):
+        ser.write(b"\r\n"); ser.flush(); time.sleep(0.1)
+    bridge(ser, banner="[手動] 請自行輸入帳密（退出：Ctrl-]）")
+    ser.close()
+
+if __name__ == "__main__":
+    main()
