@@ -1,45 +1,68 @@
-# Charter 測試平台文件（Overview）
+# Charter 測試平台（從零到上線）
 
-這裡整理的是 **Charter 自動化測試平台** 的操作方法與技術資料（SOP / API 參考 / 維運與交付）。
-
-> 文件站本身只是「呈現方式」；內容主體是 Charter 測試平台的知識與流程。
-
-## Quick Start（建議先看）
-
-- **平台入口 / 常用頁面**
-  - [Platform Links（平台入口）](platform_links.md)
-  - [Runs 操作（跑腳本 / 看 log / purge）](user_guide/runs.md)
-  - Test Suites： [Sanity](test_suites/sanity.md) / [Stability](test_suites/stability.md)
-  - [Physical Topology（線怎麼接）](architecture/topology.md)
-
-- **最常見 3 個問題**
-  - Wi‑Fi / route / iface（測試機網路面）： [Troubleshooting](runbook/troubleshooting.md#4-wi-fi--route--iface-相關問題測試機網路面)
-  - OAuth / Token / provider（OpenClaw）： [Troubleshooting](runbook/troubleshooting.md#5-oauth--token--provideropenclaw)
-  - Import DUPLICATE： [Scripts 管理](user_guide/scripts.md)
-
-> 需要「Agent 可執行版」： [Agent Runbook（給 AI）](runbook/agent_runbook.md)
->
-> Demo（工程向 15–20 分鐘）：[Runbook → Demo 場景（工程向）](runbook/demo_scenario_openclaw.md)
+> 從零佈置 → 腳本管理 → 腳本開發 → 執行取證 → Debug → 系統維運
 
 ---
 
-## 依角色入口（你是誰就點哪一區）
+## 1️⃣ 平台佈置（從零開始）
 
-- **操作 / 驗證人員**： [Platform Links](platform_links.md) → [Runs 操作](user_guide/runs.md) → [Sanity](test_suites/sanity.md) / [Stability](test_suites/stability.md)
-- **整合 / 自動化（API）**： [Workflows](api_reference/workflows.md) / [Scripts](api_reference/scripts.md) / [Runs](api_reference/runs.md)
-- **交付 / 換環境（移植）**： [Environment Template](environment_template.md) / [Hand-off](handoff/index.md)
+- [平台安裝 / 移植](getting_started/platform_install.md)
+- [環境參數範本](environment_template.md)
+- [交接文件](handoff/index.md)
 
 ---
 
-## 維護者入口（文件怎麼改 / 怎麼上站）
+## 2️⃣ 腳本管理（Import/Export/刪除）
 
-- 專案位置與協作方式： [協作 / Repo / 路徑](operations/collaboration.md)
+- [腳本匯入/匯出](user_guide/scripts.md)
+- [Import 前刪除同名腳本](user_guide/scripts.md#import-前刪除同名腳本)
+- [API 參考](api_reference/scripts.md)
 
-```bash
-cd ~/.openclaw/workspace/docs/charter_site
-python3 -m mkdocs build
-python3 -m mkdocs serve -a 127.0.0.1:8000
-```
+---
 
-> 原則：只改 `docs/` 內的 Markdown；不要直接改 `site/`。
+## 3️⃣ 腳本開發（Modify/Create）
 
+- [修改腳本代碼](user_guide/modify_script_code.md)
+- [新建腳本](user_guide/create_new_script.md)
+- [從 Test Plan 建立腳本](user_guide/create_new_script.md#從-test-plan-建立腳本)
+- [一條龍 SOP](user_guide/script_change_sop.md)
+
+---
+
+## 4️⃣ 執行與取證（Run & Evidence）
+
+- [執行腳本](user_guide/runs.md)
+- [取證（Log / Screenshot）](user_guide/runs.md#取證)
+- [清理 Runs](user_guide/runs.md#purge-清理)
+
+---
+
+## 5️⃣ Debug & Trace
+
+- [常見問題排查](runbook/troubleshooting.md)
+- [Wi-Fi / Route / Iface 問題](runbook/troubleshooting.md#4-wi-fi--route--iface-相關問題測試機網路面)
+- [OpenClaw OAuth/Token 問題](runbook/troubleshooting.md#5-oauth--token--provideropenclaw)
+
+---
+
+## 6️⃣ 系統維運
+
+- [重啟服務](platform_links.md)
+- [監控 / Health Check](platform_links.md)
+- [PDU 控制](tools/pdu.md)
+
+---
+
+## 常用入口
+
+- [Platform Links（平台入口）](platform_links.md)
+- [Test Suites](test_suites/sanity.md)
+- [Physical Topology](architecture/topology.md)
+- [Tools 工具模組](tools/index.md)
+
+---
+
+## 給 OpenClaw 測試助理
+
+- [OpenClaw Setup](openclaw_setup/openclaw_test_assistant_setup.md)
+- [Agent Runbook](runbook/agent_runbook.md)
