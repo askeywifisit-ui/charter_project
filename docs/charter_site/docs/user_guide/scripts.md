@@ -8,7 +8,7 @@
 
 ## 快速摘要（最常用 3 件事）
 
-> 想看一條龍流程：請直接看 [腳本修改 SOP（入口）](script_change_sop.md)
+> 想看一條龍流程：請直接看 [腳本修改 SOP（入口）](script_change_sop/)
 
 1) **匯入前：同名先刪再匯入**（避免 `skipped:DUPLICATE`）
 2) **修改前：先 Export 備份**
@@ -40,7 +40,7 @@
 - `main.py` / `main_impl.py`
 - entrypoint（常見）：`cycle_wrapper.py:run`
 
-> 換環境需要改哪些參數：請看 [Environment Template](../environment_template.md)
+> 換環境需要改哪些參數：請看 [Environment Template](/environment_template/)
 
 ---
 
@@ -52,7 +52,7 @@
 
 - 建議流程：選 suite → 拖放 zip → Register → 確認 Success/Failed 計數
 
-![Test Suites Import（11F_140 範例 / Pro）](../assets/ui/suites_11F_140_pro.jpg)
+![Test Suites Import（11F_140 範例 / Pro）](/assets/ui/suites_11F_140_pro.jpg)
 
 **最常見踩坑**：同名（suite + name）請先刪再匯入，否則可能出現 `skipped:DUPLICATE`。
 
@@ -61,7 +61,7 @@
 - 上方可用 suite filter + 搜尋（依 script name）
 - 每支腳本右側提供：Run / Export / Modify / Delete
 
-![Test Scripts（11F_140 範例 / Pro）](../assets/ui/scripts_11F_140_pro.jpg)
+![Test Scripts（11F_140 範例 / Pro）](/assets/ui/scripts_11F_140_pro.jpg)
 
 ### 3.3 匯出腳本（Export）
 
@@ -95,4 +95,4 @@ sudo journalctl -u charter-worker.service -n 200 --no-pager
 ```
 
 ### Q3：換環境後哪裡要改？
-A：請看 [Environment Template](../environment_template.md)（哪個參數放 systemd / `.secrets` / manifest）。
+A：請看 [Environment Template](/environment_template/)（哪個參數放 systemd / `.secrets` / manifest）。

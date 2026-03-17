@@ -1,189 +1,161 @@
 # C00000001_SSH_basic_test
 
-
+SSH 行為/權限驗證（allow/deny/port/session/credential 等）
 
 ---
 
-## 來源與下載
+## 腳本說明
 
-- GitHub scripts 目錄：<https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
+- **功能**：驗證 SSH 允許/拒絕/連接數/credential 等行為
+- **版本**：v3-professional-noc_profile-only-nodeid-cpeinfo
+- **Entrypoint**：`cycle_wrapper.py:run`
 
+---
 
-## 腳本在做什麼（依 script 內容摘要）
-- 一句話：NOTE: sshonly variant: disables NOC API tests (speedtest/wifi/lte/dns) to focus on SSH readiness.
-- 主要步驟：請參考下方「Run（API）」與「manifest.yaml（節錄）」段落（此腳本未提供可穩定解析的 step 標記）。
+## 執行資訊
 
-### Export script zip（API）
+| 項目 | 值 |
+|------|-----|
+| Suite | sanity |
+| Script ID（11F_140） | 5162 |
+| 版本 | v3-professional-noc_profile-only-nodeid-cpeinfo |
+| Entrypoint | cycle_wrapper.py:run |
 
-> 說明：`script_id` 可能因 delete/import 變動；建議以 `suite+name` 查到 id 後再 export。
+---
 
-```bash
-export CONTROL_PC_IP="172.14.1.140"
-export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
-export SUITE="sanity"
-export NAME="C00000001_SSH_basic_test"
+## 參數分組
 
-curl -fsSL "$CHARTER_BASE/api/scripts?limit=2000" -o /tmp/scripts.json
+### 執行控制
 
-SCRIPT_ID=$(python3 - <<'PY'
-import json,os
-xs=json.load(open('/tmp/scripts.json'))
-name=os.environ.get('NAME')
-suite=os.environ.get('SUITE')
-ms=[s for s in xs if s.get('suite')==suite and s.get('name')==name]
-print(ms[0]['id'] if ms else "")
-PY
-)
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `CYCLES` | 1 | 迴圈次數 |
+| `CYCLE_INTERVAL` | 70 | 迴圈間隔（秒） |
+| `STOP_ON_FAIL` | 1 | 失敗停止 |
+| `ENABLE_HEALTH_WARNING` | 1 | 啟用健康警告 |
 
-echo "SCRIPT_ID=$SCRIPT_ID"
-mkdir -p backup_scripts
-curl -fsSL "$CHARTER_BASE/api/scripts/$SCRIPT_ID/export" \
-  -o "backup_scripts/${NAME}_${SCRIPT_ID}.zip"
-ls -lh "backup_scripts/${NAME}_${SCRIPT_ID}.zip"
-```
-- Suite: **sanity**
-- Script ID（可能因 delete/import 變動）：`11F_140=5162`
-- 版本（manifest version）：`v3-professional-noc_profile-only-nodeid-cpeinfo`
-- Entrypoint：`cycle_wrapper.py:run`
+### 工具路徑
 
-> 本頁由工具依 11F_140 最新 export zip 自動產生/更新（2026-03-10）。
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `TOOLS_PATH` | /home/da40/charter/tools | 工具目錄 |
+| `CPE_INFO_TOOL` | /home/da40/charter/tools/cpe_info | CPE 資訊工具 |
+| `CPE_SSH_TOOL` | /home/da40/charter/tools/cpe_ssh.py | SSH 工具 |
 
-## 一句話說明
+### CPE 連線
 
-- SSH 行為/權限驗證（allow/deny/port/session/credential 等）
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `CPE_BAUD` | 115200 | Serial 鮑率 |
+| `CPE_USER` | root | CPE 帳號 |
+| `CPE_PASSWORD` | null | CPE 密碼 |
+| `CPE_READY_CHECK` | 1 | 檢查 CPE 就緒 |
+| `CPE_INFO_STATUS_CMD` | cpe_info --status | 狀態指令 |
 
+### SSH 設定
 
-## 你需要準備什麼（Preconditions）
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `SSH_USER` | operator | SSH 帳號 |
+| `SSH_PASSWORD` | \<fill\> | SSH 密碼 |
+| `SSH_TIMEOUT_MIN` | 120 | SSH 逾時（分） |
+| `SSH_HOST_LAN` | 192.168.1.1 | LAN IP |
+| `WAN_SSH_REQUIRED` | 1 | 需要 WAN SSH |
+| `LAN_SSH_REQUIRED` | 1 | 需要 LAN SSH |
+| `SSH_TOOL_TIMEOUT` | 15 | 工具逾時 |
+| `USE_CLOUD_SSH` | 1 | 使用 Cloud SSH |
 
-- 平台服務正常：web/api/worker
-- tools 可用：`/home/da40/charter/tools`
-- secrets 不要寫死在 manifest（NOC/SSH/Warehouse 等一律用 `<fill>`/`.secrets`）
+### NOC API
 
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `NOC_BASE` | https://piranha-int.tau.dev-charter.net | NOC 端點 |
+| `PROFILES_FILE` | /home/da40/charter/.secrets/noc_profiles.json | 帳號檔 |
+| `NOC_PROFILE` | SPECTRUM_INT | Profile 名稱 |
+| `CUSTOMER_ID` | 682d4e5179b80027cd6fb27e | 客戶 ID |
+| `ENABLE_NOC_API_TESTS` | 0 | 啟用 NOC API 測試 |
 
-## 你只要改哪些參數（Top env）
+### Reboot 設定
 
-- `TOOLS_PATH`: `/home/da40/charter/tools`
-- `PROFILES_FILE`: `/home/da40/charter/.secrets/noc_profiles.json`
-- `NOC_PROFILE`: `SPECTRUM_INT`
-- `CUSTOMER_ID`: `682d4e5179b80027cd6fb27e`
-- `SSH_USER`: `operator`
-- `SSH_PASSWORD`: `<fill>`
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `ENABLE_REBOOT_TEST` | 0 | 啟用重啟測試 |
+| `REBOOT_DELAY_SEC` | 2 | 重啟延遲 |
+| `REBOOT_MUTE_SECS` | 60 | 靜音秒數 |
+| `REBOOT_MUTE_WITH_LOCK` | 0 | 靜音加鎖 |
 
+### PDU 設定
+
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `PDU_RESET_ON_NOT_READY` | 1 | 未就緒時重置 |
+| `PDU_RESET_ACTION` | reset | 重置動作 |
+| `PDU_RESET_TIMEOUT_SEC` | 120 | 重置逾時 |
+| `PDU_RESET_WAIT_SEC` | 120 | 重置等待 |
+
+### 網路檢查
+
+| 參數 | 值 | 說明 |
+|------|-----|------|
+| `INTERNET_CHECK_MAX_RETRIES` | 10 | 網路檢查重試次數 |
+| `INTERNET_CHECK_INTERVAL_SEC` | 3 | 檢查間隔 |
+| `ENABLE_DNS_CHECK` | 0 | 啟用 DNS 檢查 |
+
+---
 
 ## Run（API）
 
 ```bash
-export CHARTER_BASE="http://<CONTROL_PC_IP>:5173"
-SCRIPT_ID=<SCRIPT_ID_11F_140>
-# 建議先確認 worker 正常
+export CHARTER_BASE="http://172.14.1.140:5173"
+SCRIPT_ID=5162
+
+# 確認 worker 正常
 curl -fsSL "$CHARTER_BASE/api/runs/worker/status" | python3 -m json.tool
+
 # 送出 run
 curl -sS -X POST "$CHARTER_BASE/api/scripts/$SCRIPT_ID/run" | python3 -m json.tool
 ```
 
+---
 
-## 怎麼看結果（Evidence）
+## 看結果
 
 ```bash
 RID=<RUN_ID>
-curl -sS "$CHARTER_BASE/api/runs/$RID/log" > run_${RID}_log.json
-# 若 fail-hook 有產生 cpe logs
-curl -sS "$CHARTER_BASE/api/runs/$RID/log-archives" | python3 -m json.tool
+
+# 查看狀態
+curl -fsSL "$CHARTER_BASE/api/runs/$RID"
+
+# 查看 log
+curl -fsSL "$CHARTER_BASE/api/runs/$RID/log" > run_${RID}_log.json
+
+# 下載 CPE logs
 curl -fsSL "$CHARTER_BASE/api/runs/$RID/log-archive" -o run_${RID}_cpe_log.tar.gz
 ```
 
+---
 
 ## Cleanup
 
 ```bash
-# 清理已完成的 runs + workdir（避免磁碟累積）
+# 清理 runs + workdir
 curl -sS -X DELETE "$CHARTER_BASE/api/runs/purge?older_than_days=0" | python3 -m json.tool
 ```
 
+---
 
-??? note "manifest.yaml（節錄：常用 env）"
+## 下載腳本
 
-    ```yaml
-    env:
-      TOOLS_PATH: /home/da40/charter/tools
-      PROFILES_FILE: /home/da40/charter/.secrets/noc_profiles.json
-      NOC_PROFILE: SPECTRUM_INT
-      CUSTOMER_ID: 682d4e5179b80027cd6fb27e
-      SSH_USER: operator
-      SSH_PASSWORD: <fill>
-    ```
+```bash
+export CHARTER_BASE="http://172.14.1.140:5173"
+SCRIPT_ID=5162
 
+mkdir -p backup
+curl -fsSL "$CHARTER_BASE/api/scripts/$SCRIPT_ID/export" -o "backup/C00000001_SSH_basic_test_${SCRIPT_ID}.zip"
+```
 
-??? note "manifest.yaml（流程參數完整；帳密/API key 已遮蔽）"
+---
 
-    ```yaml
-    name: C00000001_SSH_basic_test
-    suite: sanity
-    version: v3-professional-noc_profile-only-nodeid-cpeinfo
-    entrypoint: cycle_wrapper.py:run
-    env:
-      ENABLE_HEALTH_WARNING: 1
-      CYCLES: '1'
-      CYCLE_INTERVAL: 70
-      STOP_ON_FAIL: 1
-      ORIGINAL_ENTRY: main_impl_orig.py:run
-      TOOLS_PATH: /home/da40/charter/tools
-      CPE_INFO_TOOL: /home/da40/charter/tools/cpe_info
-      CPE_SSH_TOOL: /home/da40/charter/tools/cpe_ssh.py
-      NODE_ID_MAX_RETRIES: 10
-      NODE_ID_RETRY_INTERVAL_SEC: 5
-      CPE_BAUD: 115200
-      CPE_USER: root
-      CPE_PASSWORD: null
-      NOC_BASE: https://piranha-int.tau.dev-charter.net
-      PROFILES_FILE: /home/da40/charter/.secrets/noc_profiles.json
-      CUSTOMER_ID: 682d4e5179b80027cd6fb27e
-      SSH_USER: operator
-      SSH_PASSWORD: <fill>
-      SSH_TIMEOUT_MIN: 120
-      SSH_REENABLE_EACH_CYCLE: 0
-      SSH_HOST_LAN: 192.168.1.1
-      WAN_SSH_REQUIRED: 1
-      LAN_SSH_REQUIRED: 1
-      SSH_TOOL_TIMEOUT: 15
-      USE_CLOUD_SSH: '1'
-      CPE_LOG_TIMEOUT_SEC: '240'
-      NOC_PROFILE: SPECTRUM_INT
-      SSH_ACTION: enable
-      ENABLE_NOC_API_TESTS: 0
-      SPEEDTEST_WAIT_SEC: 100
-      ENABLE_SPEEDTEST: 0
-      ENABLE_WIFI_TEST: 0
-      ENABLE_LTE_TEST: 0
-      ENABLE_SSH_FLOW: 1
-      ENABLE_REBOOT_TEST: 0
-      REBOOT_DELAY_SEC: 2
-      REBOOT_MUTE_SECS: 60
-      REBOOT_MUTE_WITH_LOCK: 0
-      CPE_READY_CHECK: 1
-      CPE_INFO_STATUS_CMD: cpe_info -status
-      CPE_READY_MAX_RETRIES: 10
-      CPE_READY_RETRY_INTERVAL_SEC: 3
-      CPE_READY_REQUIRE_CLOUD: 1
-      PDU_RESET_ON_NOT_READY: 1
-      PDU_RESET_ACTION: reset
-      PDU_RESET_TIMEOUT_SEC: 120
-      PDU_RESET_WAIT_SEC: 120
-      REQUIRE_SSH_READY: 1
-      SSH_READY_RETRY: 20
-      SSH_READY_WAIT_SEC: 5
-      SSH_READY_CMD: uptime
-      SPEEDTEST_MAX_TRIES: 3
-      SPEEDTEST_INTERVAL_SEC: 10
-      INTERNET_CHECK_MAX_RETRIES: '10'
-      INTERNET_CHECK_INTERVAL_SEC: '3'
-      ENABLE_DNS_CHECK: 0
-      TARGET: www.google.com
-      SECOND: cloudflare.com
-      EXPECT_A_MIN: 1
-      EXPECT_AAAA_MIN: 1
-      RETRIES: 3
-      INTERVAL_SEC: 3
-      DNS_SSH_TIMEOUT_SEC: 30
-      POST_PDU_STABILIZE_SEC: 40
-    ```
+## GitHub
+
+- [scripts/sanity/C00000001_SSH_basic_test.zip](https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity)

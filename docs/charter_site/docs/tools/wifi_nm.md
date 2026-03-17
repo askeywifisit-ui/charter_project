@@ -1,33 +1,67 @@
 # wifi_nm.py
 
-- 位置（control PC）：`/home/da40/charter/tools/wifi_nm.py`
+WiFi 控制工具（使用 NetworkManager/nmcli）。
 
-## Overview
-`wifi_nm.py` 使用 **NetworkManager（nmcli）** 控制 Wi‑Fi，常作為 Wi‑Fi 測試的 fallback（或特定環境 iwd 不穩時改用）。
+---
 
-支援：
-- `status` / `scan` / `ensure` / `disconnect` / `active`
-- `--json` 輸出
-- 需要時可 `--auto-start-nm`
+## 位置
 
-## 常用範例
-### ensure
+`/home/da40/charter/tools/wifi_nm.py`
+
+---
+
+## 功能
+
+- WiFi 連線/斷線（使用 nmcli）
+- Scan 周邊網路
+- 查詢連線狀態
+
+---
+
+## 常用指令
+
+### 基本語法
 ```bash
-export WIFI_PSK='{{PSK}}'
-python3 /home/da40/charter/tools/wifi_nm.py --json ensure \
-  --iface "{{WIFI_IFACE}}" \
-  --ssid "{{SSID}}" \
-  --password-env WIFI_PSK \
-  --timeout 45 \
-  --retries 2 \
-  --auto-start-nm
+python3 /home/da40/charter/tools/wifi_nm.py <COMMAND> --iface <INTERFACE>
 ```
 
-### disconnect
+### 指令
+
 ```bash
-python3 /home/da40/charter/tools/wifi_nm.py --json disconnect --iface "{{WIFI_IFACE}}"
+# 查詢狀態
+python3 /home/da40/charter/tools/wifi_nm.py status --iface wlan0
+
+# Scan
+python3 /home/da40/charter/tools/wifi_nm.py scan --iface wlan0
+
+# 連線
+python3 /home/da40/charter/tools/wifi_nm.py ensure --iface wlan0 --ssid <SSID> --password <PASSWORD>
+
+# 斷線
+python3 /home/da40/charter/tools/wifi_nm.py disconnect --iface wlan0
 ```
 
-## 常見問題 / 排除
-- NM service 未啟動：用 `--auto-start-nm` 或先確認 systemctl
-- SSID/PSK 來源：通常由 `cpe_ssh.py --cmd wifi-creds` 提供
+---
+
+## 與 wifi_iwd.py 的差異
+
+| 工具 | 底層 | 適用場景 |
+|------|------|----------|
+| `wifi_iwd.py` | iwd/iwctl | 測試環境 |
+| `wifi_nm.py` | NetworkManager | 一般環境 |
+
+---
+
+## 腳本調用範例
+
+```python
+import subprocess
+
+# 連線到 WiFi
+subprocess.run([
+    'python3', '/home/da40/charter/tools/wifi_nm.py', 'ensure',
+    '--iface', 'wlan0',
+    '--ssid', 'TestSSID',
+    '--password', 'TestPass'
+])
+```

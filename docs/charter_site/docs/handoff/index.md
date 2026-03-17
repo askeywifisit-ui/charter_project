@@ -19,22 +19,22 @@
 ## 相關頁面（照這個順序看）
 
 1) 下載
-- [交付下載（GitHub links）](downloads.md)
+- [交付下載（GitHub links）](downloads/)
 
 2) 安裝（platform）
-- [平台安裝 / 移植（systemd）](../getting_started/platform_install.md)
-- [Quick Start（10 分鐘確認）](../getting_started/quick_start.md)
+- [平台安裝 / 移植（systemd）](/getting_started/platform_install/)
+- [Quick Start（10 分鐘確認）](/getting_started/quick_start/)
 
 3) 填環境
-- [交付環境表（對方要填）](handoff_env_form.md)
-- [Network iface 指南（常踩雷）](network_iface_guide.md)
-- [NOC profile / secrets（放哪裡、權限）](noc_profile_secrets.md)
+- [交付環境表（對方要填）](handoff_env_form/)
+- [Network iface 指南（常踩雷）](network_iface_guide/)
+- [NOC profile / secrets（放哪裡、權限）](noc_profile_secrets/)
 
 4) 驗證
-- [驗證步驟（快速驗證）](handoff_validation.md)
+- [驗證步驟（快速驗證）](handoff_validation/)
 
 5) scripts 搬移/更新
-- [Scripts 移植/匯入規則（同名先刪再匯入）](migration_scripts.md)
+- [Scripts 移植/匯入規則（同名先刪再匯入）](migration_scripts/)
 
 ---
 

@@ -1,6 +1,6 @@
 # Modify Script Code（改 zip 內 Python 程式碼）
 
-> 入口（同事照做版）：[腳本修改 SOP（Export → Modify → Import → Run → Evidence）](script_change_sop.md)
+> 入口（同事照做版）：[腳本修改 SOP（Export → Modify → Import → Run → Evidence）](script_change_sop/)
 
 本頁定位：補充「改 zip 內 code」的細節與常見踩雷點。
 

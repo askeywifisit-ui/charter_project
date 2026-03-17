@@ -105,6 +105,6 @@ curl -sS -X PUT "$CHARTER_BASE/api/scripts/$SCRIPT_ID/manifest" \
 
 ## D) 相關連結
 
-- [Test Suites → Sanity](../test_suites/sanity.md)
-- [Test Suites → Stability](../test_suites/stability.md)
-- [Environment Template（換環境必讀）](../environment_template.md)
+- [Test Suites → Sanity](/test_suites/sanity/)
+- [Test Suites → Stability](/test_suites/stability/)
+- [Environment Template（換環境必讀）](/environment_template/)

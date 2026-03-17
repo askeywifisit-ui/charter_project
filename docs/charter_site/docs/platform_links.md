@@ -1,26 +1,75 @@
-# Platform Links（平台入口 / 常用連結）
+# Platform Links（平台入口）
 
-這頁整理的是 **Charter 測試平台** 的入口與常用連結。
+本頁提供 Charter 測試平台（http://172.14.1.140:5173）的常用入口。
 
-## Charter 測試平台（Control PC）
+---
 
-- Web UI：`http://<CONTROL_PC_IP>:5173`
-- API：同源 `/api/...`（由 UI 呼叫）
+## 🎯 常用入口
 
-> 預設 Control PC（11F_140）：`172.14.1.140`
+| 服務 | URL | 說明 |
+|------|-----|------|
+| **Web UI** | http://172.14.1.140:5173 | 腳本管理、執行、查看結果 |
+| **API Base** | http://172.14.1.140:5173/api | API 端點 |
+| **Health Check** | http://172.14.1.140:5173/api/health | API 健康狀態 |
+| **Worker Status** | http://172.14.1.140:5173/api/runs/worker/status | Worker 執行狀態 |
 
-## 文件站（教學手冊呈現 / TryCloudflare quick tunnel）
+---
 
-> 文件站只是教學手冊的呈現方式；內容主體仍是 Charter 測試平台的 SOP/資料。
->
-> TryCloudflare quick tunnel 會不定期變更網址；若你看到 **Error 1033**，通常代表 tunnel 已換新 URL。
+## 🔧 API 常用端點
 
-- 公網入口（若此頁沒更新，請到文件站主機執行 `/Users/csit/bin/start_charter_docs.sh`，它會印出最新 URL）：
-  - **(last known)** https://ron-titled-andrew-opened.trycloudflare.com
+```bash
+# 設定 base
+export CHARTER_BASE="http://172.14.1.140:5173"
 
-- 本機預覽（文件站主機）：<http://127.0.0.1:8000/>
+# Health Check
+curl -fsSL "$CHARTER_BASE/api/health"
 
-## 相關
+# 查看所有腳本
+curl -fsSL "$CHARTER_BASE/api/scripts"
 
-- Getting Started：<./getting_started/quick_start/>
-- Platform Install (systemd)：<./getting_started/platform_install/>
+# 查看所有 runs
+curl -fsSL "$CHARTER_BASE/api/runs"
+
+# 查看 worker 狀態
+curl -fsSL "$CHARTER_BASE/api/runs/worker/status"
+```
+
+---
+
+## ⚙️ 服務管理
+
+```bash
+# SSH 到 Control PC
+ssh root@172.14.1.140
+
+# 查看 Charter 服務狀態
+systemctl status charter-api charter-web charter-worker
+
+# 重啟服務
+systemctl restart charter-api charter-web charter-worker
+
+# 查看 worker log
+journalctl -u charter-worker.service -f
+```
+
+---
+
+## 📁 目錄結構
+
+| 路徑 | 說明 |
+|------|------|
+| `/home/da40/charter/apps/web` | Web 程式 |
+| `/home/da40/charter/apps/api` | API 程式 |
+| `/home/da40/charter/tools` | 工具模組 |
+| `/home/da40/charter/data/scripts` | 腳本儲存 |
+| `/home/da40/charter/docs_site/site` | 文件站靜態檔 |
+
+---
+
+## 📚 相關文件
+
+| 文件 | 說明 |
+|------|------|
+| [Tools 工具模組](/tools/) | 工具使用說明 |
+| [API Reference](/api_reference/) | API 文件 |
+| [Test Suites](/test_suites/sanity/) | 測試腳本列表 |

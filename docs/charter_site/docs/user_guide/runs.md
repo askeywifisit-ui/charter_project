@@ -1,6 +1,6 @@
 # Runs 操作（Queue / Log / Evidence / Cleanup）
 
-> 入口（同事照做版）：[腳本修改 SOP（Export → Modify → Import → Run → Evidence）](script_change_sop.md)
+> 入口（同事照做版）：[腳本修改 SOP（Export → Modify → Import → Run → Evidence）](script_change_sop/)
 
 本頁定位：Runs 的「操作 + 排錯」速查。
 

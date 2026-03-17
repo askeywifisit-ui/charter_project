@@ -1,49 +1,101 @@
 # wifi_iwd.py
 
-- 位置（control PC）：`/home/da40/charter/tools/wifi_iwd.py`
+WiFi 控制工具（使用 iwd/iwctl）。
 
-## Overview
-`wifi_iwd.py` 使用 **iwd/iwctl + DHCP** 控制 Wi‑Fi 連線流程，常用於 sanity/stability 的 Wi‑Fi client 測試。
+---
 
-支援：
-- `scan` / `status` / `ensure`（連線）/ `disconnect`
-- takeover/restore（避免 NetworkManager/wpa_supplicant 競態）
-- 進階：PBR（policy based routing）
+## 位置
 
-## 介面（節錄自 --help）
-```text
-python3 /home/da40/charter/tools/wifi_iwd.py --help
-```
-常用 flags：
-- `--iface <iface>`（必填）
-- `--ssid <ssid>`（ensure 時必填）
-- `--password-env WIFI_PSK`（避免把 PSK 寫在命令列）
-- `--timeout <sec>` / `--dhcp-timeout <sec>`
-- `--takeover` / `--restore-nm` / `--unmanaged`
+`/home/da40/charter/tools/wifi_iwd.py`
 
-## 常用範例（建議照抄）
-### 1) scan
+---
+
+## 功能
+
+- WiFi 連線/斷線
+- Scan 周邊網路
+- 支援 PBR（Policy-Based Routing）
+
+---
+
+## 常用範例
+
+### 連線到 WiFi
 ```bash
-python3 /home/da40/charter/tools/wifi_iwd.py --iface "{{WIFI_IFACE}}" scan --json
+# 連線到 SSID
+python3 /home/da40/charter/tools/wifi_iwd.py ensure \
+  --iface wlan0 \
+  --ssid TestNetwork \
+  --password TestPass123
 ```
 
-### 2) ensure（連線 + DHCP）
+### 斷線
 ```bash
-export WIFI_PSK='{{PSK}}'
-python3 /home/da40/charter/tools/wifi_iwd.py --json ensure \
-  --iface "{{WIFI_IFACE}}" \
-  --ssid "{{SSID}}" \
-  --password-env WIFI_PSK \
-  --timeout 45 \
-  --takeover --restore-nm --unmanaged
+# 斷開 WiFi
+python3 /home/da40/charter/tools/wifi_iwd.py disconnect --iface wlan0
 ```
 
-### 3) disconnect
+### Scan 周邊網路
 ```bash
-python3 /home/da40/charter/tools/wifi_iwd.py --json disconnect --iface "{{WIFI_IFACE}}"
+#  Scan 可用網路
+python3 /home/da40/charter/tools/wifi_iwd.py scan --iface wlan0
 ```
 
-## 常見問題 / 排除
-- `WIFI_IFACE` 不同：外部單位一定要替換（Hand-off → 網卡判定指南）
-- NM/iwd 競態：建議用 `--takeover`
-- 多路由誤判：必要時改用 PBR 參數或指定 ping 介面
+### 查詢狀態
+```bash
+# 查詢連線狀態
+python3 /home/da40/charter/tools/wifi_iwd.py status --iface wlan0
+```
+
+### 進階選項
+```bash
+# 指定頻段（5G）
+python3 /home/da40/charter/tools/wifi_iwd.py ensure \
+  --iface wlan0 \
+  --ssid TestNetwork \
+  --password TestPass123 \
+  --band 5g
+
+# 使用 DHCP timeout
+python3 /home/da40/charter/tools/wifi_iwd.py ensure \
+  --iface wlan0 \
+  --ssid TestNetwork \
+  --password TestPass123 \
+  --dhcp-timeout 30
+```
+
+---
+
+## 參數說明
+
+| 參數 | 說明 |
+|------|------|
+| `--iface` | WiFi 介面名稱（如 wlan0, wlx...） |
+| `--ssid` | 網路名稱 |
+| `--password` | WiFi 密碼 |
+| `--band` | 頻段（2g, 5g, 6g） |
+| `--timeout` | 連線逾時 |
+| `--dhcp-timeout` | DHCP 逾時 |
+
+---
+
+## 腳本調用範例
+
+```python
+import subprocess
+
+# 連線到 WiFi
+subprocess.run([
+    'python3', '/home/da40/charter/tools/wifi_iwd.py', 'ensure',
+    '--iface', 'wlan0',
+    '--ssid', 'TestSSID',
+    '--password', 'TestPass'
+])
+
+# Scan
+result = subprocess.run([
+    'python3', '/home/da40/charter/tools/wifi_iwd.py', 'scan',
+    '--iface', 'wlan0'
+], capture_output=True, text=True)
+print(result.stdout)
+```

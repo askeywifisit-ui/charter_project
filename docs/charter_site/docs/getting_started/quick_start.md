@@ -1,160 +1,117 @@
 # Quick Start（10 分鐘確認平台可用）
 
-目標：用最短步驟確認你可以 **打開 UI → API 可用 → worker 正常 → 跑一個 smoke/sanity → 抓 log（可取證）**。
-
-> 只要這頁跑通，後面所有 test case 才有意義。
-
-本頁設計原則：**API 優先**（UI 只做人工確認/觀察）。
+目標：確認 Charter 測試平台可正常運作。
 
 ---
 
-## 0) 先填兩個變數（建議直接照這個填）
-
-!!! tip "建議範例（11 LAB）"
-
-    ```bash
-    export CONTROL_PC_IP="172.14.1.140"
-    export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
-    ```
-
-
----
-
-## 1) 開 UI（人工確認）
-
-- UI：`http://<CONTROL_PC_IP>:5173`
-- 你應該看得到：Scripts / Runs / Suites 等頁面
-
----
-
-## 2) API 健康檢查
+## 前置設定
 
 ```bash
-curl -fsSL "${CHARTER_BASE}/api/health" | python3 -m json.tool
-```
-
-成功標準：回應包含 `{"ok": true}`。
-
----
-
-## 3) Worker 狀態（最常卡住的點）
-
-```bash
-curl -fsSL "${CHARTER_BASE}/api/runs/worker/status" | python3 -m json.tool
-```
-
-若 worker 不正常：先看 `systemctl status charter-worker.service`。
-
-常用 log：
-```bash
-sudo journalctl -u charter-worker.service -n 200 --no-pager
+export CONTROL_PC_IP="172.14.1.140"
+export CHARTER_BASE="http://${CONTROL_PC_IP}:5173"
 ```
 
 ---
 
-## 4) 列出 scripts（用名稱查 script_id）
+## 1️⃣ 確認 UI 可開啟
 
-### 4.1 直接列出（大量）
+- Web UI：`http://172.14.1.140:5173`
+
+---
+
+## 2️⃣ API 健康檢查
+
 ```bash
-curl -fsSL "${CHARTER_BASE}/api/scripts?limit=2000" | python3 -m json.tool | head
+curl -fsSL "http://172.14.1.140:5173/api/health"
 ```
 
-### 4.2 只找 smoke case（推薦）
+成功標準：回應 `{"ok": true}`
 
-> 建議 demo/驗證順序：先跑 **NOC API basic** 或 **SSH basic**；Wi‑Fi 類 smoke 再跑。
+---
+
+## 3️⃣ 確認 Worker 正常
 
 ```bash
-curl -fsSL "${CHARTER_BASE}/api/scripts?limit=2000" \
-  | python3 - <<'PY'
+curl -fsSL "http://172.14.1.140:5173/api/runs/worker/status"
+```
+
+成功標準：回應 `{"status": "idle"}` 或 `{"status": "running"}`
+
+若不正常：
+```bash
+sudo systemctl status charter-worker.service
+```
+
+---
+
+## 4️⃣ 查詢 Smoke 腳本 ID
+
+在 Control PC 上執行：
+
+```bash
+curl -fsSL "http://172.14.1.140:5173/api/scripts?limit=2000" | python3 -c "
 import json,sys
 xs=json.load(sys.stdin)
-want=[
-  'C00000004_NOC_API_basic_test',
-  'C00000001_SSH_basic_test',
-  'C00000003_WIFI_basic_test',
-]
+want=['C00000004_NOC_API_basic_test','C00000001_SSH_basic_test','C00000003_WIFI_basic_test']
 for name in want:
     hit=[s for s in xs if s.get('suite')=='sanity' and s.get('name')==name]
     if hit:
-        s=hit[0]
-        print(f"{name}\tID={s.get('id')}")
+        print(f'{name}\tID={hit[0][\"id\"]}')
     else:
-        print(f"{name}\tID=<NOT_FOUND>")
-PY
+        print(f'{name}\tID=NOT_FOUND')
+"
 ```
 
-把你要跑的那支 script_id 記下來（或直接用下面「自動取 ID 再 Run」的做法）：
-```bash
-SCRIPT_ID=<FILL>
+結果範例：
 ```
-
-### 4.3（推薦）自動取 script_id 再 Run（避免手抄打錯）
-
-範例：跑 `C00000004_NOC_API_basic_test`
-
-```bash
-NAME="C00000004_NOC_API_basic_test"
-
-curl -fsSL "${CHARTER_BASE}/api/scripts?limit=2000" -o /tmp/scripts.json
-
-SCRIPT_ID=$(python3 - <<'PY'
-import json
-xs=json.load(open('/tmp/scripts.json'))
-name="C00000004_NOC_API_basic_test"
-hit=[s for s in xs if s.get('suite')=='sanity' and s.get('name')==name]
-print(hit[0]['id'] if hit else "")
-PY
-)
-
-echo "SCRIPT_ID=$SCRIPT_ID"
-curl -sS -X POST "${CHARTER_BASE}/api/scripts/${SCRIPT_ID}/run" | python3 -m json.tool
+C00000004_NOC_API_basic_test	ID=5228
+C00000001_SSH_basic_test	ID=5225
+C00000003_WIFI_basic_test	ID=5227
 ```
 
 ---
 
-## 5) 觸發 run
+## 5️⃣ 執行腳本
 
 ```bash
-curl -sS -X POST "${CHARTER_BASE}/api/scripts/${SCRIPT_ID}/run" | python3 -m json.tool
+# 替換為實際 script_id
+SCRIPT_ID=5225
+
+curl -sS -X POST "http://172.14.1.140:5173/api/scripts/${SCRIPT_ID}/run"
 ```
 
-回傳會有 `run_id`（以下用 `RID`）。
-
-> 若回傳一直卡住或沒有 run_id：優先檢查 worker status。
-
-### 5.1 等待 run 結束（不用 UI）
-
-```bash
-RID=<RUN_ID>
-
-# 看最新 runs（找到 RID 的 status=queued/running/passed/failed）
-curl -sS "${CHARTER_BASE}/api/runs?limit=50" | python3 -m json.tool
-```
+會回傳 `run_id`（記下來）。
 
 ---
 
-## 6) 看 run log / artifacts（取證）
+## 6️⃣ 查看執行結果
 
 ```bash
+# 替換為實際 run_id
 RID=<RUN_ID>
 
-curl -sS "${CHARTER_BASE}/api/runs/${RID}/log" > run_${RID}_log.json
-# log 是一行一個 event（多半是 JSON 字串）；先看 tail 最快
+# 查看狀態
+curl -fsSL "http://172.14.1.140:5173/api/runs/${RID}"
+
+# 查看 log
+curl -fsSL "http://172.14.1.140:5173/api/runs/${RID}/log" > run_${RID}_log.json
 tail -n 30 run_${RID}_log.json
-
-# 若有 log archive（通常是 fail-hook 抓到的 CPE logpull）
-curl -sS "${CHARTER_BASE}/api/runs/${RID}/log-archives" | python3 -m json.tool
-curl -fsSL "${CHARTER_BASE}/api/runs/${RID}/log-archive" -o run_${RID}_cpe_log.tar.gz
 ```
 
-成功標準（快速判斷）：
-- `run status=passed`
-- log 尾端可看到類似：`[runner] exit_code=0`
+成功標準：`status=passed`，log 尾端顯示 `exit_code=0`
 
 ---
 
-## 7) 清理（建議日常都做）
+## 7️⃣ 清理（可選）
 
 ```bash
-curl -sS -X DELETE "${CHARTER_BASE}/api/runs/purge?older_than_days=0" | python3 -m json.tool
+curl -sS -X DELETE "http://172.14.1.140:5173/api/runs/purge?older_than_days=0"
 ```
+
+---
+
+## 🔗 相關文件
+
+- [Platform Links](/platform_links/) — 常用入口
+- [Runs 操作](/user_guide/runs/) — 詳細說明
+- [API Reference](/api_reference/)

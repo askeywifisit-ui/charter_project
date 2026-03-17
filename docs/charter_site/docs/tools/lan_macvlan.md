@@ -1,40 +1,69 @@
 # lan_macvlan.py
 
-- 位置（control PC）：`/home/da40/charter/tools/lan_macvlan.py`
+MACVLAN 介面建立工具，用於模擬 LAN Client。
 
-## Overview
-`lan_macvlan.py` 在 control PC 的**有線網卡**上建立 macvlan（通常搭配 netns），用來模擬一個或多個 LAN client：
-- DHCP renew / rebind
-- ping 驗證
-- 用 JSON 回報結果給 scripts 做 assert
+---
 
-## 介面（節錄自 --help）
-常用參數：
-- `--parent <iface>`：要掛在哪張實體有線卡（例：`eno2`）
-- `--iface auto`：自動取唯一的 macvlan 介面名
-- `--mac 02:..`：指定固定 MAC（做 DHCP reservation 測試時很重要）
-- `--renew` / `--release-then-renew`
-- `--ping <host>`
-- `--json`
+## 位置
 
-## 常用範例
-### 1) DHCP renew
+`/home/da40/charter/tools/lan_macvlan.py`
+
+---
+
+## 功能
+
+- 建立 MACVLAN 介面
+- 在 namespace 中運作
+- DHCP renew
+- Ping 測試
+
+---
+
+## 常用指令
+
 ```bash
-python3 /home/da40/charter/tools/lan_macvlan.py \
-  --parent "{{LAN_PARENT_IFACE}}" --iface auto \
-  --mac '02:11:22:33:44:55' \
-  --renew --json
+# 建立 MACVLAN 並 DHCP
+python3 /home/da40/charter/tools/lan_macvlan.py --parent eno2 --renew
+
+# 建立並 ping 測試
+python3 /home/da40/charter/tools/lan_macvlan.py --parent eno2 --renew --ping 8.8.8.8
+
+# 釋放並重新取得 IP
+python3 /home/da40/charter/tools/lan_macvlan.py --parent eno2 --release-then-renew
 ```
 
-### 2) renew + ping
-```bash
-python3 /home/da40/charter/tools/lan_macvlan.py \
-  --parent "{{LAN_PARENT_IFACE}}" --iface auto \
-  --mac '02:11:22:33:44:55' \
-  --renew --json \
-  --ping 'google.com'
-```
+---
 
-## 常見問題 / 排除
-- `LAN_PARENT_IFACE` 選錯會拿不到 DHCP：請依 Hand-off → 網卡判定指南確認
-- 多路由：必要時搭配 `PING_IFACE` 或 policy routing
+## 參數說明
+
+| 參數 | 說明 |
+|------|------|
+| `--parent` | 父介面（如 eno2） |
+| `--ns` | namespace 名稱 |
+| `--iface` | MACVLAN 介面名稱 |
+| `--mac` | 指定 MAC 位址 |
+| `--renew` | DHCP renew |
+| `--release-then-renew` | 釋放後重新取得 |
+| `--ping` | Ping 測試 |
+
+---
+
+## 使用時機
+
+模擬 LAN Client 進行 DHCP/路由測試。
+
+---
+
+## 腳本調用範例
+
+```python
+import subprocess
+
+result = subprocess.run([
+    'python3', '/home/da40/charter/tools/lan_macvlan.py',
+    '--parent', 'eno2',
+    '--renew',
+    '--json'
+], capture_output=True, text=True)
+print(result.stdout)
+```

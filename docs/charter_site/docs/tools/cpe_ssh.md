@@ -1,77 +1,97 @@
 # cpe_ssh.py
 
-- 位置（control PC）：`/home/da40/charter/tools/cpe_ssh.py`
+CPE SSH 控制工具，用於遠端登入 CPE 執行命令。
 
-## Overview
-`cpe_ssh.py` 是 Charter tools 裡的**SSH 萬用工具**，用來從 control PC（TP）連到 DUT/CPE（通常是 `192.168.1.1`）執行各種查詢/驗證，並支援 **logpull 下載**。
+---
 
-典型用途：
-- 取得 Wi‑Fi SSID/PSK（`wifi-creds`）
-- reboot（含 serial mute）
-- DHCP reserved/leased table dump
-- UPnP process/log 檢查
-- pull-log（抓 CPE 端 tar.gz）
+## 位置
 
-## CLI 介面（節錄自 --help）
-### 必填參數
-- `--host <ip>`
+`/home/da40/charter/tools/cpe_ssh.py`
 
-### 常用參數
-- `--user <user>`（例：`operator`）
-- `--password <pwd>`
-- `--timeout <sec>`
-- `--bind-src <ip>`：指定 control PC 的來源 IP（用來控制走哪張 NIC；同 `SSH_BIND_SRC`）
-- `--cmd <subcommand>`：功能指令（下方列出常用）
-- `--json`：輸出 JSON（部分 cmd 會回 `{ok, ...}`）
+---
 
-### 支援的 cmd（常用子集合）
-- `health` / `uptime` / `ping`
-- `wifi-creds`
-- `reboot`
-- `pull-log`
-- `dhcp-reserved` / `dhcp-leased` / `dhcp`
-- `wifi-radio-state` / `wifi-vif-state`
-- `upnp-ps` / `upnp-proc` / `upnp-log`
+## 功能
 
-> 完整列表請執行：`python3 /home/da40/charter/tools/cpe_ssh.py --help`
+- SSH 登入 CPE
+- 執行命令（node-id, reboot, pull-log 等）
+- 拉取 CPE Log
+- 支援多種指令
 
-## 常用範例（建議照抄）
-### 1) 最小連線測試
+---
+
+## 常用範例
+
+### 查詢 CPE 狀態
 ```bash
-python3 /home/da40/charter/tools/cpe_ssh.py \
-  --host 192.168.1.1 --user operator --password "<fill>" \
-  --cmd uptime --json
+# 取得 node-id（用於 NOC API）
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd node-id
+
+# 取得 WAN IP
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd wan-ipv4
+
+# 查詢運行時間
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd uptime
 ```
 
-### 2) 取得 Wi‑Fi creds（SSID/PSK）
+### Reboot / Reset
 ```bash
-python3 /home/da40/charter/tools/cpe_ssh.py \
-  --host 192.168.1.1 --user operator --password "<fill>" \
-  --cmd wifi-creds --which both --json
+# Reboot CPE
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd reboot
 ```
 
-### 3) 抓 DHCP reserved / leased
+### 拉取 Log
 ```bash
-python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --user operator --password "<fill>" --cmd dhcp-reserved --json
-python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --user operator --password "<fill>" --cmd dhcp-leased   --json
+# 拉取 CPE Log
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd pull-log
+
+# 拉取 UPnP Log
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd upnp-log
 ```
 
-### 4) pull-log（下載 CPE logpull 壓縮檔）
+### 查詢網路狀態
 ```bash
-python3 /home/da40/charter/tools/cpe_ssh.py \
-  --host 192.168.1.1 --user operator --password "<fill>" \
-  --cmd pull-log \
-  --latest-from-dir /tmp/logpull --pattern '*.tar.gz' \
-  --dest /tmp/cpe_log \
-  --pre-logpull --logpull-timeout 120 \
-  --rename-with-node-id
+# DHCP 保留 IP
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd dhcp-reserved
+
+# DHCP 租約
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd dhcp-leased
+
+# Wi-Fi 狀態
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd wifi-vif-state
+python3 /home/da40/charter/tools/cpe_ssh.py --host 192.168.1.1 --cmd wifi-radio-state
 ```
 
-## 輸出（概念）
-- 多數腳本只看：`ok`、`rc`、以及必要欄位（ssid/psk、reserved list、etc.）
-- `--debug` 可附加 raw output（排障用）
+### 支援的指令列表
 
-## 常見問題 / 排除
-- **SSH 還沒 ready / port 22 未開**：需要先 NOC ssh-enable，且 boot 後 port 22 可能延遲；建議 retry。
-- **多網卡**：用 `--bind-src` 強制走 DUT LAN 那張 NIC（避免走錯路由）。
-- **安全**：不要把 `--password` 直接貼到群組截圖；建議用環境變數/secret file。
+| 指令 | 功能 |
+|------|------|
+| `node-id` | 取得 node-id |
+| `wan-ipv4` | WAN IPv4 位址 |
+| `wan-ipv6` | WAN IPv6 位址 |
+| `uptime` | 運行時間 |
+| `reboot` | 重啟 CPE |
+| `pull-log` | 拉取 Log |
+| `upnp-log` | UPnP Log |
+| `health` | 健康狀態 |
+| `wifi-creds` | Wi-Fi 認證資訊 |
+| `dhcp-reserved` | DHCP 保留 IP |
+| `dhcp-leased` | DHCP 租約 |
+| `wifi-vif-state` | Wi-Fi VIF 狀態 |
+| `wifi-radio-state` | Wi-Fi Radio 狀態 |
+| `dns-v4` | DNS 查詢 |
+
+---
+
+## 腳本調用範例
+
+```python
+import subprocess
+
+result = subprocess.run(
+    ['python3', '/home/da40/charter/tools/cpe_ssh.py', 
+     '--host', '192.168.1.1', 
+     '--cmd', 'node-id'],
+    capture_output=True, text=True
+)
+print(result.stdout)
+```

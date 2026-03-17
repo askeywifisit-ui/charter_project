@@ -101,10 +101,8 @@ nav:
           - C4123494_IPv6_Stability_Test_from_LAN_Client: test_suites/stability/C4123494_IPv6_Stability_Test_from_LAN_Client.md
           - "C6376350_WiFi_radio_enable_disable-xtime": test_suites/stability/C6376350_WiFi_radio_enable_disable-xtime.md
   - Tools:
-      - 協作 / Repo / 路徑: operations/collaboration.md
-      - Tools 模組清單: operations/tools_modules.md
-      - 常用工具 CLI（去除 .bak）:
-          - Overview: tools/index.md
+      - 常用工具 CLI:
+          - Tools（工具模組）: tools/index.md
           - cpe_info: tools/cpe_info.md
           - cpe_ssh.py: tools/cpe_ssh.md
           - noc_api_cli.py: tools/noc_api_cli.md
@@ -114,9 +112,15 @@ nav:
           - serial_mute.py: tools/serial_mute.md
           - serial_lock.py: tools/serial_lock.md
           - pdu_outlet*.py: tools/pdu.md
+          - net_probe.py: tools/net_probe.md
           - collect_cpe_logs.py: tools/collect_cpe_logs.md
-      - Tools 分類（Runtime vs Maint-only vs 可刪候選）: tools/tools_classification.md
-      - 未使用候選清單（先 review 再刪）: tools/unused_candidates.md
+          - cpe_console: tools/cpe_console.md
+          - cpe_console_serial.py: tools/cpe_console_serial.md
+          - cpe_metrics_agent_serial.py: tools/cpe_metrics_agent_serial.md
+          - cpe_warehouse_info.py: tools/cpe_warehouse_info.md
+          - pbr_cpe.py: tools/pbr_cpe.md
+          - ssh_awlan_tool.py: tools/ssh_awlan_tool.md
+          - upnp_igd_tester.py: tools/upnp_igd_tester.md
   - API Reference:
       - Overview: api_reference/index.md
       - Workflows（實戰）: api_reference/workflows.md
