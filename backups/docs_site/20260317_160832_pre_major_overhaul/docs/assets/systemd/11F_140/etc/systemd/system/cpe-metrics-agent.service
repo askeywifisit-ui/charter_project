@@ -1,0 +1,16 @@
+[Unit]
+Description=CPE Metrics Agent (Serial) -> API
+After=network.target
+Wants=charter-api.service
+After=charter-api.service
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/da40/charter
+EnvironmentFile=-/etc/default/cpe-metrics-agent
+ExecStart=/home/da40/charter/tools/run_cpe_metrics_agent.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
