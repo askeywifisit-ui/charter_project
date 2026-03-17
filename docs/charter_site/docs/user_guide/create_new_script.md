@@ -14,6 +14,32 @@
 
 ---
 
+## 腳本 ZIP 結構（Import 必備檔案）
+
+根據 API 原始碼 `scripts_v2.py`，import 時**必須包含以下 3 個檔案**：
+
+| 檔案 | 說明 | 是否必要 |
+|------|------|----------|
+| `main.py` | 薄 wrapper（入口，呼叫 main_impl） | ✅ 必要 |
+| `manifest.yaml` | 腳本設定（suite/name/entrypoint/env） | ✅ 必要 |
+| `requirements.txt` | Python 依賴（即使沒用到也要放） | ✅ 必要 |
+
+### 建議的完整結構
+
+```
+C15807xxx_SSH_test.zip/
+├── main.py                # ✅ 必要：入口 wrapper
+├── manifest.yaml         # ✅ 必要：腳本設定
+├── requirements.txt       # ✅ 必要：即使是空的也要放
+├── main_impl.py          # ⭕ 建議：你的測試邏輯
+├── cycle_wrapper.py       # ⭕ stability 長跑時需要
+└── log_style_shim.py    # ⭕ 建議：Log 格式
+```
+
+> **重要**：若缺少這 3 個檔案（`main.py`、`manifest.yaml`、`requirements.txt`），import 會失敗！
+
+---
+
 ## Sanity / Stability（suite 選擇與腳本架構）
 
 ### 何時放 sanity？何時放 stability？
@@ -94,7 +120,7 @@ env:
 建議用 OpenClaw 測試助理來做「新腳本產生」工作：
 - 能先找相似腳本當骨架（C00000001~04 或同模組腳本）
 - 能依 test steps 自動補齊 manifest/env、timeouts、retry/backoff 與 log（evidence）格式
-- 能依 DA40 習慣維持：**API 優先**、敏感值不進 zip、可重跑/可取證
+- 能依 DA40 習慣維持：**API 優先**、敏感值不進 zip，可重跑/可取證
 
 你只要提供：`PRD_ID + Test_case_name + Test Steps`（以及是否允許 reboot/PDU/FR），助理就能產出可 import 的 zip。
 
