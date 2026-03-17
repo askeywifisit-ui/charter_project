@@ -1,0 +1,242 @@
+[
+  {
+    "id": 5256,
+    "name": "C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN",
+    "suite": "regression",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260313_205722499839_C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN.zip"
+  },
+  {
+    "id": 5255,
+    "name": "C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260313_180154523020_C15807241.zip"
+  },
+  {
+    "id": 5253,
+    "name": "C15807130_SSH_allowed_local_IP_from_WLAN_Client",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_164637295768_C15807130_SSH_allowed_local_IP_from_WLAN_Client.zip"
+  },
+  {
+    "id": 5252,
+    "name": "C15807949_IP_reservation_for_WLAN_connected_clients",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143841831002_sanity__C15807949_IP_reservation_for_WLAN_connected_clients__id5210.zip"
+  },
+  {
+    "id": 5251,
+    "name": "C15807947_Factory_Reset_DHCP_Reservation",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143841623111_sanity__C15807947_Factory_Reset_DHCP_Reservation__id5188.zip"
+  },
+  {
+    "id": 5250,
+    "name": "C15807946_Delete_DHCP_Reservation",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143841297370_sanity__C15807946_Delete_DHCP_Reservation__id5216.zip"
+  },
+  {
+    "id": 5249,
+    "name": "C15807945_Update_DHCP_Reservation",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143840974111_sanity__C15807945_Update_DHCP_Reservation__id5186.zip"
+  },
+  {
+    "id": 5248,
+    "name": "C15807944_Add_DHCP_Reservation",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143840629614_sanity__C15807944_Add_DHCP_Reservation__id5185.zip"
+  },
+  {
+    "id": 5247,
+    "name": "C15807850_UPnP_State_Changed_From_Enabled_To_Disabled",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143840276665_sanity__C15807850_UPnP_State_Changed_From_Enabled_To_Disabled__id5221.zip"
+  },
+  {
+    "id": 5246,
+    "name": "C15807844_UPnP_State_Changed_From_Disabled_To_Enabled",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143839945900_sanity__C15807844_UPnP_State_Changed_From_Disabled_To_Enabled__id5183.zip"
+  },
+  {
+    "id": 5245,
+    "name": "C15807242_Warehouse_Web_Page_should_load_with_Domain_Name",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143839591676_sanity__C15807242_Warehouse_Web_Page_should_load_with_Domain_Name__id5219.zip"
+  },
+  {
+    "id": 5243,
+    "name": "C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143838889781_sanity__C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN__id5211.zip"
+  },
+  {
+    "id": 5242,
+    "name": "C15807173_Test_Upnp_discovery",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143838555201_sanity__C15807173_Test_Upnp_discovery__id5215.zip"
+  },
+  {
+    "id": 5241,
+    "name": "C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143838221786_sanity__C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client__id5178.zip"
+  },
+  {
+    "id": 5240,
+    "name": "C15807134_SSH_only_1_session_per_username",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143837888731_sanity__C15807134_SSH_only_1_session_per_username__id5177.zip"
+  },
+  {
+    "id": 5239,
+    "name": "C15807133_SSH_authorized_only_on_port_22",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143837570509_sanity__C15807133_SSH_authorized_only_on_port_22__id5176.zip"
+  },
+  {
+    "id": 5238,
+    "name": "C15807131_SSH_not_allowed_wrong_credential",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143837236800_sanity__C15807131_SSH_not_allowed_wrong_credential__id5175.zip"
+  },
+  {
+    "id": 5236,
+    "name": "C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143836577556_sanity__C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile__id5173.zip"
+  },
+  {
+    "id": 5235,
+    "name": "C15807128_SSH_allowed_local_IP_from_LAN_Client",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143836237846_sanity__C15807128_SSH_allowed_local_IP_from_LAN_Client__id5214.zip"
+  },
+  {
+    "id": 5234,
+    "name": "C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143835889757_sanity__C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client__id5171.zip"
+  },
+  {
+    "id": 5233,
+    "name": "C15807061_WAN_IPv6_Connectivity",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143835522474_sanity__C15807061_WAN_IPv6_Connectivity__id5170.zip"
+  },
+  {
+    "id": 5232,
+    "name": "C15807060_WAN_IPv4_Connectivity",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143835176152_sanity__C15807060_WAN_IPv4_Connectivity__id5169.zip"
+  },
+  {
+    "id": 5231,
+    "name": "C15806953_Router_resolves_the_DNS_queries_using_IPv4",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143834839983_sanity__C15806953_Router_resolves_the_DNS_queries_using_IPv4__id5168.zip"
+  },
+  {
+    "id": 5230,
+    "name": "C15806905_SSID_broadcast_when_WiFi_radios_toggled",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143834488295_sanity__C15806905_SSID_broadcast_when_WiFi_radios_toggled__id5204.zip"
+  },
+  {
+    "id": 5229,
+    "name": "C15806902_WLAN_Client_connects_successfully_over_Default_SSID",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143834122574_sanity__C15806902_WLAN_Client_connects_successfully_over_Default_SSID__id5166.zip"
+  },
+  {
+    "id": 5228,
+    "name": "C00000004_NOC_API_basic_test",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143833772211_sanity__C00000004_NOC_API_basic_test__id5165.zip"
+  },
+  {
+    "id": 5227,
+    "name": "C00000003_WIFI_basic_test",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143833342486_sanity__C00000003_WIFI_basic_test__id5164.zip"
+  },
+  {
+    "id": 5226,
+    "name": "C00000002_SSH_disable_test",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143833016063_sanity__C00000002_SSH_disable_test__id5163.zip"
+  },
+  {
+    "id": 5225,
+    "name": "C00000001_SSH_basic_test",
+    "suite": "sanity",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260312_143832689887_sanity__C00000001_SSH_basic_test__id5162.zip"
+  },
+  {
+    "id": 5224,
+    "name": "A2435635_Continuously_executing_speedtest",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260311_144433994580_A2435635_fixed_v2.zip"
+  },
+  {
+    "id": 5218,
+    "name": "C24532530_UPNP_enable_disable_longrun",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260310_165732125445_C24532530_UPNP_enable_disable_longrun.zip"
+  },
+  {
+    "id": 5217,
+    "name": "A2435637_Continuously_executing_FactoryReset",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260310_162233952318_A2435637_Continuously_executing_FactoryReset.zip"
+  },
+  {
+    "id": 5125,
+    "name": "C4123494_IPv6_Stability_Test_from_LAN_Client",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_225408376330_C4123494_IPv6_Stability_Test_from_LAN_Client.zip"
+  },
+  {
+    "id": 5123,
+    "name": "C6376350_WiFi_radio_enable_disable-xtime",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_203028770547_C6376350_WiFi_radio_enable_disable-xtime.zip"
+  },
+  {
+    "id": 5121,
+    "name": "C4123492_IPv4_Stability_Test_from_LAN_Client",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_203028435473_C4123492_IPv4_Stability_Test_from_LAN_Client.zip"
+  },
+  {
+    "id": 5120,
+    "name": "C24541455_Multiple_speedtest",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_203028274391_C24541455_Multiple_speedtest.zip"
+  },
+  {
+    "id": 5119,
+    "name": "C24541454_Multiple_reboot_stress",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_203028077962_C24541454_Multiple_reboot_stress.zip"
+  },
+  {
+    "id": 5117,
+    "name": "C15806945_WiFi_radio_enable_disable_longrun",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_203027678035_C15806945_WiFi_radio_enable_disable_longrun.zip"
+  },
+  {
+    "id": 5116,
+    "name": "A2844344_Continuously_executing_reboot",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_203027464629_A2844344_Continuously_executing_reboot.zip"
+  },
+  {
+    "id": 5115,
+    "name": "A2435638_Cycle_power_on_off_test",
+    "suite": "stability",
+    "zip_path": "/home/da40/charter/data/scripts/upload_20260226_203027268414_A2435638_Cycle_power_on_off_test.zip"
+  }
+]
