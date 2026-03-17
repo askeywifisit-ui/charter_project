@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="780" viewBox="0 0 1400 780">
+  <defs>
+    <style>
+      .title { font: 700 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans","PingFang TC","Microsoft JhengHei",sans-serif; fill:#111; }
+      .h { font: 700 16px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans","PingFang TC","Microsoft JhengHei",sans-serif; fill:#111; }
+      .t { font: 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans","PingFang TC","Microsoft JhengHei",sans-serif; fill:#111; }
+      .muted { fill:#444; }
+      .box { fill:#fff; stroke:#2f3b52; stroke-width:2; rx:12; }
+      .cpe { fill:#fff0f0; stroke:#b42318; stroke-width:3; rx:14; }
+      .zone { fill:#f7f9ff; stroke:#c9d3ea; stroke-width:2; rx:16; }
+      .zone2 { fill:#fffaf2; stroke:#ead7a6; stroke-width:2; rx:16; }
+      .zone3 { fill:#f5fff7; stroke:#bfe4c9; stroke-width:2; rx:16; }
+      .req { stroke:#0f62fe; stroke-width:3; fill:none; }
+      .opt { stroke:#8a3ffc; stroke-width:3; fill:none; stroke-dasharray:8 6; }
+      .pwr { stroke:#ff6b00; stroke-width:3; fill:none; }
+      .lbl { font: 12px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans","PingFang TC","Microsoft JhengHei",sans-serif; fill:#111; }
+    </style>
+
+    <marker id="arrowReq" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 z" fill="#0f62fe" />
+    </marker>
+    <marker id="arrowOpt" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 z" fill="#8a3ffc" />
+    </marker>
+    <marker id="arrowPwr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 z" fill="#ff6b00" />
+    </marker>
+  </defs>
+
+  <text x="40" y="46" class="title">Charter Topology（Recommended / 人類好讀版）</text>
+  <text x="40" y="72" class="t muted">藍色＝必接（主要路徑）｜紫色虛線＝可選（僅特定測項）｜橘色＝電源控制（PDU）</text>
+
+  <!-- Zones -->
+  <rect x="30" y="95" width="640" height="300" class="zone"/>
+  <text x="50" y="125" class="h">LAB 管理網段（172.14.1.0/24）</text>
+
+  <rect x="30" y="420" width="640" height="320" class="zone3"/>
+  <text x="50" y="450" class="h">管理/文件（100.40.1.0/24）</text>
+
+  <rect x="700" y="95" width="670" height="645" class="zone2"/>
+  <text x="720" y="125" class="h">DUT / CPE LAN（192.168.1.0/24）</text>
+
+  <!-- Boxes: LAB -->
+  <rect x="60" y="150" width="260" height="90" class="box"/>
+  <text x="80" y="178" class="h">External Gateway / Router</text>
+  <text x="80" y="202" class="t">LAN：172.14.1.1/24（DHCP）</text>
+  <text x="80" y="222" class="t">WAN：Internet / NOC</text>
+
+  <rect x="360" y="150" width="280" height="150" class="box"/>
+  <text x="380" y="178" class="h">TP（Control PC）</text>
+  <text x="380" y="202" class="t">① WAN（對外 / NOC）→ 172.14.1.1</text>
+  <text x="380" y="222" class="t">② LAN（CPE LAN / SSH / DHCP）→ 192.168.1.1</text>
+  <text x="380" y="242" class="t">③ Wi‑Fi（WLAN client 可選）→ SSID</text>
+  <text x="380" y="262" class="t">④ Console（serial 必接）→ /dev/ttyUSB*</text>
+
+  <rect x="360" y="280" width="160" height="80" class="box"/>
+  <text x="380" y="310" class="h">PDU</text>
+  <text x="380" y="334" class="t">172.14.1.135</text>
+
+  <rect x="60" y="260" width="260" height="100" class="box"/>
+  <text x="80" y="290" class="h">ASUS Router（WAN 端）</text>
+  <text x="80" y="314" class="t">172.14.1.169/24</text>
+  <text x="80" y="334" class="t">用途：100.40.1.0/24 NAT</text>
+
+  <!-- Boxes: Management -->
+  <rect x="60" y="480" width="260" height="90" class="box"/>
+  <text x="80" y="508" class="h">ASUS LAN GW</text>
+  <text x="80" y="532" class="t">100.40.1.1/24（NAT/Router）</text>
+
+  <rect x="360" y="480" width="280" height="90" class="box"/>
+  <text x="380" y="508" class="h">OpenClaw Host（Docs）</text>
+  <text x="380" y="532" class="t">100.40.1.115（MkDocs 預覽）</text>
+
+  <!-- Boxes: DUT LAN -->
+  <rect x="730" y="160" width="280" height="120" class="cpe"/>
+  <text x="750" y="188" class="h">CPE（DUT） ★</text>
+  <text x="750" y="212" class="t">WAN：172.14.1.x（DHCP client）</text>
+  <text x="750" y="232" class="t">LAN GW/DHCP：192.168.1.1/24</text>
+  <text x="750" y="252" class="t">Wi‑Fi AP：SpectrumSetup‑6A4D</text>
+
+  <rect x="1040" y="160" width="300" height="120" class="box"/>
+  <text x="1060" y="188" class="h">TP ↔ CPE LAN（必接）</text>
+  <text x="1060" y="212" class="t">LAN_PARENT_IFACE / PING_IFACE</text>
+  <text x="1060" y="232" class="t">例如：enx...（USB NIC）</text>
+  <text x="1060" y="252" class="t">TP LAN：192.168.1.2/24</text>
+
+  <rect x="1040" y="305" width="300" height="95" class="box"/>
+  <text x="1060" y="333" class="h">TP ↔ CPE console（必接）</text>
+  <text x="1060" y="357" class="t">CPE_DEV：/dev/ttyUSB*（或 by-id）</text>
+
+  <rect x="730" y="305" width="280" height="95" class="box"/>
+  <text x="750" y="333" class="h">TP Wi‑Fi NIC（可選）</text>
+  <text x="750" y="357" class="t">WIFI_IFACE：11F_131=wlan0</text>
+  <text x="750" y="377" class="t">11F_140=wlx6cb0ce1ff230</text>
+
+  <rect x="730" y="425" width="610" height="105" class="box"/>
+  <text x="750" y="453" class="h">一句話（路徑總覽）</text>
+  <text x="750" y="477" class="t">TP 走 eno1 對外（NOC/Internet）｜TP 走 LAN_PARENT_IFACE 控 CPE LAN（SSH/DHCP）｜Wi‑Fi NIC 僅供 WLAN client cases</text>
+  <text x="750" y="499" class="t">PDU 只供 power-cycle 類 stability（OFF/ON/reset）</text>
+
+  <!-- Lines -->
+  <!-- Required: TP eno1 -> Gateway -->
+  <line x1="360" y1="205" x2="320" y2="205" class="req" marker-end="url(#arrowReq)"/>
+  <text x="200" y="195" class="lbl">① WAN 對外（NOC/Internet）</text>
+
+  <!-- Required: TP LAN box -> CPE -->
+  <line x1="1040" y1="220" x2="1010" y2="220" class="req" marker-end="url(#arrowReq)"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <!-- draw to CPE -->
+  <line x1="1010" y1="220" x2="1010" y2="220" class="req"/>
+  <line x1="1010" y1="220" x2="730" y2="220" class="req" marker-end="url(#arrowReq)"/>
+  <text x="860" y="210" class="lbl">② LAN → CPE LAN（SSH/DHCP）</text>
+
+  <!-- Required: console -->
+  <path d="M1040 350 C 980 360, 900 330, 870 280" class="req" marker-end="url(#arrowReq)"/>
+  <text x="970" y="380" class="lbl">④ Console / serial（必接）</text>
+
+  <!-- Optional: WiFi NIC -> CPE -->
+  <path d="M870 305 C 860 285, 820 275, 780 270" class="opt" marker-end="url(#arrowOpt)"/>
+  <text x="740" y="292" class="lbl">③ 可選：Wi‑Fi client</text>
+
+  <!-- Power control: PDU -> CPE -->
+  <path d="M440 320 C 560 300, 640 240, 730 205" class="pwr" marker-end="url(#arrowPwr)"/>
+  <text x="500" y="300" class="lbl">PDU 電源控制（可選）</text>
+
+  <!-- Optional: Docs path -->
+  <path d="M360 525 C 320 510, 300 505, 320 500" class="opt" marker-end="url(#arrowOpt)"/>
+  <text x="180" y="510" class="lbl">可選：文件站/管理</text>
+
+</svg>

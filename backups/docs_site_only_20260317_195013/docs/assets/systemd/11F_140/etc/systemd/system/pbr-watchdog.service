@@ -1,0 +1,21 @@
+[Unit]
+Description=PBR watchdog for eno2 (reapply after link/IP changes)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+# 如需覆蓋腳本中的參數，取消下一行註解並依實際環境修改：
+# Environment="SRC=192.168.1.2" "IF=eno2" "GW=192.168.1.1" "SUB=192.168.1.0/24" "T=100" "PF=1000" "PT=1001"
+# 確保找到 /sbin 命令
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/da40/charter/tools/pbr_watchdog_event.sh
+Restart=always
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

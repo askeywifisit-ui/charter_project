@@ -1,0 +1,153 @@
+site_name: Charter Platform Docs
+site_description: Charter 自動化測試平台（DA40）文件站（預覽）
+docs_dir: docs
+
+# NOTE: this mkdocs.yml lives inside docs/charter_site/, and our markdown pages are
+# stored in the same directory (not in a nested ./docs). So set docs_dir to ".".
+
+site_url: ""
+repo_url: ""
+repo_name: ""
+
+theme:
+  name: material
+  language: zh-TW
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - tables
+  - toc
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+
+# Click-to-zoom images (lightbox-like) for better readability on topology/screenshots.
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js
+  - assets/js/zoom.js
+
+extra_css:
+  - assets/css/custom.css
+
+nav:
+  - Overview:
+      - Charter 平台概覽（README）: index.md
+      - Platform Links（平台入口）: platform_links.md
+      - Environment Template（給外部單位）: environment_template.md
+  - Getting Started:
+      - 平台安裝/移植（systemd）: getting_started/platform_install.md
+      - Quick Start: getting_started/quick_start.md
+  - User Guide:
+      - 腳本修改 SOP（入口）: user_guide/script_change_sop.md
+      - Scripts 管理: user_guide/scripts.md
+      - Modify Script Code（改 code）: user_guide/modify_script_code.md
+      - 新增腳本（Create New Script）: user_guide/create_new_script.md
+      - Runs 操作: user_guide/runs.md
+  - Test Suites:
+      - Sanity:
+          - Overview: test_suites/sanity.md
+          - C00000001_SSH_basic_test: test_suites/sanity/C00000001_SSH_basic_test.md
+          - C00000002_SSH_disable_test: test_suites/sanity/C00000002_SSH_disable_test.md
+          - C00000003_WIFI_basic_test: test_suites/sanity/C00000003_WIFI_basic_test.md
+          - C15806902_WLAN_Client_connects_successfully_over_Default_SSID: test_suites/sanity/C15806902_WLAN_Client_connects_successfully_over_Default_SSID.md
+          - C15806905_SSID_broadcast_when_WiFi_radios_toggled: test_suites/sanity/C15806905_SSID_broadcast_when_WiFi_radios_toggled.md
+          - C15806953_Router_resolves_the_DNS_queries_using_IPv4: test_suites/sanity/C15806953_Router_resolves_the_DNS_queries_using_IPv4.md
+          - C15807060_WAN_IPv4_Connectivity: test_suites/sanity/C15807060_WAN_IPv4_Connectivity.md
+          - C15807061_WAN_IPv6_Connectivity: test_suites/sanity/C15807061_WAN_IPv6_Connectivity.md
+          - C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client: test_suites/sanity/C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client.md
+          - C15807128_SSH_allowed_local_IP_from_LAN_Client: test_suites/sanity/C15807128_SSH_allowed_local_IP_from_LAN_Client.md
+          - C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile: test_suites/sanity/C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile.md
+          - C15807130_SSH_allowed_local_IP_from_WLAN_Client: test_suites/sanity/C15807130_SSH_allowed_local_IP_from_WLAN_Client.md
+          - C15807131_SSH_not_allowed_wrong_credential: test_suites/sanity/C15807131_SSH_not_allowed_wrong_credential.md
+          - C15807133_SSH_authorized_only_on_port_22: test_suites/sanity/C15807133_SSH_authorized_only_on_port_22.md
+          - C15807134_SSH_only_1_session_per_username: test_suites/sanity/C15807134_SSH_only_1_session_per_username.md
+          - C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client: test_suites/sanity/C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client.md
+          - C15807173_Test_Upnp_discovery: test_suites/sanity/C15807173_Test_Upnp_discovery.md
+          - C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN: test_suites/sanity/C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN.md
+          - C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN: test_suites/sanity/C15807241_Warehouse_Web_Page_should_load_with_IPv6_Link_Local_address_on_LAN.md
+          - C15807242_Warehouse_Web_Page_should_load_with_Domain_Name: test_suites/sanity/C15807242_Warehouse_Web_Page_should_load_with_Domain_Name.md
+          - C15807844_UPnP_State_Changed_From_Disabled_To_Enabled: test_suites/sanity/C15807844_UPnP_State_Changed_From_Disabled_To_Enabled.md
+          - C15807850_UPnP_State_Changed_From_Enabled_To_Disabled: test_suites/sanity/C15807850_UPnP_State_Changed_From_Enabled_To_Disabled.md
+          - C15807944_Add_DHCP_Reservation: test_suites/sanity/C15807944_Add_DHCP_Reservation.md
+          - C15807945_Update_DHCP_Reservation: test_suites/sanity/C15807945_Update_DHCP_Reservation.md
+          - C15807946_Delete_DHCP_Reservation: test_suites/sanity/C15807946_Delete_DHCP_Reservation.md
+          - C15807947_Factory_Reset_DHCP_Reservation: test_suites/sanity/C15807947_Factory_Reset_DHCP_Reservation.md
+          - C15807949_IP_reservation_for_WLAN_connected_clients: test_suites/sanity/C15807949_IP_reservation_for_WLAN_connected_clients.md
+      - Stability:
+          - Overview: test_suites/stability.md
+          - A2435635_Continuously_executing_speedtest: test_suites/stability/A2435635_Continuously_executing_speedtest.md
+          - A2435637_Continuously_executing_FactoryReset: test_suites/stability/A2435637_Continuously_executing_FactoryReset.md
+          - A2435638_Cycle_power_on_off_test: test_suites/stability/A2435638_Cycle_power_on_off_test.md
+          - A2844344_Continuously_executing_reboot: test_suites/stability/A2844344_Continuously_executing_reboot.md
+          - C15806945_WiFi_radio_enable_disable_longrun: test_suites/stability/C15806945_WiFi_radio_enable_disable_longrun.md
+          - C24532530_UPNP_enable_disable_longrun: test_suites/stability/C24532530_UPNP_enable_disable_longrun.md
+          - C24541454_Multiple_reboot_stress: test_suites/stability/C24541454_Multiple_reboot_stress.md
+          - C24541455_Multiple_speedtest: test_suites/stability/C24541455_Multiple_speedtest.md
+          - C4123492_IPv4_Stability_Test_from_LAN_Client: test_suites/stability/C4123492_IPv4_Stability_Test_from_LAN_Client.md
+          - C4123494_IPv6_Stability_Test_from_LAN_Client: test_suites/stability/C4123494_IPv6_Stability_Test_from_LAN_Client.md
+          - "C6376350_WiFi_radio_enable_disable-xtime": test_suites/stability/C6376350_WiFi_radio_enable_disable-xtime.md
+  - Tools:
+      - 常用工具 CLI:
+          - Tools（工具模組）: tools/index.md
+          - cpe_info: tools/cpe_info.md
+          - cpe_ssh.py: tools/cpe_ssh.md
+          - noc_api_cli.py: tools/noc_api_cli.md
+          - wifi_iwd.py: tools/wifi_iwd.md
+          - wifi_nm.py: tools/wifi_nm.md
+          - lan_macvlan.py: tools/lan_macvlan.md
+          - serial_mute.py: tools/serial_mute.md
+          - serial_lock.py: tools/serial_lock.md
+          - pdu_outlet*.py: tools/pdu.md
+          - net_probe.py: tools/net_probe.md
+          - collect_cpe_logs.py: tools/collect_cpe_logs.md
+          - cpe_console: tools/cpe_console.md
+          - cpe_console_serial.py: tools/cpe_console_serial.md
+          - cpe_metrics_agent_serial.py: tools/cpe_metrics_agent_serial.md
+          - cpe_warehouse_info.py: tools/cpe_warehouse_info.md
+          - pbr_cpe.py: tools/pbr_cpe.md
+          - ssh_awlan_tool.py: tools/ssh_awlan_tool.md
+          - upnp_igd_tester.py: tools/upnp_igd_tester.md
+  - API Reference:
+      - Overview: api_reference/index.md
+      - Workflows（實戰）: api_reference/workflows.md
+      - Common Errors / Status Codes: api_reference/error_codes.md
+      - Health: api_reference/health.md
+      - Scripts: api_reference/scripts.md
+      - Runs: api_reference/runs.md
+      - Worker: api_reference/worker.md
+      - Dashboard / Metrics / Wi‑Fi / CPE: api_reference/metrics_cpe_wifi.md
+  - Architecture:
+      - Topology（Physical）: architecture/topology.md
+      - Platform Paths & Components: architecture/paths_and_components.md
+  - Hand-off（交付外部單位）:
+      - Overview: handoff/index.md
+      - OpenClaw Charter Ops Pack（少問、直接做）: handoff/openclaw_charter_ops_pack.md
+      - 平台移植腳本（Export/Import）: handoff/migration_scripts.md
+      - NOC Profile / Secrets: handoff/noc_profile_secrets.md
+      - 網卡判定指南: handoff/network_iface_guide.md
+      - 交付環境表: handoff/handoff_env_form.md
+      - 快速驗證: handoff/handoff_validation.md
+  - OpenClaw Setup:
+      - 測試助理 Setup: openclaw_setup/openclaw_test_assistant_setup.md
+      - OpenClaw 能做什麼（Charter）: openclaw_setup/openclaw_capabilities.md
+  - Runbook:
+      - Demo 場景（工程向）: runbook/demo_scenario_openclaw.md
+      - Agent Runbook（給 AI）: runbook/agent_runbook.md
+      - 常用維運: runbook/operations.md
+      - Cycles 調整（OpenClaw 測試助理）: runbook/cycles_edit.md
+      - Dashboard 一鍵抓取（API Snapshot）: runbook/dashboard_snapshot.md
+      - 故障排除: runbook/troubleshooting.md
