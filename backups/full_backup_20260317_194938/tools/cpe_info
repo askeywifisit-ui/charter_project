@@ -1,0 +1,247 @@
+#!/usr/bin/env python3
+import os, sys, re, json, subprocess, urllib.parse
+import time
+
+DEFAULT_BASE = os.getenv("CPE_URL", "https://192.168.1.1/cgi-bin/index.cgi")
+
+
+def _norm_key(s: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", (s or "").lower())
+
+
+def extract_wan_mac(data: dict) -> str:
+    """Best-effort: find WAN MAC value from parsed index.cgi fields."""
+    if not data:
+        return ""
+
+    # Common key variants seen on different firmwares / portals
+    preferred = [
+        "WAN MAC Address",
+        "WAN MAC",
+        "WAN MAC ADDRESS",
+        "WAN MACADDR",
+        "WAN HW Address",
+        "WAN Hardware Address",
+    ]
+    norm_map = { _norm_key(k): k for k in data.keys() }
+    for k in preferred:
+        kk = norm_map.get(_norm_key(k))
+        if kk and data.get(kk):
+            return str(data.get(kk, "")).strip()
+
+    # Heuristic scan
+    for k, v in data.items():
+        nk = _norm_key(k)
+        if "wan" in nk and "mac" in nk and v:
+            return str(v).strip()
+
+    # Last resort: if only a single MAC-like value exists, use it
+    mac_re = re.compile(r"(?i)\b([0-9a-f]{2}[:-]){5}[0-9a-f]{2}\b")
+    candidates = []
+    for k, v in data.items():
+        if not v:
+            continue
+        m = mac_re.search(str(v))
+        if m:
+            candidates.append(m.group(0))
+    if len(candidates) == 1:
+        return candidates[0]
+
+    return ""
+
+
+def mac_to_node_id(mac: str) -> str:
+    """Convert WAN MAC to node_id format: remove separators, lowercase."""
+    if not mac:
+        return ""
+    s = re.sub(r"[^0-9A-Fa-f]", "", mac)
+    return s.lower()
+
+def print_help():
+    print("""cpe_info - Fetch CPE info from web UI
+
+Usage:
+  cpe_info [BASE_URL] [FLAGS]...
+
+Flags (aliases):
+  --password, --pw              Serial Number（常作為登入密碼）
+  --wan-mac                     WAN MAC Address（嘗試從 index.cgi 欄位推斷）
+  --node-id                     Node ID（由 WAN MAC 推導：去冒號/符號 + 小寫）
+  --wan, --ip, --ipv4           WAN IPv4
+  --ipv6                        WAN IPv6（需 index.cgi 顯示 IPv6 欄位）
+  --internet                    Internet Status
+  --cloud                       Cloud Status
+  --pods                        Connected Pods S/N
+  --status                      Internet Status + Cloud Status
+  -f, --field NAME              取指定欄位（可重複）
+  --json                        以 JSON 輸出
+  --value, -v                   只輸出值（不含欄位名）
+  -h, --help                    顯示本說明並離開
+
+Positional:
+  BASE_URL                      預設為 CPE_URL 環境變數，否則 https://192.168.1.1
+
+Examples:
+  cpe_info --wan --value
+  cpe_info --password
+  cpe_info -f "FW Version" --value
+  cpe_info https://192.168.50.1 --status
+""")
+
+def norm_base(s):
+    if not s.startswith("http"): s = "https://" + s.strip("/")
+    u = urllib.parse.urlsplit(s); return f"{u.scheme}://{u.netloc}"
+
+def _curl(args, timeout=1):
+    """Internal helper: run curl and capture only stdout; swallow stderr on error.
+    這樣就算 curl timeout / DNS 失敗，也不會把英文錯誤訊息印到外面，
+    外面只靠回傳值（空字串 or HTML）來判斷成功/失敗。
+    """
+    try:
+        return subprocess.check_output(
+            args,
+            timeout=timeout,
+            stderr=subprocess.DEVNULL,   # <<< 關鍵：把 stderr 丟掉
+        ).decode("utf-8", "ignore")
+    except Exception:
+        return ""
+
+
+def curl_get(url, timeout=1):
+    resp = _curl(["curl","-4fsSkm",str(timeout),url], timeout+1)
+    if resp: return resp
+    u = urllib.parse.urlsplit(url)
+    alt = urllib.parse.urlunsplit(("http" if u.scheme=="https" else "https", u.netloc, u.path, u.query, u.fragment))
+    return _curl(["curl","-4fsSkm",str(timeout),alt], timeout+1)
+
+def curl_post_empty(url, timeout=1):
+    resp = _curl(["curl","-4fsSkm",str(timeout),"-X","POST","-d","",url], timeout+1)
+    if resp: return resp
+    u = urllib.parse.urlsplit(url)
+    alt = urllib.parse.urlunsplit(("http" if u.scheme=="https" else "https", u.netloc, u.path, u.query, u.fragment))
+    return _curl(["curl","-4fsSkm",str(timeout),"-X","POST","-d","",alt], timeout+1)
+
+def parse_index(html):
+    html = html.replace("\r","").replace("&nbsp;"," ")
+    html = re.sub(r"(?is)<script[^>]*>.*?</script>", "", html)  # 移除內嵌 script
+    pairs = {}
+    patt = re.compile(
+        r"<div\s+class=['\"]data_name['\"][^>]*>\s*(.*?)\s*</div>\s*"
+        r"<div\s+class=['\"]data_value['\"][^>]*>\s*(.*?)\s*</div>",
+        re.I|re.S
+    )
+    for m in patt.finditer(html):
+        key = re.sub(r"\s+"," ", m.group(1).strip())
+        val = re.sub(r"\s+"," ", m.group(2).strip())
+        pairs[key] = val
+    m = re.search(r"id=['\"]Serial Number['\"]\s*>\s*([A-Za-z0-9]{6,})", html, re.I)
+    if m: pairs["Serial Number"] = m.group(1).strip()
+    return pairs
+
+def main():
+    argv = sys.argv[1:]
+    if ("-h" in argv) or ("--help" in argv):
+        print_help(); return
+
+    base = norm_base(argv[0]) if argv and not argv[0].startswith("-") else norm_base(DEFAULT_BASE)
+    flags = set(a for a in argv if a.startswith("-"))
+    want_json = "--json" in flags
+    value_only = ("--value" in flags) or ("-v" in flags)
+
+    # 欄位別名
+    aliases = {
+        "--password": ["Serial Number"], "--pw": ["Serial Number"],
+        "--wan-mac": ["WAN MAC Address"],
+        "--node-id": ["Node ID"],
+        "--mac": ["MAC"], "--ipv4": ["IPv4"], "--ip": ["IPv4"], "--wan": ["IPv4"],
+        "--ipv6": ["IPv6"],
+        "--model": ["Model"], "--fw": ["FW Version"], "--pods": ["Connected Pods S/N"],
+        "--internet": ["Internet Status"], "--cloud": ["Cloud Status"],
+        "--status": ["Internet Status","Cloud Status"],
+    }
+    selected = []
+    for k,v in aliases.items():
+        if k in flags: selected += v
+    # -f/--field 可重複
+    for i,a in enumerate(argv):
+        if a in ("-f","--field") and i+1 < len(argv):
+            selected.append(argv[i+1])
+
+    # 抓資料
+    idx_url = urllib.parse.urljoin(base, "/cgi-bin/index.cgi")
+
+    # 為了避免 CPE web 介面偶爾忙碌（起機 / reload）導致單次 timeout，
+    # 這裡對 index.cgi 做簡單重試：最多嘗試 3 次，每次 timeout=1 秒，中間 sleep 1 秒。
+    html = ""
+    for i in range(5):
+        html = curl_get(idx_url, timeout=2)
+        if html:
+            break
+        time.sleep(2)
+
+    if not html:
+        print("ERROR: cannot fetch index.cgi", file=sys.stderr); sys.exit(2)
+    data = parse_index(html)
+
+    # 動態欄位（POST 空 body，避免 411）
+    net = curl_post_empty(urllib.parse.urljoin(base, "/cgi-bin/connectivity_api"), timeout=3).strip()
+    if net: data["Internet Status"] = net
+    pods = curl_post_empty(urllib.parse.urljoin(base, "/cgi-bin/pods_api"), timeout=3).strip()
+    if pods: data["Connected Pods S/N"] = pods.replace(" ", "\n")
+    else:    data.setdefault("Connected Pods S/N", "N/A")
+
+    # --- Derived fields: WAN MAC + Node ID ---
+    wan_mac = extract_wan_mac(data)
+    if wan_mac:
+        data["WAN MAC Address"] = wan_mac
+        node_id = mac_to_node_id(wan_mac)
+        if node_id:
+            data["Node ID"] = node_id
+    else:
+        node_id = ""
+
+    # 只取密碼快速路徑
+    if "--password" in flags or "--pw" in flags:
+        print(data.get("Serial Number","")); return
+
+    # 只取 WAN MAC / Node ID 快速路徑（單獨使用時更方便）
+    if "--wan-mac" in flags and selected == ["WAN MAC Address"]:
+        if want_json:
+            print(json.dumps({"WAN MAC Address": wan_mac}, ensure_ascii=False, indent=2))
+        else:
+            print(wan_mac)
+        return
+    if "--node-id" in flags and selected == ["Node ID"]:
+        if want_json:
+            print(json.dumps({"Node ID": node_id, "WAN MAC Address": wan_mac}, ensure_ascii=False, indent=2))
+        else:
+            print(node_id)
+        return
+
+    # 若有選擇欄位
+    if selected:
+        out = {k: data.get(k, "") for k in selected}
+        if want_json:
+            print(json.dumps(out, ensure_ascii=False, indent=2))
+        else:
+            if value_only and len(out)==1:
+                print(next(iter(out.values()), ""))
+            elif value_only:
+                for k in selected: print(out.get(k,""))
+            else:
+                for k in selected:
+                    print(f"{k}: {out.get(k,'')}")
+        return
+
+    # 預設列印全部
+    if want_json:
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        order = ["Internet Status","Cloud Status","IPv4","MAC","Serial Number","Model","FW Version","Connected Pods S/N"]
+        for k in order:
+            if k in data: print(f"{k}: {data[k]}")
+        for k,v in data.items():
+            if k not in order: print(f"{k}: {v}")
+
+if __name__ == "__main__":
+    main()

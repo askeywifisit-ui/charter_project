@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Wrapper that the API will call via WIFI_STATION_COUNT_CMD
+# Usage: export WIFI_STATION_COUNT_CMD=/home/da40/charter/tools/wifi_station_count
+#        export SERIAL_DEV=/dev/ttyUSB0
+#        export SERIAL_BAUD=115200
+#        export SERIAL_USER=root
+#        export SERIAL_PASS=
+set -euo pipefail
+dev="${SERIAL_DEV:-/dev/ttyUSB0}"
+baud="${SERIAL_BAUD:-115200}"
+user="${SERIAL_USER:-root}"
+pass="${SERIAL_PASS:-}"
+exec python3 /home/da40/charter/tools/wifi_station_count_serial.py --device "$dev" --baud "$baud" --user "$user" --password "$pass"

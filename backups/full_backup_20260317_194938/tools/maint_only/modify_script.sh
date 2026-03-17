@@ -1,0 +1,12 @@
+python3 /home/da40/charter/tools/batch_patch_manifest_zip_text.py \
+  --glob "/home/da40/charter/data/scripts/upload_*.zip" \
+  --backup-dir "/home/da40/charter/data/scripts/bak_$(date +%Y%m%d_%H%M%S)" \
+  --set CYCLES=1 \
+  --set CYCLE_INTERVAL="20" \
+  --set CPE_DEV="/dev/ttyUSB0" \
+  --set CUSTOMER_ID="682d4e5179b80027cd6fb27e" \
+  --set PING_IFACE="eno2" \
+  --set PDU_SCRIPT="/home/da40/charter/tools/pdu_outlet1.py" \
+  --set PDU_OUTLET_ID="1" \
+  --set TEST_PROFILE="lab" \
+  --set NODE_ID_MAX_RETRIES="10" 

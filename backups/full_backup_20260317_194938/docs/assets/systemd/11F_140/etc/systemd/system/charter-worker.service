@@ -1,0 +1,29 @@
+# /etc/systemd/system/charter-worker.service
+[Unit]
+Description=Charter Worker
+After=network-online.target postgresql.service charter-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=da40
+WorkingDirectory=/home/da40/charter/apps/api
+Environment=NOC_HTTP_TIMEOUT_SEC=60
+Environment=DATABASE_URL=postgresql+psycopg2://rg:rg@localhost:5432/rg
+# platform-fixed params (prefer systemd env; manifest.yaml should NOT hardcode these)
+Environment=WIFI_IFACE=wlx6cb0ce1ff230
+Environment=LAN_PARENT_IFACE=eno2
+Environment=PING_IFACE=eno2
+Environment=CPE_DEV=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0
+Environment=PDU_SCRIPT=/home/da40/charter/tools/pdu_outlet1.py
+Environment=PDU_OUTLET_ID=1
+Environment=TEST_PROFILE=lab
+# optional DUT overrides
+EnvironmentFile=-/home/da40/charter/.secrets/dut.env
+ExecStart=/home/da40/charter/apps/api/.venv/bin/python /home/da40/charter/apps/api/worker.py
+Restart=always
+RestartSec=2
+Environment=SERIAL_LOCK_LOG=1
+
+[Install]
+WantedBy=multi-user.target

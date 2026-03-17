@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ===== NOC 設定（從 secrets 讀取）=====
+SECRETS_FILE="/home/da40/charter/.secrets/noc_profiles.json"
+PROFILE="SPECTRUM_INT"
+
+# 從 secrets 讀取 NOC 設定
+if [ -f "$SECRETS_FILE" ]; then
+  NOC_BASE=$(python3 -c "import json; print(json.load(open('$SECRETS_FILE'))['$PROFILE']['base'])")
+  NOC_EMAIL=$(python3 -c "import json; print(json.load(open('$SECRETS_FILE'))['$PROFILE']['email'])")
+  NOC_PASSWORD=$(python3 -c "import json; print(json.load(open('$SECRETS_FILE'))['$PROFILE']['password'])")
+else
+  echo "Error: secrets file not found: $SECRETS_FILE"
+  exit 1
+fi
+
+# CUSTOMER_ID 可從命令列參數或環境變數取得
+CUSTOMER_ID="${2:-}"
+
+# 預設 node-id，如要換機器直接在執行時帶參數
+NODE_ID="${1:-90d3cfeb6a4d}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLI="python3 ${SCRIPT_DIR}/noc_api_cli.py"
+
+echo "=== 測試 UPNP CLI 工具 ==="
+echo "NODE_ID = ${NODE_ID}"
+echo
+
+# 全域共用參數
+COMMON_GLOBAL_ARGS=(
+  --base "${NOC_BASE}"
+  --email "${NOC_EMAIL}"
+  --password "${NOC_PASSWORD}"
+)
+
+[ -n "$CUSTOMER_ID" ] && COMMON_GLOBAL_ARGS+=(--customer-id "$CUSTOMER_ID")
+
+echo "### Step 0: 把 node-id 轉成 location-id"
+LOCATION_ID="$(
+  ${CLI} \
+    "${COMMON_GLOBAL_ARGS[@]}" \
+    get-location \
+    --node-id "${NODE_ID}"
+)"
+echo "LOCATION_ID = ${LOCATION_ID}"
+echo
+
+echo "### Step 1: 查目前 UPNP 狀態"
+${CLI} \
+  "${COMMON_GLOBAL_ARGS[@]}" \
+  upnp-status \
+  --location-id "${LOCATION_ID}"
+echo
