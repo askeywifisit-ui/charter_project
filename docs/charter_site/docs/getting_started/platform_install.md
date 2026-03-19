@@ -35,19 +35,33 @@ scp -r da40@舊機器IP:/home/da40/charter /home/da40/
 
 ```
 /home/da40/charter/
-├── apps/              # 應用程式
-│   ├── api/           # FastAPI 後端
-│   ├── web/           # Vite Web UI
-│   └── web_bak_*/    # 舊版備份
-├── tools/             # 工具腳本
-│   ├── cpe_console    # CPE Console
-│   ├── cpe_info      # CPE 資訊
-│   ├── cpe_metrics_* # Metrics 收集
-│   └── wifi_*        # WiFi 工具
-├── data/             # 資料
-│   └── scripts/      # 測試腳本
-├── .secrets/        # 敏感設定（NOC API Key 等）
-└── var/             # 執行時產出（日誌、執行紀錄）
+├── apps/                      # 應用程式
+│   ├── api/                   # FastAPI 後端
+│   ├── web/                   # Vite Web UI
+│   └── web_bak_*/            # 舊版備份
+├── tools/                     # 工具腳本
+│   ├── cpe_console            # CPE Console（序列埠操控）
+│   ├── cpe_console_serial.py  # CPE Console Python 版
+│   ├── cpe_info               # CPE 資訊查詢
+│   ├── cpe_ssh.py             # CPE SSH 工具
+│   ├── cpe_metrics_agent_serial.py  # Metrics 收集
+│   ├── wifi_iwd.py            # WiFi iwd 工具
+│   ├── wifi_nm.py             # WiFi NetworkManager 工具
+│   ├── noc_api_cli.py         # NOC API CLI
+│   ├── lan_macvlan.py         # LAN MACVLAN 設定
+│   ├── pdu_outlet1.py         # PDU 插座控制
+│   ├── pdu_outlet2.py         # PDU 插座控制
+│   ├── net_probe.py           # 網路探測
+│   ├── collect_cpe_logs.py    # 收集 CPE 日誌
+│   ├── ssh_awlan_tool.py      # AWLAN 工具
+│   ├── upnp_igd_tester.py     # UPnP IGD 測試
+│   └── ...
+├── data/                      # 資料
+│   └── scripts/               # 測試腳本（YAML manifests）
+├── .secrets/                  # 敏感設定（NOC API Key 等）
+│   └── noc_profiles.json      # NOC 連線設定
+└── var/                       # 執行時產出
+    └── logs/                   # 日誌目錄
 ```
 
 ---
