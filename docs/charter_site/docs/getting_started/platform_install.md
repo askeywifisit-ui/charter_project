@@ -326,6 +326,98 @@ curl http://127.0.0.1:5173/
 
 ---
 
+## 🔄 服務管理（完整版）
+
+> 所有 Charter 平台服務的 systemd 設定與管理方式。
+
+### 服務清單
+
+| 服務名稱 | 說明 | Port |
+|---------|------|------|
+| charter-api.service | API 後端 | 8080 |
+| charter-web.service | Web UI（Vite） | 5173 |
+| charter-docs.service | 文件站（MkDocs） | 8000 |
+| charter-worker.service | 腳本執行 worker | - |
+| cpe-status-probe.service | CPE 狀態探針 | - |
+| cpe-metrics-agent.service | CPE Metrics 收集 | - |
+| pbr-watchdog.service | PBR 監控（可選） | - |
+
+### 一鍵重啟所有服務
+
+```bash
+echo "=== Charter 全系統一鍵重啟程序 ==="
+
+# === Step 1: 停止所有服務 ===
+echo "[1/4] 停止 Charter 相關服務..."
+sudo systemctl stop charter-web.service || true
+sudo systemctl stop cpe-status-probe.service || true
+sudo systemctl stop cpe-metrics-agent.service || true
+sudo systemctl stop charter-worker.service || true
+sudo systemctl stop charter-api.service || true
+sudo systemctl stop pbr-watchdog.service || true
+
+# === Step 2: 重新載入 systemd 設定 ===
+echo "[2/4] 重新載入 systemd 設定..."
+sudo systemctl daemon-reload
+
+# === Step 3: 依正確順序啟動所有服務 ===
+echo "[3/4] 啟動 Charter 服務..."
+sudo systemctl start charter-api.service
+sudo systemctl start charter-worker.service
+sudo systemctl start cpe-metrics-agent.service
+sudo systemctl start cpe-status-probe.service
+sudo systemctl start charter-web.service
+sudo systemctl start pbr-watchdog.service
+
+# === Step 4: 顯示服務狀態 ===
+echo
+echo "[4/4] ✅ Charter 服務當前狀態："
+sudo systemctl status \
+ charter-api.service \
+ charter-worker.service \
+ cpe-metrics-agent.service \
+ cpe-status-probe.service \
+ pbr-watchdog.service \
+ charter-web.service --no-pager
+```
+
+### 個別服務管理
+
+```bash
+# 停止
+sudo systemctl stop charter-api.service
+
+# 啟動
+sudo systemctl start charter-api.service
+
+# 重啟
+sudo systemctl restart charter-api.service
+
+# 查看狀態
+sudo systemctl status charter-api.service --no-pager
+
+# 查看日誌
+journalctl -u charter-api.service -n 50 -f
+```
+
+### 確認服務是否正常
+
+```bash
+# API Health
+curl http://127.0.0.1:8080/api/health
+
+# CPE Status
+curl http://127.0.0.1:8080/api/cpe/status/latest
+
+# Metrics
+curl http://127.0.0.1:8080/api/metrics/latest?limit=1
+
+# Worker
+ps aux | grep worker | grep -v grep
+```
+
+---
+
 ## ⚠️ 移植常見問題（已驗證問題 + 解決方案）
 
 > 本節列出從 172.14.1.140 移植到新機器時實際遇到的問題。
