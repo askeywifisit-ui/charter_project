@@ -29,6 +29,29 @@ scp -r da40@舊機器IP:/home/da40/charter /home/da40/
 
 ---
 
+## 📁 目錄結構
+
+安裝完成後，目錄結構如下：
+
+```
+/home/da40/charter/
+├── apps/              # 應用程式
+│   ├── api/           # FastAPI 後端
+│   ├── web/           # Vite Web UI
+│   └── web_bak_*/    # 舊版備份
+├── tools/             # 工具腳本
+│   ├── cpe_console    # CPE Console
+│   ├── cpe_info      # CPE 資訊
+│   ├── cpe_metrics_* # Metrics 收集
+│   └── wifi_*        # WiFi 工具
+├── data/             # 資料
+│   └── scripts/      # 測試腳本
+├── .secrets/        # 敏感設定（NOC API Key 等）
+└── var/             # 執行時產出（日誌、執行紀錄）
+```
+
+---
+
 ## 🔧 安裝流程
 
 ### Step 1️⃣ - 安裝系統依賴
