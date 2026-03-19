@@ -425,6 +425,51 @@ rsync -avz --delete /Users/csit/.openclaw/workspace/docs/charter_site/site/ \
 
 ---
 
+### 問題 7：腳本執行失敗 - NOC 認證錯誤
+
+**錯誤**：
+```
+403 Client Error: Forbidden for url: https://piranha-int.tau.dev-charter.net/api/Customers/login
+```
+
+**原因**：NOC 憑證無效或過期
+
+**解決**：檢查 `/home/da40/charter/.secrets/noc_profiles.json` 中的憑證是否正確
+
+---
+
+### 問題 8：Worker 未啟動導致腳本排隊不執行
+
+**現象**：腳本一直處於 queued 狀態，Worker 顯示 idle
+
+**原因**：worker.py 未在執行
+
+**解決**：啟動 worker 並設定為 systemd 服務
+```bash
+sudo bash -c 'cat > /etc/systemd/system/charter-worker.service << EOF
+[Unit]
+Description=Charter Worker
+After=network.target
+
+[Service]
+Type=simple
+User=da40
+WorkingDirectory=/home/da40/charter/apps/api
+Environment="PATH=/home/da40/.local/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/home/da40/charter/apps/api/.venv/bin/python /home/da40/charter/apps/api/worker.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+sudo systemctl daemon-reload
+sudo systemctl enable charter-worker
+sudo systemctl start charter-worker
+```
+
+---
+
 ## ⚠️ 常見問題
 
 | 問題 | 解決方式 |

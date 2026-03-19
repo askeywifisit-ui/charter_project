@@ -192,18 +192,20 @@ CREATE TABLE event_log (
 sudo -iu postgres psql -d rg << 'SQL'
 -- Add missing columns to runs
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT now();
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT now();
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS log TEXT;
 UPDATE runs SET created_at = started_at WHERE created_at IS NULL;
 
 -- Add missing columns to cpe_metrics
 ALTER TABLE cpe_metrics ADD COLUMN IF NOT EXISTS run_id INTEGER;
 
--- Create missing tables
+-- Create or fix cpe_status table
 CREATE TABLE IF NOT EXISTS cpe_status (
     id SERIAL PRIMARY KEY,
     ts TIMESTAMP NOT NULL DEFAULT now(),
     device_id TEXT,
-    internet_ok INTEGER,
-    cloud_ok INTEGER,
+    internet_ok boolean,
+    cloud_ok boolean,
     ipv4 TEXT,
     mac TEXT,
     serial TEXT,
@@ -223,6 +225,13 @@ CREATE TABLE IF NOT EXISTS wifi_radio_state (
     bandwidth TEXT,
     tx_power TEXT,
     status TEXT
+);
+
+CREATE TABLE IF NOT EXISTS event_log (
+    id SERIAL PRIMARY KEY,
+    ts TIMESTAMP NOT NULL DEFAULT now(),
+    level VARCHAR(16) NOT NULL,
+    message TEXT NOT NULL
 );
 
 -- Grant permissions
