@@ -204,4 +204,4 @@ sudo systemctl start/stop/restart cpe-status-probe
 
 - [下載交付包](../handoff/downloads/)
 - [搬家腳本說明](../handoff/migration_scripts/)
-- [資料庫初始化](../getting_started/database_setup/)
+- [資料庫初始化](database_setup/)
