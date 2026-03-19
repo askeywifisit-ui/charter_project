@@ -20,3 +20,61 @@
 .md-content article {
   font-size: 15px;
 }
+
+/* ===========================
+   Chinese Typography Fix
+   =========================== */
+
+/* Apply to all text - consistent Chinese font */
+body,
+.md-typeset,
+.md-typeset p,
+.md-typeset li,
+.md-typeset td,
+.md-typeset th,
+.md-typeset span {
+    font-family: "PingFang TC", "Microsoft JhengHei", "Heiti TC", 
+                 "Source Han Sans TC", "Noto Sans CJK TC", 
+                 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - consistent weight */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+    font-family: "PingFang TC", "Microsoft JhengHei", "Heiti TC",
+                 "Source Han Sans TC", "Noto Sans CJK TC",
+                 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* English headers - same style as Chinese */
+.md-typeset h1,
+.md-typeset h2 {
+    font-weight: 700;
+}
+
+/* Code blocks - proper monospace */
+.md-typeset code,
+.md-typeset pre,
+.md-typeset .codehilite {
+    font-family: "Menlo", "Consolas", "Source Code Pro", 
+                 "JetBrains Mono", monospace !important;
+    font-size: 0.85em;
+}
+
+/* Tables - consistent font */
+.md-typeset table {
+    font-family: inherit;
+}
+
+/* Ensure proper line height for Chinese text */
+.md-typeset p,
+.md-typeset li {
+    line-height: 1.7;
+}
