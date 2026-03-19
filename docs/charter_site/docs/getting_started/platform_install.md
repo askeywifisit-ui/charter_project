@@ -126,21 +126,34 @@ sudo systemctl status charter-api charter-web charter-worker cpe-metrics-agent c
 ```
 /home/da40/charter/
 ├── apps/
-│   ├── api/           # FastAPI 後端（含 .venv, app/, routers/）
-│   └── web/           # Vite Web UI（含 node_modules, src/）
-├── tools/             # 工具腳本
-│   ├── cpe_console
-│   ├── cpe_info
-│   ├── cpe_metrics_agent_serial.py
-│   ├── cpe_status_probe.py
-│   └── wifi_*.py
+│   ├── api/                   # FastAPI 後端（含 .venv）
+│   ├── api_bad_YYYYMMDD_*/  # 舊版 API（備份）
+│   ├── web/                  # Vite Web UI（含 node_modules, src/）
+│   ├── web_bad_YYYYMMDD_*/ # 舊版 Web（備份）
+│   └── web_bak_YYYYMMDD_*/ # 舊版 Web（備份）
+├── tools/                     # 工具腳本
+│   ├── cpe_console          # CPE Console 工具
+│   ├── cpe_console_serial.py
+│   ├── cpe_info             # CPE 資訊查詢
+│   ├── cpe_metrics_agent_serial.py  # Metrics 收集
+│   ├── cpe_ssh.py          # CPE SSH 工具
+│   ├── wifi_iwd.py         # WiFi IWD 工具
+│   ├── wifi_nm.py          # WiFi NetworkManager 工具
+│   ├── noc_api_cli.py      # NOC API CLI
+│   ├── pdu_*.py           # PDU 控制腳本
+│   ├── lan_macvlan.py      # LAN MACVLAN 工具
+│   ├── serial_*.py         # Serial 工具
+│   ├── cycle_wrapper.py    # Cycle 包裝工具
+│   └── net_probe.py       # 網路探針
 ├── data/
-│   ├── scripts/       # 測試腳本（含 sanity/, stability/）
-│   ├── work/          # 工作目錄
-│   └── venv/          # Python 虛擬環境
-├── .secrets/          # 敏感設定（NOC, DUT 密碼）
-├── docs_site/         # 文件站
-└── var/               # 其他資料
+│   ├── scripts/            # 測試腳本
+│   ├── venv/               # Python 虛擬環境
+│   └── work/              # 工作目錄
+├── .secrets/             # 敏感設定（NOC, DUT 密碼）
+├── docs_site/            # 文件站 MkDocs
+└── var/                  # 執行時產生的檔案
+    ├── serial.lock         # Serial 鎖檔
+    └── pdu_mute.log       # PDU 日誌
 ```
 
 ---
