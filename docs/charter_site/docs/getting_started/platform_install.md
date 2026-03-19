@@ -48,9 +48,13 @@ sudo apt install -y \
   build-essential dkms \
   postgresql-client
 
-# 安裝 Node.js（使用 LTS 版本 20.x）
+# 安裝 Node.js（使用 LTS 版本 20.x 或 22.x）
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
+
+# 或使用 22.x
+# curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+# sudo apt install -y nodejs
 
 # 安裝 pnpm
 npm install -g pnpm
