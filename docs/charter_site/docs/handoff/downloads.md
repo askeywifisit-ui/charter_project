@@ -4,7 +4,7 @@
 
 > Repo：<https://github.com/askeywifisit-ui/charter_project>
 
-## 1) Scripts（測試腳本 zip）
+## 1) Scripts（測試腳本）
 
 - Sanity（資料夾）：
   - <https://github.com/askeywifisit-ui/charter_project/tree/main/scripts/sanity>
@@ -21,28 +21,27 @@
 
 | 檔案 | 大小 | 說明 |
 |------|------|------|
-| `charter_api.tar.gz` | ~30MB | Charter API 程式 |
-| `charter_web.tar.gz` | ~23MB | Charter Web UI 程式 |
-| `charter_tools.tar.gz` | ~264KB | Charter Tools 工具 |
-| `charter_systemd_units.tar.gz` | ~618B | Systemd 服務設定檔 |
+| `charter_api_20260310_201313.tar.gz` | ~30MB | Charter API 程式 |
+| `charter_web_20260310_201313.tar.gz` | ~23MB | Charter Web UI 程式 |
+| `charter_tools_20260310_201313.tar.gz` | ~264KB | Charter Tools 工具 |
+| `charter_systemd_units_11F_140_20260311_105846.tar.gz` | ~1KB | Systemd 服務設定檔 |
 
 ## 3) 校驗（下載後建議執行）
 
 ```bash
 # 檢查 SHA256
-shasum -a 256 charter_api.tar.gz
-shasum -a 256 charter_web.tar.gz
-shasum -a 256 charter_tools.tar.gz
-shasum -a 256 charter_systemd_units.tar.gz
+shasum -a 256 charter_api_20260310_201313.tar.gz
+shasum -a 256 charter_web_20260310_201313.tar.gz
+shasum -a 256 charter_tools_20260310_201313.tar.gz
 ```
 
 ## 4) 解壓縮
 
 ```bash
-tar -xzf charter_api.tar.gz -C /home/da40/
-tar -xzf charter_web.tar.gz -C /home/da40/
-tar -xzf charter_tools.tar.gz -C /home/da40/
-tar -xzf charter_systemd_units.tar.gz -C /etc/systemd/system/
+tar -xzf charter_api_20260310_201313.tar.gz -C /home/da40/
+tar -xzf charter_web_20260310_201313.tar.gz -C /home/da40/
+tar -xzf charter_tools_20260310_201313.tar.gz -C /home/da40/
+tar -xzf charter_systemd_units_11F_140_20260311_105846.tar.gz -C /etc/systemd/system/
 ```
 
 ## 5) 資料庫 Schema（新架站用）
@@ -56,6 +55,7 @@ tar -xzf charter_systemd_units.tar.gz -C /etc/systemd/system/
 
 ```bash
 # 在新機器執行
+curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql
 sudo -iu postgres psql -d rg -f rg_schema_only.sql
 ```
 
@@ -75,19 +75,4 @@ gunzip rg_full_backup.sql.gz
 
 # 還原
 sudo -iu postgres psql -d rg -f rg_full_backup.sql
-```
-
-### 參考：從 172.14.1.140 匯出
-
-如需自行匯出：
-
-```bash
-# 完整匯出
-PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg > rg_full_backup.sql
-
-# 只匯出 schema
-PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg --schema-only > rg_schema_only.sql
-
-# 只匯出資料（不含 schema）
-PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg --data-only > rg_data_only.sql
 ```
