@@ -196,6 +196,6 @@ sudo systemctl start/stop/restart cpe-status-probe
 
 ## 📚 相關頁面
 
-- [下載交付包](../handoff/downloads/)
-- [搬家腳本說明](../handoff/migration_scripts/)
-- [資料庫初始化](database_setup/)
+- [下載交付包](../../handoff/downloads/)
+- [搬家腳本說明](../../handoff/migration_scripts/)
+- [資料庫初始化](../database_setup/)
