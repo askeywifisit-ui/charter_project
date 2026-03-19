@@ -72,6 +72,20 @@ sudo usermod -aG sudo da40        # 方便維護
 sudo usermod -aG dialout da40    # 序列埠權限
 ```
 
+### PDU 權限設定（重要！）
+
+如果使用 PDU（Power Distribution Unit）控制 CPE 電源，需要設定權限：
+```bash
+# 確認 PDU 設備
+ls -la /dev/ttyUSB*  # 或 /dev/ttyACM*
+
+# 將 da40 加入 PDU 所屬群組（通常是 dialout 或 usb）
+sudo usermod -aG dialout da40
+
+# 如果 PDU 使用特定的 USB 埠，可能需要額外設定
+# 請根據實際 PDU 型號調整
+```
+
 ---
 
 ## 2️⃣ 資料庫設定
@@ -94,6 +108,50 @@ psql -h 127.0.0.1 -U rg -d rg -c '\conninfo'
 ## 3️⃣ 複製程式碼
 
 ### 方法 A：完整搬家打包（推薦）
+
+#### 在舊機器上打包：
+```bash
+sudo -iu da40
+cd /home/da40
+
+mkdir -p charter-migration
+cd charter-migration
+
+# 1) 程式與工具
+cp -a /home/da40/charter/apps/api ./apps_api
+cp -a /home/da40/charter/apps/web ./apps_web
+cp -a /home/da40/charter/tools ./tools
+
+# 2) 一鍵腳本
+cp /home/da40/charter/restart.all.charter.sh . 2>/dev/null || true
+cp /home/da40/charter/log.color.charter.sh . 2>/dev/null || true
+
+# 3) systemd units
+sudo cp /etc/systemd/system/charter-api.service .
+sudo cp /etc/systemd/system/charter-web.service .
+sudo cp /etc/systemd/system/charter-worker.service .
+sudo cp /etc/systemd/system/cpe-metrics-agent.service .
+sudo cp /etc/systemd/system/cpe-status-probe.service .
+sudo cp /etc/systemd/system/pbr-watchdog.service .
+sudo cp /etc/systemd/system/cpe-status-probe.timer .
+
+# 4) 環境設定檔
+sudo cp /etc/default/cpe-metrics-agent . 2>/dev/null || true
+
+# 5) DB dump（重要！）
+sudo -iu postgres pg_dump rg > ./rg_db_dump.sql
+
+# 打包
+cd /home/da40/charter-migration
+tar czf charter_migration_full.tgz *
+```
+
+#### 在新機器上建立目錄結構：
+```bash
+sudo -iu da40
+mkdir -p ~/charter/{apps,tools,data,logs}
+mkdir -p ~/charter/apps/{api,web}
+```
 
 在舊機器上打包：
 ```bash
