@@ -109,6 +109,8 @@ psql -h 127.0.0.1 -U rg -d rg -c '\conninfo'
 
 ### 方法 A：完整搬家打包（推薦）
 
+> ⚠️ **重要**：Systemd units 請直接用複製的，不要自己手動建立！否則會漏掉參數（如 `--with-wifi --with-radio`）
+
 #### 在舊機器上打包：
 ```bash
 sudo -iu da40
@@ -126,7 +128,7 @@ cp -a /home/da40/charter/tools ./tools
 cp /home/da40/charter/restart.all.charter.sh . 2>/dev/null || true
 cp /home/da40/charter/log.color.charter.sh . 2>/dev/null || true
 
-# 3) systemd units
+# 3) systemd units（直接複製，不要自己建立！）
 sudo cp /etc/systemd/system/charter-api.service .
 sudo cp /etc/systemd/system/charter-web.service .
 sudo cp /etc/systemd/system/charter-worker.service .
@@ -144,6 +146,30 @@ sudo -iu postgres pg_dump rg > ./rg_db_dump.sql
 # 打包
 cd /home/da40/charter-migration
 tar czf charter_migration_full.tgz *
+```
+
+#### 在新機器上解壓並啟用服務：
+```bash
+# 解壓
+sudo -iu da40
+cd ~
+tar xzf charter_migration_full.tgz -C .
+
+# 複製 systemd units 到系統（直接用複製的，不要自己建立！）
+sudo cp charter-api.service /etc/systemd/system/
+sudo cp charter-web.service /etc/systemd/system/
+sudo cp charter-worker.service /etc/systemd/system/
+sudo cp cpe-metrics-agent.service /etc/systemd/system/
+sudo cp cpe-status-probe.service /etc/systemd/system/
+sudo cp pbr-watchdog.service /etc/systemd/system/
+sudo cp cpe-status-probe.timer /etc/systemd/system/
+
+# 重新載入 systemd
+sudo systemctl daemon-reload
+
+# 啟動服務
+sudo systemctl enable charter-api charter-web charter-worker cpe-metrics-agent cpe-status-probe
+sudo systemctl start charter-api charter-web charter-worker cpe-metrics-agent cpe-status-probe
 ```
 
 #### 在新機器上建立目錄結構：
