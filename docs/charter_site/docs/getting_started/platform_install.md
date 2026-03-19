@@ -384,7 +384,7 @@ After=network.target
 Type=simple
 User=da40
 Environment="PATH=/home/da40/.local/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=/home/da40/charter/apps/api/.venv/bin/python /home/da40/charter/tools/cpe_metrics_agent_serial.py --api http://127.0.0.1:8080 --device /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0 --baud 115200 --user admin --password 70KW2512417000F --iface br-wan --interval 10 --run-id 0
+ExecStart=/home/da40/charter/apps/api/.venv/bin/python /home/da40/charter/tools/cpe_metrics_agent_serial.py --api http://127.0.0.1:8080 --device /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_B0008Z1P-if00-port0 --baud 115200 --user admin --password YOUR_CPE_PASSWORD --iface br-wan --interval 10 --run-id 0 --with-wifi --with-radio
 Restart=always
 
 [Install]
