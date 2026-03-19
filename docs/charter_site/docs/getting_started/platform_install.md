@@ -17,6 +17,8 @@
 | [📦 charter_tools.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz) | ~264KB | 工具腳本 |
 | [📦 charter_systemd.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_systemd_units_11F_140_20260311_105846.tar.gz) | ~1KB | Systemd 設定 |
 
+> 📌 `charter_tools.tar.gz` 中包含 `rg_schema_only.sql`（資料庫 Schema）
+
 > 📌 或從 [GitHub Packages 頁面](https://github.com/askeywifisit-ui/charter_project/tree/main/packages) 下載所有檔案
 
 ---
@@ -132,11 +134,8 @@ sudo systemctl daemon-reload
 ### Step 5️⃣ - 匯入資料庫
 
 ```bash
-# 下載 schema
-curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql
-
-# 或從本機
-sudo -iu postgres psql -d rg -f rg_schema_only.sql
+# 匯入 schema（交付包中已附帶）
+sudo -iu postgres psql -d rg -f ~/charter/tools/rg_schema_only.sql
 ```
 
 ### Step 6️⃣ - 啟動服務

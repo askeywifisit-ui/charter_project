@@ -4,132 +4,105 @@
 
 ---
 
-## 🚀 快速開始
+## 📋 前置準備
 
-### 方式 1：從新機器直接下載
+### 需要取得的檔案
+
+交付包中包含資料庫 Schema 檔案：
+
+| 交付檔案 | 說明 |
+|---------|------|
+| `rg_schema_only.sql` | 資料庫結構定義（14KB） |
+
+---
+
+## 🚀 安裝流程
+
+### Step 1️⃣ - 啟動 PostgreSQL
 
 ```bash
-# 下載 schema（172.14.1.140 的位置）
-curl -O http://172.14.1.140:8000/assets/database/rg_schema_only.sql
+# 啟動並設定開機啟動
+sudo systemctl enable --now postgresql
+```
 
-# 或從 172.14.1.200
-curl -O http://172.14.1.200:8000/assets/database/rg_schema_only.sql
+### Step 2️⃣ - 建立資料庫用戶
 
-# 匯入資料庫
+```bash
+# 建立資料庫用戶
+sudo -iu postgres psql -c "CREATE USER rg WITH PASSWORD 'rg';"
+```
+
+### Step 3️⃣ - 建立資料庫
+
+```bash
+# 建立資料庫
+sudo -iu postgres psql -c "CREATE DATABASE rg OWNER rg;"
+```
+
+### Step 4️⃣ - 匯入 Schema
+
+```bash
+# 進入交付包目錄
+cd ~/charter/tools  # 或你放置交付檔的位置
+
+# 匯入資料庫結構
 sudo -iu postgres psql -d rg -f rg_schema_only.sql
 ```
 
-### 方式 2：從 GitHub 下載（需登入）
+---
+
+## ❓ 常見問題
+
+### Q1: `pg_dump: command not found`
 
 ```bash
-# 需先登入 GitHub
-curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql
-
-# 匯入資料庫
-sudo -iu postgres psql -d rg -f rg_schema_only.sql
+sudo apt install postgresql-client
 ```
 
-### 方式 3：從舊機器複製
+### Q2: `FATAL: role "rg" does not exist`
 
 ```bash
-# 在舊機器匯出
-pg_dump -h 127.0.0.1 -U rg -d rg --schema-only > rg_schema.sql
+# 確認 postgres 已啟動
+sudo systemctl status postgresql
+```
 
-# 傳到新機器後匯入
-sudo -iu postgres psql -d rg -f rg_schema.sql
+### Q3: `permission denied for schema public`
+
+```bash
+sudo -iu postgres psql -d rg -c "GRANT ALL ON SCHEMA public TO rg;"
 ```
 
 ---
 
-## ❓ 為什麼需要這個？
+## 🛠️ 一鍵修復（完整版）
 
-新機器需要相同的資料庫結構（Schema）才能讓 Charter API 正常運作。
-
-| 項目 | 說明 |
-|:-----|:-----|
-| ✅ Schema | 表格結構（需要） |
-| ❌ 資料 | 測試資料（不需要） |
-
----
-
-## ⚠️ 常見錯誤
-
-### 錯誤 1：`column runs.created_at does not exist`
+如果匯入失敗，執行這個腳本：
 
 ```bash
-sudo -iu postgres psql -d rg << 'EOF'
-ALTER TABLE runs ADD COLUMN created_at TIMESTAMP DEFAULT now();
-ALTER TABLE runs ADD COLUMN updated_at TIMESTAMP DEFAULT now();
-ALTER TABLE runs ADD COLUMN log TEXT;
-UPDATE runs SET created_at = started_at WHERE created_at IS NULL;
-EOF
-```
+sudo systemctl enable --now postgresql
 
-### 錯誤 2：`column cpe_metrics.run_id does not exist`
+sudo -iu postgres psql << 'EOF'
+-- 建立用戶
+DO $$ 
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'rg') THEN
+      CREATE USER rg WITH PASSWORD 'rg';
+   END IF;
+END
+$$;
 
-```bash
-sudo -iu postgres psql -d rg -c "ALTER TABLE cpe_metrics ADD COLUMN run_id INTEGER;"
-```
+-- 建立資料庫
+SELECT 'CREATE DATABASE rg OWNER rg' 
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'rg')\gexec
 
-### 錯誤 3：`column cpe_status.internet_ok` 類型錯誤
-
-```bash
-sudo -iu postgres psql -d rg << 'EOF'
-ALTER TABLE cpe_status ALTER COLUMN internet_ok TYPE boolean USING internet_ok::boolean;
-ALTER TABLE cpe_status ALTER COLUMN cloud_ok TYPE boolean USING cloud_ok::boolean;
-EOF
-```
-
----
-
-## 🛠️ 一鍵修復（推薦）
-
-遇到任何資料庫錯誤，執行這個：
-
-```bash
-sudo -iu postgres psql -d rg << 'EOF'
-
--- runs 表
-ALTER TABLE runs ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT now();
-ALTER TABLE runs ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT now();
-ALTER TABLE runs ADD COLUMN IF NOT EXISTS log TEXT;
-
--- cpe_metrics 表
-ALTER TABLE cpe_metrics ADD COLUMN IF NOT EXISTS run_id INTEGER;
-
--- cpe_status 表
-CREATE TABLE IF NOT EXISTS cpe_status (
-    id SERIAL PRIMARY KEY,
-    ts TIMESTAMP NOT NULL DEFAULT now(),
-    device_id TEXT,
-    internet_ok boolean,
-    cloud_ok boolean,
-    ipv4 TEXT, mac TEXT, serial TEXT,
-    model TEXT, fw TEXT,
-    probe_ms INTEGER, error TEXT
-);
-
--- wifi_radio_state 表
-CREATE TABLE IF NOT EXISTS wifi_radio_state (
-    id SERIAL PRIMARY KEY,
-    ts TIMESTAMP NOT NULL DEFAULT now(),
-    device_id TEXT, radio TEXT, ssid TEXT,
-    channel INTEGER, bandwidth TEXT,
-    tx_power TEXT, status TEXT
-);
-
--- event_log 表
-CREATE TABLE IF NOT EXISTS event_log (
-    id SERIAL PRIMARY KEY,
-    ts TIMESTAMP NOT NULL DEFAULT now(),
-    level VARCHAR(16) NOT NULL,
-    message TEXT NOT NULL
-);
-
--- 權限
+-- 賦予權限
+GRANT ALL PRIVILEGES ON DATABASE rg TO rg;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO rg;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO rg;
 EOF
+
+# 匯入 schema（假設檔案在 ~/charter/tools/rg_schema_only.sql）
+sudo -iu postgres psql -d rg -f ~/charter/tools/rg_schema_only.sql
 ```
 
 ---
@@ -140,7 +113,7 @@ EOF
 # 重啟 API
 sudo systemctl restart charter-api
 
-# 測試
+# 測試 API
 curl http://127.0.0.1:8080/api/health
 ```
 
@@ -153,4 +126,4 @@ curl http://127.0.0.1:8080/api/health
 | 頁面 | 說明 |
 |:-----|:-----|
 | [🏠 平台安裝](../platform_install/) | 完整安裝流程 |
-| [📥 下載交付包](../../handoff/downloads/) | 下載所有檔案 |
+| [📦 下載交付包](../../handoff/downloads/) | 取得交付檔案 |
