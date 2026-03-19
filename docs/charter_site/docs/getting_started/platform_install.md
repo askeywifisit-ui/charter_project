@@ -48,11 +48,11 @@ sudo apt install -y \
   build-essential dkms \
   postgresql-client
 
-# 安裝 Node.js
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+# 安裝 Node.js（使用 LTS 版本 20.x）
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# 安裝 pnpm（可選，用 npm 也可以）
+# 安裝 pnpm
 npm install -g pnpm
 
 # 驗證
@@ -60,10 +60,12 @@ node -v
 npm -v
 ```
 
-（必選）Serial 權限：
+（必選）建立使用者並給予權限：
 ```bash
-sudo usermod -aG dialout da40
-newgrp dialout
+# 建立 da40 使用者（如果還沒有）
+sudo useradd -m -s /bin/bash da40
+sudo usermod -aG sudo da40        # 方便維護
+sudo usermod -aG dialout da40    # 序列埠權限
 ```
 
 ---
@@ -87,14 +89,76 @@ psql -h 127.0.0.1 -U rg -d rg -c '\conninfo'
 
 ## 3️⃣ 複製程式碼
 
-### 方法 A：從舊機器複製（推薦）
+### 方法 A：完整搬家打包（推薦）
+
+在舊機器上打包：
+```bash
+sudo -iu da40
+cd /home/da40
+
+mkdir -p charter-migration
+cd charter-migration
+
+# 1) 程式與工具
+cp -a /home/da40/charter/apps/api ./apps_api
+cp -a /home/da40/charter/apps/web ./apps_web
+cp -a /home/da40/charter/tools ./tools
+
+# 2) 設定檔與腳本
+cp /home/da40/charter/restart.all.charter.sh . 2>/dev/null || true
+cp /home/da40/charter/log.color.charter.sh . 2>/dev/null || true
+
+# 3) systemd units
+sudo cp /etc/systemd/system/charter-api.service .
+sudo cp /etc/systemd/system/charter-web.service .
+sudo cp /etc/systemd/system/charter-worker.service .
+sudo cp /etc/systemd/system/cpe-metrics-agent.service .
+sudo cp /etc/systemd/system/cpe-status-probe.service .
+sudo cp /etc/systemd/system/pbr-watchdog.service .
+sudo cp /etc/systemd/system/cpe-status-probe.timer .
+
+# 4) 環境設定檔
+sudo cp /etc/default/cpe-metrics-agent . 2>/dev/null || true
+
+# 5) DB dump（重要！）
+sudo -iu postgres pg_dump rg > ./rg_db_dump.sql
+
+# 打包
+cd /home/da40/charter-migration
+tar czf charter_migration_full.tgz *
+```
+
+把 `charter_migration_full.tgz` 傳到新機器：
+```bash
+scp charter_migration_full.tgz da40@新機器IP:~
+```
+
+在新機器解壓：
+```bash
+sudo -iu da40
+cd ~
+tar xzf charter_migration_full.tgz -C .
+
+# 移到正確位置
+mkdir -p charter/apps charter/tools
+mv apps_api charter/apps/api
+mv apps_web charter/apps/web
+mv tools charter/tools
+mv restart.all.charter.sh charter/ 2>/dev/null || true
+mv log.color.charter.sh charter/ 2>/dev/null || true
+
+# 還原資料庫
+sudo -iu postgres psql -d rg < ~/rg_db_dump.sql
+```
+
+### 方法 B：直接 scp 複製
 
 ```bash
 # 複製整個 charter 目錄
 scp -r da40@舊機器IP:/home/da40/charter /home/da40/
 ```
 
-### 方法 B：從 GitHub
+### 方法 C：從 GitHub
 
 ```bash
 cd /home/da40
@@ -339,6 +403,7 @@ curl http://127.0.0.1:5173/
 | charter-docs.service | 文件站（MkDocs） | 8000 |
 | charter-worker.service | 腳本執行 worker | - |
 | cpe-status-probe.service | CPE 狀態探針 | - |
+| cpe-status-probe.timer | CPE 狀態探針計時器 | - |
 | cpe-metrics-agent.service | CPE Metrics 收集 | - |
 | pbr-watchdog.service | PBR 監控（可選） | - |
 
