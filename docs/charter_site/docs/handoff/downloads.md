@@ -44,3 +44,29 @@ tar -xzf charter_web.tar.gz -C /home/da40/
 tar -xzf charter_tools.tar.gz -C /home/da40/
 tar -xzf charter_systemd_units.tar.gz -C /etc/systemd/system/
 ```
+
+## 5) 資料庫 Schema（新架站用）
+
+> 新架站只需要 schema，不需要實際測試資料
+
+- Schema 檔案：<https://github.com/askeywifisit-ui/charter_project/tree/main/database>
+- 直接下載：<https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql>
+
+### 還原資料庫 Schema
+
+```bash
+# 在新機器執行
+sudo -iu postgres psql -d rg -f rg_schema_only.sql
+```
+
+### 參考：完整資料庫匯出（包含測試資料）
+
+如需完整備份（含資料），可自行在 172.14.1.140 執行：
+
+```bash
+# 完整匯出
+PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg > rg_full_backup.sql
+
+# 只匯出資料（不含 schema）
+PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg --data-only > rg_data_only.sql
+```
