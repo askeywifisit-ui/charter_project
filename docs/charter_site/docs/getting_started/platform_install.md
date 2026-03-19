@@ -126,15 +126,21 @@ sudo systemctl status charter-api charter-web charter-worker cpe-metrics-agent c
 ```
 /home/da40/charter/
 ├── apps/
-│   ├── api/          # FastAPI 後端
-│   └── web/          # Vite Web UI
-├── tools/            # 工具腳本
+│   ├── api/           # FastAPI 後端（含 .venv, app/, routers/）
+│   └── web/           # Vite Web UI（含 node_modules, src/）
+├── tools/             # 工具腳本
 │   ├── cpe_console
 │   ├── cpe_info
 │   ├── cpe_metrics_agent_serial.py
-│   └── cpe_status_probe.py
-└── data/
-    └── scripts/      # 測試腳本
+│   ├── cpe_status_probe.py
+│   └── wifi_*.py
+├── data/
+│   ├── scripts/       # 測試腳本（含 sanity/, stability/）
+│   ├── work/          # 工作目錄
+│   └── venv/          # Python 虛擬環境
+├── .secrets/          # 敏感設定（NOC, DUT 密碼）
+├── docs_site/         # 文件站
+└── var/               # 其他資料
 ```
 
 ---
