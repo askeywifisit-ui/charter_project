@@ -6,7 +6,7 @@
 
 ## 快速開始
 
-### 方式 1：下載並匯入（推薦）
+### 方式 1：從 GitHub 下載（推薦）
 
 ```bash
 # 下載 schema
@@ -16,14 +16,14 @@ curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_
 sudo -iu postgres psql -d rg -f rg_schema_only.sql
 ```
 
-### 方式 2：從 GitHub 下載（推薦）
+### 方式 2：從舊機器複製
 
 ```bash
-# 下載 schema
-curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql
+# 在舊機器匯出
+pg_dump -h 127.0.0.1 -U rg -d rg --schema-only > rg_schema.sql
 
-# 匯入資料庫
-sudo -iu postgres psql -d rg -f rg_schema_only.sql
+# 傳到新機器後匯入
+sudo -iu postgres psql -d rg -f rg_schema.sql
 ```
 
 ---
