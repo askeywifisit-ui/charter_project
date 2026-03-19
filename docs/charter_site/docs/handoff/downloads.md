@@ -59,13 +59,34 @@ tar -xzf charter_systemd_units.tar.gz -C /etc/systemd/system/
 sudo -iu postgres psql -d rg -f rg_schema_only.sql
 ```
 
-### 參考：完整資料庫匯出（包含測試資料）
+## 6) 完整資料庫備份（可選）
 
-如需完整備份（含資料），可自行在 172.14.1.140 執行：
+> ⚠️ 大檔案（53MB），建議只在需要完整資料時下載
+
+- 完整備份（壓縮）：<https://github.com/askeywifisit-ui/charter_project/tree/main/database>
+- 下載：`rg_full_backup.sql.gz`（約 53MB）
+
+### 還原完整資料庫
+
+```bash
+# 下載並解壓
+curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_full_backup.sql.gz
+gunzip rg_full_backup.sql.gz
+
+# 還原
+sudo -iu postgres psql -d rg -f rg_full_backup.sql
+```
+
+### 參考：從 172.14.1.140 匯出
+
+如需自行匯出：
 
 ```bash
 # 完整匯出
 PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg > rg_full_backup.sql
+
+# 只匯出 schema
+PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg --schema-only > rg_schema_only.sql
 
 # 只匯出資料（不含 schema）
 PGPASSWORD=rg pg_dump -U rg -h 127.0.0.1 rg --data-only > rg_data_only.sql
