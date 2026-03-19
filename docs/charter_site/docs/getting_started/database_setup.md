@@ -1,84 +1,84 @@
 # 資料庫初始化
 
-> 本頁說明如何正確建立 Charter 平台的資料庫 schema。
+> 本頁說明如何在新機器上設定 Charter 平台的資料庫。
 
 ---
 
-## ⚠️ 重要：不要手動建 DB！
+## 快速開始
 
-**問題**：手動建立資料庫很容易漏掉欄位，導致 API 錯誤。
-
-**解決**：從 API 程式自動建立，或從舊機器複製。
-
----
-
-## 方法 A：從舊機器複製（推薦）
-
-### 1. 在舊機器匯出資料庫
+### 方式 1：下載並匯入（推薦）
 
 ```bash
-pg_dump -h 127.0.0.1 -U rg -d rg > charter_db.sql
+# 下載 schema
+curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql
+
+# 匯入資料庫
+sudo -iu postgres psql -d rg -f rg_schema_only.sql
 ```
 
-### 2. 在新機器匯入
+### 方式 2：從舊機器複製
 
 ```bash
-sudo -iu postgres psql -d rg -c "DROP DATABASE rg;"
-sudo -iu postgres psql -c "CREATE DATABASE rg OWNER rg;"
-sudo -iu postgres psql -d rg -f charter_db.sql
-```
+# 在舊機器匯出
+pg_dump -h 127.0.0.1 -U rg -d rg --schema-only > rg_schema.sql
 
----
-
-## 方法 B：使用 API 自動建立
-
-API 啟動時會自動建立缺少的欄位。但可能不完整。
-
-啟動 API 後檢查：
-```bash
-curl http://127.0.0.1:8080/api/health
-```
-
-如果有錯誤，檢查日誌：
-```bash
-journalctl -u charter-api -n 50
+# 傳到新機器後匯入
+sudo -iu postgres psql -d rg -f rg_schema.sql
 ```
 
 ---
 
-## 常見錯誤與修復
+## 為什麼需要這個？
 
-### 錯誤 1：`column runs.created_at does not exist`
+新機器需要相同的資料庫結構（Schema）才能讓 Charter API 正常運作。
 
-**原因**：runs 表缺少 created_at 欄位
+| 項目 | 說明 |
+|------|------|
+| Schema | 表格結構定義 |
+| 資料 | 不需要（不需要舊機器的測試資料） |
 
-**修復**：
-```sql
+---
+
+## 常見錯誤
+
+如果 API 啟動失敗並出現以下錯誤，用快速修復指令解決：
+
+### `column runs.created_at does not exist`
+
+```bash
+sudo -iu postgres psql -d rg << 'EOF'
 ALTER TABLE runs ADD COLUMN created_at TIMESTAMP DEFAULT now();
+ALTER TABLE runs ADD COLUMN updated_at TIMESTAMP DEFAULT now();
+ALTER TABLE runs ADD COLUMN log TEXT;
 UPDATE runs SET created_at = started_at WHERE created_at IS NULL;
+EOF
 ```
 
-### 錯誤 2：`column cpe_metrics.run_id does not exist`
+### `column cpe_metrics.run_id does not exist`
 
-**原因**：cpe_metrics 表缺少 run_id 欄位
-
-**修復**：
-```sql
-ALTER TABLE cpe_metrics ADD COLUMN run_id INTEGER;
+```bash
+sudo -iu postgres psql -d rg -c "ALTER TABLE cpe_metrics ADD COLUMN run_id INTEGER;"
 ```
 
-### 錯誤 3：`relation "cpe_status" does not exist`
+### `column cpe_status.internet_ok does not exist`
 
-**原因**：缺少 cpe_status 表
+```bash
+sudo -iu postgres psql -d rg << 'EOF'
+ALTER TABLE cpe_status ALTER COLUMN internet_ok TYPE boolean USING internet_ok::boolean;
+ALTER TABLE cpe_status ALTER COLUMN cloud_ok TYPE boolean USING cloud_ok::boolean;
+EOF
+```
 
-**修復**：
-```sql
+### `relation "cpe_status" does not exist`
+
+```bash
+sudo -iu postgres psql -d rg << 'EOF'
 CREATE TABLE cpe_status (
     id SERIAL PRIMARY KEY,
     ts TIMESTAMP NOT NULL DEFAULT now(),
     device_id TEXT,
-    internet_ok INTEGER,
-    cloud_ok INTEGER,
+    internet_ok boolean,
+    cloud_ok boolean,
     ipv4 TEXT,
     mac TEXT,
     serial TEXT,
@@ -87,78 +87,7 @@ CREATE TABLE cpe_status (
     probe_ms INTEGER,
     error TEXT
 );
-```
 
----
-
-## 完整 Schema 參考
-
-如果要手動建立，以下是所有需要的表：
-
-### runs
-```sql
-CREATE TABLE runs (
-    id SERIAL PRIMARY KEY,
-    script_id INTEGER,
-    status TEXT NOT NULL,
-    started_at TIMESTAMP NOT NULL DEFAULT now(),
-    finished_at TIMESTAMP,
-    exit_code INTEGER,
-    created_at TIMESTAMP DEFAULT now()
-);
-```
-
-### scripts
-```sql
-CREATE TABLE scripts (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    suite TEXT NOT NULL,
-    entrypoint TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP,
-    zip_path TEXT
-);
-```
-
-### cpe_metrics
-```sql
-CREATE TABLE cpe_metrics (
-    id SERIAL PRIMARY KEY,
-    ts TIMESTAMP NOT NULL DEFAULT now(),
-    device_id TEXT,
-    cpu_pct DOUBLE PRECISION,
-    mem_pct DOUBLE PRECISION,
-    temp_c DOUBLE PRECISION,
-    rx_mbps DOUBLE PRECISION,
-    tx_mbps DOUBLE PRECISION,
-    latency_ms DOUBLE PRECISION,
-    wifi_clients INTEGER,
-    wifi_clients_per_band TEXT,
-    run_id INTEGER
-);
-```
-
-### cpe_status
-```sql
-CREATE TABLE cpe_status (
-    id SERIAL PRIMARY KEY,
-    ts TIMESTAMP NOT NULL DEFAULT now(),
-    device_id TEXT,
-    internet_ok INTEGER,
-    cloud_ok INTEGER,
-    ipv4 TEXT,
-    mac TEXT,
-    serial TEXT,
-    model TEXT,
-    fw TEXT,
-    probe_ms INTEGER,
-    error TEXT
-);
-```
-
-### wifi_radio_state
-```sql
 CREATE TABLE wifi_radio_state (
     id SERIAL PRIMARY KEY,
     ts TIMESTAMP NOT NULL DEFAULT now(),
@@ -170,36 +99,37 @@ CREATE TABLE wifi_radio_state (
     tx_power TEXT,
     status TEXT
 );
-```
 
-### event_log
-```sql
 CREATE TABLE event_log (
     id SERIAL PRIMARY KEY,
     ts TIMESTAMP NOT NULL DEFAULT now(),
     level VARCHAR(16) NOT NULL,
     message TEXT NOT NULL
 );
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO rg;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO rg;
+EOF
 ```
 
 ---
 
-## 快速修復腳本
+## 一鍵修復（推薦）
 
-如果遇到 API 錯誤，可以執行這個快速修復：
+如果遇到任何資料庫錯誤，執行這個：
 
 ```bash
-sudo -iu postgres psql -d rg << 'SQL'
--- Add missing columns to runs
+sudo -iu postgres psql -d rg << 'EOF'
+-- runs 表
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT now();
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT now();
 ALTER TABLE runs ADD COLUMN IF NOT EXISTS log TEXT;
 UPDATE runs SET created_at = started_at WHERE created_at IS NULL;
 
--- Add missing columns to cpe_metrics
+-- cpe_metrics 表
 ALTER TABLE cpe_metrics ADD COLUMN IF NOT EXISTS run_id INTEGER;
 
--- Create or fix cpe_status table
+-- cpe_status 表
 CREATE TABLE IF NOT EXISTS cpe_status (
     id SERIAL PRIMARY KEY,
     ts TIMESTAMP NOT NULL DEFAULT now(),
@@ -215,6 +145,7 @@ CREATE TABLE IF NOT EXISTS cpe_status (
     error TEXT
 );
 
+-- wifi_radio_state 表
 CREATE TABLE IF NOT EXISTS wifi_radio_state (
     id SERIAL PRIMARY KEY,
     ts TIMESTAMP NOT NULL DEFAULT now(),
@@ -227,6 +158,7 @@ CREATE TABLE IF NOT EXISTS wifi_radio_state (
     status TEXT
 );
 
+-- event_log 表
 CREATE TABLE IF NOT EXISTS event_log (
     id SERIAL PRIMARY KEY,
     ts TIMESTAMP NOT NULL DEFAULT now(),
@@ -234,32 +166,27 @@ CREATE TABLE IF NOT EXISTS event_log (
     message TEXT NOT NULL
 );
 
--- Grant permissions
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO rg;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO rg;
-SQL
+EOF
 ```
 
 ---
 
 ## 驗證
 
-修復後重啟 API：
 ```bash
+# 重啟 API
 sudo systemctl restart charter-api
-```
 
-測試：
-```bash
+# 測試
 curl http://127.0.0.1:8080/api/health
-curl http://127.0.0.1:8080/api/metrics/latest?limit=1
+# 預期：{"ok":true}
 ```
 
 ---
 
-## 📞 支援
+## 📂 相關頁面
 
-如果遇到其他錯誤，請附上：
-- API 日誌：`journalctl -u charter-api -n 50`
-- 錯誤訊息
-- 嘗試過的修復步驟
+- [平台安裝](../getting_started/platform_install/)
+- [下載交付包](../handoff/downloads/)
