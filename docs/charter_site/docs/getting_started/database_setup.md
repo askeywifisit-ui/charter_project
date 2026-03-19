@@ -188,5 +188,5 @@ curl http://127.0.0.1:8080/api/health
 
 ## 📂 相關頁面
 
-- [平台安裝](../getting_started/platform_install/)
+- [平台安裝](../platform_install/)
 - [下載交付包](../handoff/downloads/)
