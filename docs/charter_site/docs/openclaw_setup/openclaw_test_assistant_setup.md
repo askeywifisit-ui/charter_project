@@ -1,208 +1,336 @@
 # OpenClaw 測試助理 Setup（交付版）
 
+> 官方文件：https://docs.openclaw.ai
+
 本頁目的：讓其他單位在一台乾淨的機器上，完成並驗證：
-1) 安裝 OpenClaw
-2) 設定 LLM（ChatGPT/OpenAI 或 Kimi via NVIDIA Build）
-3) 串接 Telegram（收發訊息）
-4) 用 Control UI/WebChat 驗證可用
-
-> 原則：**不要把 API key / token 直接寫進文件 repo**。
+1. 安裝 OpenClaw
+2. 設定 LLM（ChatGPT/OpenAI、NVIDIA Build 或 Minimax）
+3. 串接 Telegram（收發訊息）
+4. 用 Control UI/WebChat 驗證可用
 
 ---
 
-## 快速完成清單（Quick Checklist）
-完成以下 4 件事，就算 setup 成功：
-1) `openclaw gateway status` 顯示 gateway 正常
-2) Control UI（`http://127.0.0.1:18789/`）Chat 能回覆
-3) Telegram bot 能回覆（DM）
-4) 換成指定模型（OpenAI 或 NVIDIA Build）仍能回覆
+## 🎯 我是誰？（快速了解）
+
+| 問題 | 答案 |
+|------|------|
+| 這是什麼？ | Charter 測試平台的 AI 助理 |
+| 做什麼用的？ | 自動化測試、故障排除、監控 |
+| 要多少時間？ | 約 30 分鐘（不含網路問題） |
 
 ---
 
-## 0) 前置需求（Prerequisites）
+## 📦 我需要什麼？（前置需求）
 
-- OS：macOS / Linux（擇一）
-- Node.js：建議 v22+（本環境為 Node 22.x）
-- 對外連線（至少要能通其中一個 LLM provider）：
-  - OpenAI（如使用 ChatGPT/OpenAI）
-  - NVIDIA Build（Kimi）
-- Telegram Bot API（若要用 Telegram）
-- DNS / TLS 正常
-  - 若公司環境做 HTTPS inspection，可能遇到 TLS 憑證問題（可參考本頁「Troubleshooting → TLS/CA」）
+### 硬體
+- 電腦 1 台（macOS 或 Linux）
+- 網路（能連 Internet）
 
-建議先做基本連通測試：
+### 軟體
+- Node.js v22+
+- Git
+
+### 帳號（依需求申請）
+| 服務 | 用途 | 申請方式 |
+|------|------|----------|
+| OpenAI API | LLM（可選） | https://platform.openai.com |
+| NVIDIA Build | Kimi LLM（可選） | https://build.nvidia.com |
+| Minimax API | LLM（可選） | https://platform.minimax.io |
+| Telegram Bot | 訊息通知（可選） | @BotFather |
+
+---
+
+## ⏱️ 安裝流程時間估計
+
+| 步驟 | 需要時間 | 備註 |
+|------|----------|------|
+| 1. 安裝 OpenClaw | 5 分鐘 | 網路順暢時 |
+| 2. 驗證 UI | 2 分鐘 | |
+| 3. 設定 LLM | 5 分鐘 | 申請 API Key 另計 |
+| 4. 串接 Telegram | 5 分鐘 | 可選 |
+| 5. 驗證完成 | 3 分鐘 | |
+| **總計** | **約 20 分鐘** | 不含申請帳號時間 |
+
+---
+
+## 快速完成清單
+
+| 步驟 | 驗證方式 |
+|------|----------|
+| 1. OpenClaw 安裝 | `openclaw gateway status` 顯示正常 |
+| 2. Control UI 可用 | http://127.0.0.1:18789/ 能開啟 |
+| 3. Chat 能回覆 | 發送「請回覆 OK」能得到回覆 |
+| 4. 模型切換正常 | 切換模型後仍能正常回覆 |
+
+---
+
+## 安裝流程
+
+### Step 1：安裝 OpenClaw
+
 ```bash
-curl -sS -I https://api.openai.com | head
-curl -sS -I https://integrate.api.nvidia.com | head
-```
-
----
-
-## 1) 安裝 OpenClaw（npm global）
-
-> 安裝方式（與 DA40 一致）：npm 全域安裝。
-
-```bash
+# 檢查版本
 node -v
 npm -v
 
+# 安裝
 npm i -g openclaw
 
+# 驗證
 openclaw --version
 openclaw gateway status || true
-```
 
-啟動 gateway：
-```bash
+# 啟動
 openclaw gateway start
 openclaw gateway status
 ```
 
-> 若你要「開機自動啟動」，請改用 LaunchAgent/systemd（視 OS 而定）。
-
 ---
 
-## 2) 開啟 Control UI / WebChat
+## 遠程安裝指南（SSH 遠程部署）
 
-- 預設（local loopback）：
-  - Dashboard: http://127.0.0.1:18789/
+如果你沒有直接在伺服器上操作，可以透過 SSH 遠程安裝。
 
-驗證：
-- 打開 UI 後，在 Chat 分頁發送：`請回覆 OK` → 應能得到回覆（後續會切換模型驗證）。
+### 前置準備
 
----
-
-## 3) LLM 設定
-
-> 建議做法：把 key 放在「環境變數」或「私密檔（權限 600）」；不要寫入 git。
-
-### 3.1 ChatGPT / OpenAI（可選）
-- Key：`OPENAI_API_KEY`
-
-驗證：
-- 在 Control UI 送出一則訊息 → 有正常回覆即可。
-
-### 3.2 Kimi（NVIDIA Build / OpenAI-compatible）
-
-Kimi key 取得：
-- https://build.nvidia.com/settings/api-keys
-
-本環境使用的 NVIDIA Build 參數（範例）：
-- Base URL：`https://integrate.api.nvidia.com/v1`
-- Model id：`moonshotai/kimi-k2.5`
-- OpenClaw model key：`nvidia/moonshotai/kimi-k2.5`
-
-建議 key 命名：
-- `NVIDIA_API_KEY="<YOUR_KEY>"`
-
-> 交付建議：不要沿用 `OPENAI_API_KEY` 來裝 NVIDIA key，避免跟真正 OpenAI key 混淆。
-
-驗證：
-1) 在 Control UI 選用（或設定預設）模型：`nvidia/moonshotai/kimi-k2.5`
-2) 發送：`請回覆 OK`
-3) 預期：回覆 OK（或合理文字）
-
----
-
-## 4) Telegram 串接（收發訊息）
-
-### 4.1 建立 Telegram Bot
-
-1) 在 Telegram 找 @BotFather
-2) `/newbot`
-3) 取得 **Bot Token**（不要入 repo）
-
-### 4.2 OpenClaw 設定 Telegram channel（概念）
-
-- 建議用 tokenFile/secret file（不要把 token 寫死在 openclaw.json 進 git）
-- 建議限制：
-  - DM policy：pairing
-  - Group policy：allowlist
-
-### 4.3 驗證
-
-1) 從 Telegram 對 bot 發「hi」
-2) 期待：bot 會回覆（表示 channel → gateway → LLM 完整鏈路 OK）
-3) Control UI 的 Sessions/Chat 也應可看到對應 session
-
-若你們採 pairing 流程（建議）：
-```bash
-openclaw pairing list telegram
-openclaw pairing approve telegram <CODE>
-```
-
----
-
-## 5) 助理頭像（WebChat/Control UI）
-
-正規做法（避免走 `/assets/...`）：
-
-1) 把 icon 放到 OpenClaw workspace：
+#### 1. 產生 SSH Key
 
 ```bash
-cd ~/.openclaw/workspace
-mkdir -p avatars
-# 放入 avatars/lina_512.png （建議 512x512）
+ssh-keygen -t ed25519 -C "your_email@example.com"
 ```
 
-2) 編輯 `~/.openclaw/workspace/IDENTITY.md`：
-
-```text
-Avatar: avatars/lina_512.png
-```
-
-3) 重啟 gateway：
+#### 2. 複製 SSH 公鑰到伺服器
 
 ```bash
-openclaw gateway restart
+ssh-copy-id -i ~/.ssh/id_ed25519.pub <使用者>@<伺服器IP>
 ```
 
-若 UI 還是舊頭像：
-- Hard Reload（Ctrl+Shift+R / ⌘+Shift+R）
-- 或改檔名破快取（例如 `lina_512_v2.png`）再重啟。
+#### 3. 驗證 SSH 連線
+
+```bash
+ssh <使用者>@<伺服器IP> "echo 'SSH 連線成功！'"
+```
 
 ---
 
-## 6) 最小故障排除（Troubleshooting）
+### 安裝流程（遠程執行）
 
-### 6.1 UI 沒回覆 / 一直顯示 …
-- 先看：
-  - `openclaw gateway status`
-- 再看：TLS/CA 是否錯誤（見 6.4）
+#### Step 1：安裝必要軟體
 
-### 6.2 Telegram 沒訊息
-- Bot token 是否正確
-- allowlist / pairing 是否擋到
-- gateway 是否啟動 telegram plugin/channel
+```bash
+# 安裝 curl（如果沒有）
+ssh <使用者>@<伺服器IP> "sudo apt-get update && sudo apt-get install -y curl"
 
-### 6.3 模型不可用
-- 確認 provider baseUrl / model id
-- key 是否存在（但不要在 log/截圖中外流）
+# 安裝 Git
+ssh <使用者>@<伺服器IP> "sudo apt-get install -y git"
 
-### 6.4 TLS/CA（企業網路常見）
-症狀常見：
+# 安裝 Node.js 22
+ssh <使用者>@<伺服器IP> "curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt-get install -y nodejs"
+
+# 驗證
+ssh <使用者>@<伺服器IP> "node -v && npm -v"
+```
+
+#### Step 2：安裝 OpenClaw
+
+```bash
+# 全域安裝 OpenClaw
+ssh <使用者>@<伺服器IP> "sudo npm i -g openclaw"
+
+# 驗證版本
+ssh <使用者>@<伺服器IP> "openclaw --version"
+```
+
+#### Step 3：初始化與配置
+
+```bash
+# 安裝 systemd 服務
+ssh <使用者>@<伺服器IP> "openclaw gateway install"
+
+# 配置 gateway
+ssh <使用者>@<伺服器IP> "openclaw config set gateway.bind lan"
+
+# 設定 LLM API Key（以 Minimax 為例）
+ssh <使用者>@<伺服器IP> "systemctl --user set-environment MINIMAX_API_KEY='你的API_KEY'"
+
+# 設定預設模型
+ssh <使用者>@<伺服器IP> "openclaw config set agents.defaults.model.primary 'minimax/MiniMax-M2.5'"
+```
+
+#### Step 4：啟動與驗證
+
+```bash
+# 啟動 Gateway
+ssh <使用者>@<伺服器IP> "openclaw gateway start"
+
+# 檢查狀態
+ssh <使用者>@<伺服器IP> "openclaw gateway status"
+```
+
+---
+
+### 訪問 Control UI
+
+#### 方法一：SSH Tunnel（推薦）
+
+```bash
+ssh -N -L 18789:127.0.0.1:18789 <使用者>@<伺服器IP>
+```
+
+然後訪問：http://localhost:18789
+
+#### 方法二：直接訪問
+
+http://172.14.1.200:18789
+
+---
+
+### 常見問題
+
+| 問題 | 解決方式 |
+|------|----------|
+| npm 安裝權限問題 | 使用 `sudo npm i -g openclaw` |
+| Gateway 啟動失敗 | 執行 `openclaw doctor --fix` |
+| CORS 錯誤 | 設定 `gateway.controlUi.allowedOrigins` |
+| 模型無法使用 | 確認 API Key 已正確設定 |
+
+---
+
+### 筆記
+
+| 項目 | 值 |
+|------|-----|
+| 伺服器 IP | 172.14.1.200 |
+| 使用者 | da40 |
+| Gateway 端口 | 18789 |
+| 模型 | minimax/MiniMax-M2.5 |
+
+
+> 若要開機自動啟動：用 LaunchAgent（macOS）或 systemd（Linux）。
+
+---
+
+### Step 2：開啟 Control UI
+
+- **Dashboard**：http://127.0.0.1:18789/
+
+驗證：打開 UI 後，在 Chat 發送 `請回覆 OK` → 應能得到回覆。
+
+---
+
+### Step 3：設定 LLM
+
+> 原則：key 放環境變數或私密檔（權限 600），不要寫入 git。
+
+#### OpenAI（ChatGPT）
+
+```bash
+export OPENAI_API_KEY="sk-..."
+```
+
+#### NVIDIA Build（Kimi）
+
+```bash
+export NVIDIA_API_KEY="nvapi-..."
+```
+
+設定參考：
+- **Base URL**：`https://integrate.api.nvidia.com/v1`
+- **Model**：`moonshotai/kimi-k2.5`
+
+#### Minimax
+
+```bash
+export MINIMAX_API_KEY="<YOUR_KEY>"
+```
+
+設定參考：
+- **Base URL**：`https://api.minimax.chat/v1`
+- **Model**：`MiniMax-M2.5`
+
+驗證：在 UI 發送 `請回覆 OK`。
+
+---
+
+### Step 4：串接 Telegram（可選）
+
+#### 建立 Bot
+
+1. 找 @BotFather
+2. 送 `/newbot`
+3. 取得 Bot Token（不要入 git）
+
+#### 設定 Channel
+
+```bash
+# 驗證
+openclaw channel list telegram
+```
+
+#### 驗證
+
+從 Telegram 對 bot 發 `hi` → 應能回覆。
+
+---
+
+### Step 5：驗證完成
+
+從 Control UI 或 Telegram 發送測試訊息，確認回覆正常。
+
+---
+
+## ❓ 遇到問題怎麼辦？
+
+| 問題 | 處理方式 |
+|------|----------|
+| 安裝失敗 | 檢查 Node.js 版本（需 v22+） |
+| UI 沒回覆 | 檢查 `openclaw gateway status` |
+| 模型無法使用 | 確認 API Key 正確 |
+| TLS 憑證錯誤 | 參考下方「TLS 處理」章節 |
+| Telegram 沒訊息 | 檢查 Bot Token 與設定 |
+
+### TLS 憑證錯誤（企業網路常見）
+
+症狀：
 - `fetch failed`
 - `UNABLE_TO_GET_ISSUER_CERT_LOCALLY`
 
-處理方向（macOS）：
-1) 匯出 System Roots：
+處理（macOS）：
 ```bash
+# 匯出 System Roots
 security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain > ~/.openclaw/certs/system-roots.pem
-```
-2) 設定 gateway 環境變數 `NODE_EXTRA_CA_CERTS=.../system-roots.pem`
-3) 重啟 gateway
 
-> 實際設定方式依你們部署（LaunchAgent/systemd）而不同；可在你們內部 runbook 補上標準作法。
+# 設定環境變數
+export NODE_EXTRA_CA_CERTS=~/.openclaw/certs/system-roots.pem
+
+# 重啟
+openclaw gateway restart
+```
 
 ---
 
-## 7) 交付建議（給外部單位）
+## 📋 交付檢查清單（交給你的人要勾）
 
-- 交付時請標註：
-  - OpenClaw 版本
-  - Node 版本
-  - 使用的 model（OpenAI / NVIDIA Build）
-- Secrets（API keys / tokens）：
-  - 不入 git
-  - 用環境變數 / tokenFile（權限 600）
-  - Telegram 建議限制允許的 chat id
+| 項目 | 確認 |
+|------|------|
+| OpenClaw 版本 | <填入版本> |
+| Node 版本 | <填入版本> |
+| 使用模型 | <填入型號> |
+| Secrets 管理 | 環境變數 / tokenFile |
+| Telegram | <已設定/未設定> |
+
+---
+
+## 📞 聯絡資訊
+
+- **技術窗口**：DA40 CSIT 團隊
+- **文件站**：http://172.14.1.140:8000/
+- **問題回報**：請附上錯誤訊息與操作步驟
+
+---
+
+## 相關頁面
+
+- [Platform Links](/platform_links/)
+- [Tools 工具模組](/tools/)
+- [Architecture 架構](/architecture/topology/)

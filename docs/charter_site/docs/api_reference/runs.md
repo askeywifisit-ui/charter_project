@@ -1,126 +1,134 @@
-# Runs
+# Runs API
 
 對應 UI：`/runs`
 
-## GET `/api/runs`
-- 用途：列出 runs
-- Query:
-  - `limit: int`（預設 200）
-- 回應：`RunRow[]`
-  - `id, status, script, suite, created_at, started_at, finished_at`
+---
 
-### curl
+## GET /api/runs
+
+列出執行記錄
+
+### Request
+
 ```bash
-curl -sS "$CHARTER_BASE/api/runs?limit=50" | jq .
+curl -sS "http://172.14.1.140:5173/api/runs?limit=50" | jq .
 ```
 
-## GET `/api/runs/{rid}/log`
-- 用途：取某 run 的 log（前端會 stringify 顯示）
+### Query Parameters
 
-### curl
-```bash
-RID=1234
-curl -sS "$CHARTER_BASE/api/runs/$RID/log" > run_${RID}_log.json
-# 如果回傳不是 JSON array 而是字串，仍可直接看檔案
-tail -n 50 run_${RID}_log.json
-```
+| 參數 | 說明 | 範例 |
+|------|------|------|
+| `limit` | 數量限制 | `50`, `100` |
+| `status` | 狀態過濾 | `passed`, `failed`, `running` |
 
-### 常見錯誤/注意
-- log 內容格式有兩種：
-  - JSON array（結構化 log）
-  - 或單一字串（包含多行）
+### Response
 
-## POST `/api/runs/{rid}/stop`
-## POST `/api/runs/stop?id={rid}`
-- 用途：停止 run
-- 行為（依 status）：
-  - queued → 直接標 error + summary=stopped by user
-  - starting/running → 標記 stopping
-  - 其它 → noop
-- 回應：`{"ok": true, "mode": "...", ...}`
-
-### curl
-```bash
-RID=1234
-curl -sS -X POST "$CHARTER_BASE/api/runs/$RID/stop" | jq .
-# 或（舊路徑）
-curl -sS -X POST "$CHARTER_BASE/api/runs/stop?id=$RID" | jq .
-```
-
-## DELETE `/api/runs/{rid}`
-- 用途：刪除 run（DB）+ 刪除工作目錄（預設 WORK_BASE/run_{id}）
-
-### curl
-```bash
-RID=1234
-curl -sS -X DELETE "$CHARTER_BASE/api/runs/$RID" | jq .
-```
-
-### 注意
-- 具破壞性（會刪 DB + 工作目錄），建議先取 log/下載 archive。
-
-## DELETE `/api/runs/purge`
-- 用途：批次清理已結束的 runs + 對應工作目錄
-- Query（擇一提供 cutoff）：
-  - `before=YYYY-MM-DD`（指定日期 00:00 之前）
-  - `older_than_days=int`（>0：早於 N 天；<=0：不套時間條件，表示清所有已結束）
-- 其他 Query：
-  - `status`（可選）：例如 `passed`
-  - `dry_run=1`（可選）：只預估不刪
-- 回應：
-  - dry-run：`{"ok": true, "would_delete": <n>, "ids": [..]}`
-  - real：`{"ok": true, "deleted": <n>, "ids": [..]}`
-
-### curl
-清理所有已 finished 的 runs（最常用）：
-```bash
-curl -sS -X DELETE "$CHARTER_BASE/api/runs/purge?older_than_days=0" | jq .
-```
-
-只試算不刪：
-```bash
-curl -sS -X DELETE "$CHARTER_BASE/api/runs/purge?older_than_days=0&dry_run=1" | jq .
-```
-
-## GET `/api/runs/worker/status`
-- 用途：簡易 worker status（queued/running 計數）
-- 回應：`{"idle": true|false, "queue": <queued_count>}`
-
-### curl
-```bash
-curl -sS "$CHARTER_BASE/api/runs/worker/status" | jq .
-```
-
-## GET `/api/runs/{run_id}/log-archives`
-- 用途：列出失敗 run 的 cpe_log 壓縮檔（*.tar.gz/*.tgz）
-
-### curl
-```bash
-RID=1234
-curl -sS "$CHARTER_BASE/api/runs/$RID/log-archives" | jq .
-```
-
-### 回應（範例）
 ```json
-[{"name":"...tar.gz","size":123,"mtime":<fill>0}, ...]
+[
+  {
+    "id": 7500,
+    "script_id": 5225,
+    "status": "passed",
+    "started_at": "2026-03-17T10:30:00Z",
+    "finished_at": "2026-03-17T10:35:00Z"
+  }
+]
 ```
 
-## GET `/api/runs/{run_id}/log-archive?name=...`
-- 用途：下載指定或最新的 log archive
-- Query：
-  - `name`（可選）：不給則下載最新
-- 回應：`application/gzip`（FileResponse）
+---
 
-### curl
-下載最新：
+## GET /api/runs/{id}
+
+查看執行結果
+
+### Request
+
 ```bash
-RID=1234
-curl -fsSL "$CHARTER_BASE/api/runs/$RID/log-archive" -o run_${RID}_cpe_log.tar.gz
+curl -sS "http://172.14.1.140:5173/api/runs/7500" | jq .
 ```
 
-指定檔名下載：
-```bash
-RID=1234
-NAME='90d3cf...-logpull-20260224-124020.tar.gz'
-curl -fsSL "$CHARTER_BASE/api/runs/$RID/log-archive?name=$NAME" -o "$NAME"
+### Response
+
+```json
+{
+  "id": 7500,
+  "script_id": 5225,
+  "status": "passed",
+  "exit_code": 0,
+  "started_at": "2026-03-17T10:30:00Z",
+  "finished_at": "2026-03-17T10:35:00Z"
+}
 ```
+
+---
+
+## GET /api/runs/{id}/log
+
+下載執行日誌
+
+### Request
+
+```bash
+curl -sS "http://172.14.1.140:5173/api/runs/7500/log" -o run_7500_log.json
+```
+
+---
+
+## DELETE /api/runs/purge
+
+清理舊執行記錄
+
+### Request
+
+```bash
+# 清理所有已完成的 runs
+curl -sS -X DELETE "http://172.14.1.140:5173/api/runs/purge?older_than_days=0" | jq .
+
+# 清理 7 天前的
+curl -sS -X DELETE "http://172.14.1.140:5173/api/runs/purge?older_than_days=7" | jq .
+```
+
+### Response
+
+```json
+{
+  "ok": true,
+  "deleted_runs": 50
+}
+```
+
+---
+
+## GET /api/runs/worker/status
+
+Worker 狀態
+
+### Request
+
+```bash
+curl -sS "http://172.14.1.140:5173/api/runs/worker/status" | jq .
+```
+
+### Response
+
+```json
+{
+  "status": "idle"
+}
+```
+
+或
+
+```json
+{
+  "status": "running",
+  "current_run_id": 7500
+}
+```
+
+---
+
+## 相關頁面
+
+- [Scripts API](/api_reference/scripts/)
+- [Worker API](/api_reference/worker/)

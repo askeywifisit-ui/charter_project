@@ -1,24 +1,26 @@
 # cycle_wrapper.py
 
-腳本入口包裝工具，用於載入 `manifest.yaml` 環境變數。
+腳本入口包裝工具。
 
 ---
 
 ## 功能
 
-- 載入腳本目錄下的 `manifest.yaml` 環境變數
-- 支援多種 entrypoint 格式（`module:func` 或 `file.py:func`）
-- 自動處理 JSON events 輸出
-- 若缺少 PyYAML，會提示並 exit
+- 載入 manifest.yaml 環境變數
+- 支援迴圈執行
+- 自動處理 JSON events
 
 ---
 
-## 使用方式
+## 常用範例
 
-腳本 ZIP 的 `manifest.yaml` 中指定 entrypoint：
-
-```yaml
+```bash
+# 在 manifest.yaml 中指定
 entrypoint: cycle_wrapper.py:run
+
+# 環境變數
+CYCLES=10
+CYCLE_INTERVAL=120
 ```
 
 ---

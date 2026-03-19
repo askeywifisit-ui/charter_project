@@ -50,6 +50,7 @@ nav:
       - Environment Template（給外部單位）: environment_template.md
   - Getting Started:
       - 平台安裝/移植（systemd）: getting_started/platform_install.md
+      - 資料庫初始化: getting_started/database_setup.md
       - Quick Start: getting_started/quick_start.md
   - User Guide:
       - 腳本修改 SOP（入口）: user_guide/script_change_sop.md

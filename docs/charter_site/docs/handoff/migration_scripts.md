@@ -1,179 +1,201 @@
-# 移植腳本（Export / Import 一鍵範本）
+# 移植腳本（遷移到新機器）
 
-本頁提供兩支「可直接貼去跑」的移植腳本範本：
-
-- `charter_migration_export.sh`：在來源 controlpc 匯出 migration pack
-- `charter_migration_import.sh`：在新機器匯入 migration pack
-
-> 設計原則：能重建、可稽核、避免把 secrets 明文交付。
+> 目標：把舊機器的設定/腳本，搬到新機器。
 
 ---
 
-## 1) Export（在來源 controlpc）
+## 🎯 我是誰？
 
-> **標準交付帳號：`da40`（需具備 sudo）**。實務上：
-> - 以 `da40` 維護 `/home/da40/charter` 目錄與檔案 owner
-> - 需要 root 權限的步驟（apt/systemd、/etc/default）由 sudo 執行
-> - 如客戶只給 root/其他帳號，請務必仍建立 `/home/da40/charter`（或同步改 unit 內路徑）
+| 問題 | 答案 |
+|------|------|
+| 這是什麼？ | 搬家腳本（Export = 打包，Import = 解開） |
+| 誰要做？ | 被移轉的 IT 管理員 |
+| 要多久？ | 約 30 分鐘 |
 
-把下面存成：`/home/da40/charter/charter_migration_export.sh`
+---
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
+## 📥 下載腳本
 
-TS=$(date +%Y%m%d_%H%M%S)
-OUTDIR=/home/da40/charter-migration-${TS}
-PKG=${OUTDIR}/charter_migration_${TS}.tgz
+| 腳本 | 用途 | 下載 |
+|------|------|------|
+| `charter_migration_export.sh` | 舊機器匯出 | [下載](../handoff/scripts/charter_migration_export.sh) |
+| `charter_migration_import.sh` | 新機器匯入 | [下載](../handoff/scripts/charter_migration_import.sh) |
 
-mkdir -p "$OUTDIR"
+---
 
-echo "[1/7] Export apps/tools"
-cp -a /home/da40/charter/apps/api  "$OUTDIR/apps_api"
-cp -a /home/da40/charter/apps/web  "$OUTDIR/apps_web"
-cp -a /home/da40/charter/tools     "$OUTDIR/tools"
+## 📦 搬家需要的檔案
 
-echo "[2/7] Export helper scripts"
-cp -a /home/da40/charter/restart.all.charter.sh "$OUTDIR/" || true
-cp -a /home/da40/charter/log.color.charter.sh   "$OUTDIR/" || true
+### 來源機器（舊）
 
-echo "[3/7] Export systemd units"
-sudo cp -a /etc/systemd/system/charter-api.service            "$OUTDIR/" || true
-sudo cp -a /etc/systemd/system/charter-worker.service          "$OUTDIR/" || true
-sudo cp -a /etc/systemd/system/charter-web.service             "$OUTDIR/" || true
-sudo cp -a /etc/systemd/system/cpe-metrics-agent.service       "$OUTDIR/" || true
-sudo cp -a /etc/systemd/system/cpe-status-probe.service        "$OUTDIR/" || true
-sudo cp -a /etc/systemd/system/cpe-status-probe.timer          "$OUTDIR/" || true
-sudo cp -a /etc/systemd/system/pbr-watchdog.service            "$OUTDIR/" || true
+| 檔案 | 說明 |
+|------|------|
+| `charter_migration_*.tgz` | 打包好的壓縮檔 |
 
-# drop-in（若存在）
-if sudo test -d /etc/systemd/system/charter-api.service.d; then
-  sudo cp -a /etc/systemd/system/charter-api.service.d "$OUTDIR/"
-fi
+### 目標機器（新）
 
-echo "[4/7] Export /etc/default/cpe-metrics-agent"
-if sudo test -f /etc/default/cpe-metrics-agent; then
-  sudo cp -a /etc/default/cpe-metrics-agent "$OUTDIR/"
-fi
+| 條件 | 說明 |
+|------|------|
+| Ubuntu 22.04 | 作業系統 |
+| PostgreSQL | 資料庫（見下方安裝） |
+| Node.js v22+ | 執行 Vite |
+| 網路正常 | 能連網際網路 |
 
-echo "[5/7] Export DB (optional)"
-# 預設不 dump，交付版通常走 A 乾淨建 DB。
-# 若你要保留 runs/history，再解除註解：
-# sudo -iu postgres pg_dump -Fc rg > "$OUTDIR/rg.dump"
+---
 
-echo "[6/7] Secrets handling"
-# 不建議直接交付 .secrets；改提供 template。
-if test -f /home/da40/charter/.secrets/noc_profiles.json; then
-  mkdir -p "$OUTDIR/secrets_template"
-  cat > "$OUTDIR/secrets_template/noc_profiles.template.json" <<'JSON'
-{
-  "<YOUR_PROFILE_NAME>": {
-    "base": "https://<your-noc-endpoint>",
-    "email": "<your-email>",
-    "password": "<your-password>"
-  }
-}
-JSON
+## Step 1：匯出（舊機器）
 
-  echo "ACTION REQUIRED: customer must fill noc_profiles.json (do NOT ship real secrets)." > "$OUTDIR/secrets_template/README.txt"
-fi
+### 1.1 下載腳本
 
-echo "[7/7] Pack + sha256"
-( cd "$OUTDIR" && tar -czf "$PKG" . )
-sha256sum "$PKG" > "${PKG}.sha256" || shasum -a 256 "$PKG" > "${PKG}.sha256"
+下載 `charter_migration_export.sh` 並放到 `/home/da40/charter/`
 
-echo "OK: $PKG"
-```
-
-執行：
+### 1.2 執行匯出腳本
 
 ```bash
+# 放到正確位置
 chmod +x /home/da40/charter/charter_migration_export.sh
+
+# 執行（會產生 charter_migration_YYYYMMDD_HHMMSS.tgz）
 /home/da40/charter/charter_migration_export.sh
 ```
 
-產出 `charter_migration_*.tgz` 後，用 `scp` 搬到新機器。
+### 1.3 產生的檔案
+
+```
+charter-migration-YYYYMMDD_HHMMSS/
+├── apps/              # API + Web
+├── tools/             # 工具腳本
+├── scripts/           # 測試腳本
+├── charter-api.service # Systemd 服務檔
+├── charter-web.service
+└── ...
+charter_migration_YYYYMMDD_HHMMSS.tgz   ← 壓縮檔
+charter_migration_YYYYMMDD_HHMMSS.tgz.sha256  ← 驗證碼
+```
+
+### 1.4 搬到新機器
+
+```bash
+scp -r charter-migration-YYYYMMDD_HHMMSS da40@新機器IP:/home/da40/
+```
 
 ---
 
-## 2) Import（在新機器 / 新 VM）
+## Step 2：匯入（新機器）
 
-把下面存成：`/home/da40/charter_migration_import.sh`
+### 2.1 確認環境
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
+# 檢查系統
+cat /etc/os-release
 
-PKG=${1:?"Usage: $0 charter_migration_XXXX.tgz"}
-WORK=/home/da40/charter_migration_work
+# 安裝必要軟體
+sudo apt update
+sudo apt install -y postgresql python3-pip curl jq git
+sudo apt install -y nodejs npm
+pip install psycopg2-binary fastapi uvicorn
+```
 
-echo "[1/8] Prepare dirs"
-mkdir -p "$WORK"
-mkdir -p /home/da40/charter/apps /home/da40/charter/tools
+### 2.2 安裝 PostgreSQL
 
-echo "[2/8] Unpack"
-tar -xzf "$PKG" -C "$WORK"
-
-echo "[3/8] Place apps/tools"
-rm -rf /home/da40/charter/apps/api /home/da40/charter/apps/web /home/da40/charter/tools
-mv "$WORK/apps_api" /home/da40/charter/apps/api
-mv "$WORK/apps_web" /home/da40/charter/apps/web
-mv "$WORK/tools"    /home/da40/charter/tools
-
-echo "[4/8] Install systemd units"
-sudo cp -a "$WORK"/*.service /etc/systemd/system/ 2>/dev/null || true
-sudo cp -a "$WORK"/*.timer   /etc/systemd/system/ 2>/dev/null || true
-if test -d "$WORK/charter-api.service.d"; then
-  sudo mkdir -p /etc/systemd/system/charter-api.service.d
-  sudo cp -a "$WORK/charter-api.service.d"/* /etc/systemd/system/charter-api.service.d/
-fi
-
-echo "[5/8] Install cpe-metrics-agent env (review before enable)"
-if test -f "$WORK/cpe-metrics-agent"; then
-  sudo cp -a "$WORK/cpe-metrics-agent" /etc/default/cpe-metrics-agent
-fi
-
-echo "[6/8] Postgres (A: clean DB)"
-# A) 乾淨建 DB（交付推薦）
+```bash
 sudo systemctl enable --now postgresql
-sudo -iu postgres psql -c "CREATE USER rg WITH PASSWORD 'rg';" || true
-sudo -iu postgres psql -c "CREATE DATABASE rg OWNER rg;" || true
-sudo -iu postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rg TO rg;" || true
 
-# B) 若有 rg.dump，且你要保留 runs/history：
-# sudo -iu postgres pg_restore -d rg "$WORK/rg.dump"
-
-echo "[7/8] Reload + start services"
-sudo systemctl daemon-reload
-
-# 建議啟動順序（同 controlpc）
-sudo systemctl enable --now charter-api.service
-sudo systemctl enable --now charter-worker.service
-sudo systemctl enable --now cpe-metrics-agent.service
-sudo systemctl enable --now cpe-status-probe.timer
-sudo systemctl enable --now charter-web.service
-sudo systemctl enable --now pbr-watchdog.service
-
-echo "[8/8] Health check"
-curl -sS http://127.0.0.1:5173/api/health || true
-sudo systemctl status charter-api.service charter-worker.service charter-web.service --no-pager || true
-
-echo "DONE"
+sudo -iu postgres psql -c "CREATE USER rg WITH PASSWORD 'rg';"
+sudo -iu postgres psql -c "CREATE DATABASE rg OWNER rg;"
+sudo -iu postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rg TO rg;"
 ```
 
-執行：
+### 2.3 下載並執行腳本
 
 ```bash
+# 下載 charter_migration_import.sh 並放到 /home/da40/
 chmod +x /home/da40/charter_migration_import.sh
-/home/da40/charter_migration_import.sh /home/da40/charter_migration_XXXX.tgz
+
+# 執行匯入
+/home/da40/charter_migration_import.sh /home/da40/charter-migration-YYYYMMDD_HHMMSS/
+```
+
+### 2.4 驗證成功
+
+```bash
+# 檢查服務狀態
+curl http://127.0.0.1:8080/api/health
+# 預期：{"ok":true}
+
+curl http://127.0.0.1:5173/api/health
+# 預期：{"ok":true}
 ```
 
 ---
 
-## 3) 交付前必做 checklist
+## Step 3：設定 Secrets
 
-- [ ] 確認 `DATABASE_URL`（systemd drop-in）在新機器仍正確。
-- [ ] 檢查 `/etc/default/cpe-metrics-agent`：serial device/iface/password/interval。
-- [ ] 確認 `.secrets/noc_profiles.json` 由對方填入（不要交付明文）。
-- [ ] `systemctl status ...` 全綠。
-- [ ] `curl http://<CONTROL_PC_IP>:5173/api/health` 回 `{"ok":true}`。
+> **重要**：不要直接用舊的 secrets，要重新設定！
+
+### 3.1 填入 NOC 設定
+
+從舊機器複製或編輯：
+```bash
+nano /home/da40/charter/.secrets/noc_profiles.json
+```
+
+格式：
+```json
+{
+  "SPECTRUM_INT": {
+    "base": "https://piranha-int.tau.dev-charter.net",
+    "email": "your-email@example.com",
+    "password": "your-password"
+  }
+}
+```
+
+### 3.2 填入 DUT 設定
+
+```bash
+nano /home/da40/charter/.secrets/dut.env
+```
+
+格式：
+```
+WAREHOUSE_ID=YourWarehouseID
+WAREHOUSE_PASSWORD=YourPassword
+SSH_PASSWORD=YourPassword
+```
+
+### 3.3 重啟服務
+
+```bash
+sudo systemctl restart charter-api
+sudo systemctl restart charter-web
+```
+
+---
+
+## ⚠️ 常見問題
+
+| 問題 | 解決方式 |
+|------|----------|
+| 服務啟動失敗 | 檢查 `journalctl -u charter-api -n 50` |
+| 連線失敗 | 確認防火牆開啟 5173/8080/8000 port |
+| Secrets 錯誤 | 檢查 `.secrets/noc_profiles.json` 格式 |
+| DB 連不到 | 確認 PostgreSQL 正在執行 |
+
+---
+
+## ✅ 交付檢查清單
+
+| 項目 | 確認 |
+|------|------|
+| API 可連 | `curl http://127.0.0.1:8080/api/health` 回 `{"ok":true}` |
+| Web UI 可連 | `curl http://127.0.0.1:5173/` 回 HTML |
+| Worker 正常 | `curl http://127.0.0.1:5173/api/runs/worker/status` |
+| Secrets 已設定 | `.secrets/noc_profiles.json` 已填入 |
+| NOC 可連 | 執行一支測試確認 |
+
+---
+
+## 📞 支援
+
+- 文件站：http://172.14.1.140:8000/
+- 相關頁面：[/getting_started/platform_install/](../getting_started/platform_install/)、[/environment_template/](../environment_template/)

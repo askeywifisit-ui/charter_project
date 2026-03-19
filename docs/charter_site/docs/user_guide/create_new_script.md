@@ -181,4 +181,4 @@ curl -fsSL "$CHARTER_BASE/api/runs/$RID/log-archive" -o run_${RID}_cpe_log.tar.g
 
 - [Modify Script Code](modify_script_code/)
 - [Scripts 管理](scripts/)
-- [腳本修改 SOP（入口）](script_change_sop/)
+- [腳本修改 SOP](script_change_sop/)

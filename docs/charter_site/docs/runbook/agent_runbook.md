@@ -1,40 +1,143 @@
-# Agent Runbook（給 AI/自動化助理）
+# Agent Runbook（OpenClaw 測試助理專用）
 
-目標：讓 Agent 以最少背景知識也能「照做必成功」。本頁刻意偏結構化、可複製貼上。
+> 目標：讓 AI 助理以最少背景知識也能「照做必成功」。
 
-## 核心原則
+---
 
-- **平台參數以 systemd env 為準**；`manifest.yaml` 只提供 defaults，不可寫死平台值（WIFI_IFACE / PDU / CPE_DEV / PING_IFACE / TEST_PROFILE…）。
-- 高風險動作（import/purge/stop/clear queue）要在紀錄中留下 run_id / 變更內容 / 備份檔名。
+## 🎯 我是誰？
 
-## 重要連結
+| 問題 | 答案 |
+|------|------|
+| 這是什麼？ | Charter 平台操作手冊 |
+| 誰要看？ | OpenClaw AI 助理 |
+| 怎麼用？ | 照著指令複製貼上 |
 
-- UI：`http://172.14.1.140:5173/`
-- API base：`http://172.14.1.140:5173/api`
+---
 
-## 常用 API（最短路徑）
+## ⚠️ 核心原則
 
-> 以平台提供的 CLI 或直接呼叫 API 均可；此處以既有 `charter_api_cli.py` 表達。
+1. **平台參數以 systemd env 為準**
+   - `manifest.yaml` 只提供 defaults
+   - 不可寫死：WIFI_IFACE / PDU / CPE_DEV / PING_IFACE / TEST_PROFILE
 
-- 列 scripts：`python3 charter_api_cli.py scripts list`
-- 找 script：`python3 charter_api_cli.py scripts find --suite <suite> --name <name>`
-- 跑 script：`python3 charter_api_cli.py scripts run --suite <suite> --name <name>`
-- 列 runs：`python3 charter_api_cli.py runs list --limit 50`
-- 抓 log：`python3 charter_api_cli.py runs log --run-id <rid>`
-- purge finished：`python3 charter_api_cli.py runs purge --older-than-days 0`
+2. **高風險動作要記錄**
+   - import / purge / stop / clear queue
+   - 必須留下：run_id、變更內容、備份檔名
 
-## Wi‑Fi 常見故障定位（iwd）
+---
 
-- 現象：可連 SSID、可 ping router，但 ping internet 失敗
-  - 優先看：Wi‑Fi iface 是否缺 IPv4 default route（工具 `wifi_iwd.py` 已有補 default route 的修正邏輯）。
-- 現象：腳本選到 `wlan0` 但實體是 `wlx...`
-  - 正解：在 `charter-worker.service` 設 `WIFI_IFACE=<實際 iface>`；腳本不要硬寫。
+## 📍 重要連結
 
-## 交付紀錄（Agent 必填）
+| 服務 | 網址 |
+|------|------|
+| Control UI | http://172.14.1.140:5173/ |
+| API Base | http://172.14.1.140:5173/api |
+| 文件站 | http://172.14.1.140:8000/ |
 
-每次你做了會影響平台狀態的事情，至少留下：
-- 日期/時間
-- 影響範圍（suite/script/run_id）
-- 你改了什麼（檔案路徑 + 備份名/sha）
-- 重跑驗證 run_id + PASS/FAIL
+---
 
+## 📋 常用指令（複製貼上）
+
+### 查詢腳本
+
+```bash
+# 列出所有腳本
+curl -sS "http://172.14.1.140:5173/api/scripts?limit=100" | jq .
+
+# 找特定腳本（用名稱）
+curl -sS "http://172.14.1.140:5173/api/scripts?suite=sanity&q=DHCP" | jq .
+
+# 用 script_id 查
+curl -sS "http://172.14.1.140:5173/api/scripts/5225" | jq .
+```
+
+### 執行腳本
+
+```bash
+# 執行腳本
+curl -sS -X POST "http://172.14.1.140:5173/api/scripts/5225/run" | jq .
+
+# 看執行結果
+curl -sS "http://172.14.1.140:5173/api/runs?limit=10" | jq .
+```
+
+### 看 Log
+
+```bash
+# 下載 log
+curl -sS "http://172.14.1.140:5173/api/runs/7500/log" -o run_7500_log.json
+
+# 看狀態
+curl -sS "http://172.14.1.140:5173/api/runs/7500" | jq .
+```
+
+### 清理
+
+```bash
+# 清理已完成 runs（全部）
+curl -sS -X DELETE "http://172.14.1.140:5173/api/runs/purge?older_than_days=0" | jq .
+
+# 清理 7 天前
+curl -sS -X DELETE "http://172.14.1.140:5173/api/runs/purge?older_than_days=7" | jq .
+```
+
+### Import / Export
+
+```bash
+# Export 腳本
+curl -sS "http://172.14.1.140:5173/api/scripts/5225/export" -o backup.zip
+
+# Import 腳本
+curl -sS -X POST "http://172.14.1.140:5173/api/scripts/import2" \
+  -F "suite=sanity" \
+  -F "file=@./my_script.zip" | jq .
+
+# Delete 腳本
+curl -sS -X DELETE "http://172.14.1.140:5173/api/scripts/5225" | jq .
+```
+
+---
+
+## 🔧 Wi-Fi 故障定位（iwd）
+
+### 問題：可連 SSID、可 ping router，但 ping internet 失敗
+
+**優先檢查**：Wi-Fi iface 是否缺 IPv4 default route
+
+**解決**：`wifi_iwd.py` 已有補 default route 的邏輯
+
+### 問題：腳本選到 `wlan0` 但實體是 `wlx...`
+
+**正解**：在 `charter-worker.service` 設 `WIFI_IFACE=<實際 iface>`
+
+---
+
+## 📝 交付紀錄（必填）
+
+每次做了影響平台狀態的事，至少留下：
+
+| 欄位 | 範例 |
+|------|------|
+| 日期/時間 | 2026-03-18 14:00 |
+| 影響範圍 | suite=sanity, script_id=5225 |
+| 改了什麼 | 改了 manifest.yaml CYCLES=3 |
+| 備份檔名 | backup_5225_20260318.zip |
+| 驗證結果 | run_id=7500, PASS |
+
+---
+
+## ❓ 遇到問題？
+
+| 問題 | 處理 |
+|------|------|
+| Worker 沒反應 | 檢查 `journalctl -u charter-worker.service` |
+| Run 一直 queue | 確認 worker 狀態 `/api/runs/worker/status` |
+| DUPLICATE 錯誤 | Import 前先刪除同名 script |
+| Log 抓不到 | 確認 run 已經 finished |
+
+---
+
+## 📞 支援
+
+- 文件站：http://172.14.1.140:8000/
+- 相關頁面：/user_guide/runs/, /user_guide/scripts/

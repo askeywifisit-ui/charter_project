@@ -235,6 +235,6 @@ ls -lh run_${RID}_log.json
 
 ## 下一步（相關頁面）
 
-- Scripts 管理（概念 + UI 截圖）：[Scripts 管理](scripts/)
-- Modify Script Code（詳細版）：[Modify Script Code](modify_script_code/)
-- Runs 操作（API 速查）：[Runs 操作](runs/)
+- Scripts 管理（概念 + UI 截圖）：[Scripts 管理](/user_guide/scripts/
+- Modify Script Code（詳細版）：[Modify Script Code](/user_guide/modify_script_code/
+- Runs 操作（API 速查）：[Runs 操作](/user_guide/runs/
