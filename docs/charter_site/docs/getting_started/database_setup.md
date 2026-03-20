@@ -6,21 +6,19 @@
 
 ## 📋 取得 Schema 檔案
 
-### 方式 1：從交付包取得（推薦）⭐
-
-交付包中已附帶 `rg_schema_only.sql`，解壓後即可使用：
+### 方式 1：從 GitHub 下載（推薦）⭐
 
 ```bash
-# 解壓 charter_tools.tar.gz
-tar -xzf charter_tools.tar.gz
-# Schema 檔案在 tools/ 目錄下
+curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql
 ```
 
-### 方式 2：從 GitHub 下載
+### 方式 2：從交付包取得
+
+如果交付包中有獨立的 `rg_schema_only.sql` 檔案，直接使用該檔案。
 
 ```bash
-# 下載 schema（直接連結）
-curl -O https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql
+# 匯入 schema
+sudo -iu postgres psql -d rg -f rg_schema_only.sql
 ```
 
 ---

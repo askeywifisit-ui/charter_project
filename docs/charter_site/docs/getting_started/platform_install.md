@@ -16,11 +16,7 @@
 | [📦 charter_web.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_201313.tar.gz) | ~23MB | Web UI 程式 |
 | [📦 charter_tools.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz) | ~264KB | 工具腳本 |
 | [📦 charter_systemd.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_systemd_units_11F_140_20260311_105846.tar.gz) | ~1KB | Systemd 設定 |
-| [📄 rg_schema_only.sql](https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql) | ~14KB | 資料庫 Schema |
-
-> 📌 `charter_tools.tar.gz` 中也包含 `rg_schema_only.sql`（資料庫 Schema）
-
-> 📌 或從 [GitHub Packages 頁面](https://github.com/askeywifisit-ui/charter_project/tree/main/packages) 下載所有檔案
+| [📄 rg_schema_only.sql](https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql) | ~14KB | 資料庫 Schema（從 database 資料夾下載） |
 
 ---
 
