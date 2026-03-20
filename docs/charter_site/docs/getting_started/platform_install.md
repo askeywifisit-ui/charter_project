@@ -15,7 +15,7 @@
 | [📦 charter_api.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_api_20260310_201313.tar.gz) | ~30MB | API 程式 |
 | [📦 charter_web.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_201313.tar.gz) | ~23MB | Web UI 程式 |
 | [📦 charter_tools.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz) | ~264KB | 工具腳本 |
-| [📦 charter_systemd_units.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_systemd_units_20260320.tar.gz) | ~2KB | Systemd 設定（含 10-db.conf） |
+| [📦 charter_systemd_units.tar.gz](http://172.14.1.140:8000/assets/systemd/charter_systemd_units_11F_140_20260320.tar.gz) | ~2KB | Systemd 設定（含 10-db.conf） |
 | [📄 rg_schema_only.sql](https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql) | ~14KB | 資料庫 Schema（從 database 資料夾下載） |
 
 ---
@@ -34,10 +34,8 @@ scp -r da40@舊機器IP:/home/da40/charter /home/da40/
 /home/da40/charter/
 ├── apps/
 │   ├── api/                   # FastAPI 後端（含 .venv）
-│   ├── api_bad_YYYYMMDD_*/  # 舊版 API（備份）
 │   ├── web/                  # Vite Web UI（含 node_modules, src/）
-│   ├── web_bad_YYYYMMDD_*/ # 舊版 Web（備份）
-│   └── web_bak_YYYYMMDD_*/ # 舊版 Web（備份）
+│   └── ...                   # 其他備份目錄（忽略）
 ├── tools/                     # 工具腳本
 │   ├── cpe_console          # CPE Console 工具
 │   ├── cpe_console_serial.py
@@ -138,14 +136,24 @@ sudo -iu postgres psql -d rg -f ~/charter/tools/rg_schema_only.sql
 ### Step 6️⃣ - 啟動服務
 
 ```bash
-# 啟動所有服務
-sudo systemctl enable charter-api
-sudo systemctl enable charter-web
-sudo systemctl enable charter-worker
+# 啟動並啟用所有服務
+sudo systemctl daemon-reload
 
-sudo systemctl start charter-api
-sudo systemctl start charter-web
-sudo systemctl start charter-worker
+sudo systemctl enable \
+  charter-api \
+  charter-web \
+  charter-worker \
+  cpe-metrics-agent \
+  cpe-status-probe.timer \
+  pbr-watchdog
+
+sudo systemctl restart \
+  charter-api \
+  charter-web \
+  charter-worker \
+  cpe-metrics-agent \
+  cpe-status-probe.timer \
+  pbr-watchdog
 ```
 
 ---
@@ -157,6 +165,9 @@ sudo systemctl start charter-worker
 | Web UI | 5173 | http://新機器IP:5173 |
 | API | 8080 | http://新機器IP:8080 |
 | 文件站 | 8000 | http://新機器IP:8000 |
+| CPE Metrics Agent | - | 收集 CPE 監控數據 |
+| CPE Status Probe | - | 定時探測 CPE 狀態 |
+| PBR Watchdog | - | 維護 PBR 路由表 |
 
 ---
 
