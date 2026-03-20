@@ -157,12 +157,21 @@ sudo cp /etc/systemd/system/cpe-status-probe.service .
 
 ```bash
 sudo systemctl daemon-reload
+sudo systemctl enable \
+  charter-api \
+  charter-web \
+  charter-worker \
+  cpe-metrics-agent \
+  cpe-status-probe.timer \
+  pbr-watchdog
+
 sudo systemctl restart \
   charter-api \
   charter-web \
   charter-worker \
   cpe-metrics-agent \
-  cpe-status-probe
+  cpe-status-probe.timer \
+  pbr-watchdog
 ```
 
 ---
