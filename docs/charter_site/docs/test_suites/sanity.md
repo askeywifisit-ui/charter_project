@@ -2,6 +2,10 @@
 
 > ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
 
+**測試帳號（僅供下載用）：**
+- **GitHub ID**：`testcharter`
+- **GitHub Password**：`Askey#*c1234`
+
 
 
 ---
