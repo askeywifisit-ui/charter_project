@@ -135,7 +135,25 @@ nano /home/da40/charter/.secrets/dut.env
 
 ---
 
-## Step 5️⃣：啟動服務
+## Step 5️⃣：複製 Systemd 服務
+
+```bash
+cd /home/da40
+sudo cp /etc/systemd/system/charter-api.service .
+sudo cp -r /etc/systemd/system/charter-api.service.d .
+sudo cp /etc/systemd/system/charter-web.service .
+sudo cp /etc/systemd/system/charter-worker.service .
+sudo cp /etc/systemd/system/cpe-metrics-agent.service .
+sudo cp /etc/systemd/system/pbr-watchdog.service .
+sudo cp /etc/systemd/system/cpe-status-probe.timer .
+sudo cp /etc/systemd/system/cpe-status-probe.service .
+```
+
+> ⚠️ `charter-api.service.d/` 包含資料庫連線設定（`10-db.conf`），確認內容正確後再啟動服務。
+
+---
+
+## Step 6️⃣：啟動服務
 
 ```bash
 sudo systemctl daemon-reload
