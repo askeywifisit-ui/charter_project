@@ -137,6 +137,7 @@ nav:
   - Hand-off（交付外部單位）:
       - Overview: handoff/index.md
       - OpenClaw Charter Ops Pack（少問、直接做）: handoff/openclaw_charter_ops_pack.md
+      - 下載交付包（Downloads）: handoff/downloads.md
       - 平台移植腳本（Export/Import）: handoff/migration_scripts.md
       - NOC Profile / Secrets: handoff/noc_profile_secrets.md
       - 網卡判定指南: handoff/network_iface_guide.md
