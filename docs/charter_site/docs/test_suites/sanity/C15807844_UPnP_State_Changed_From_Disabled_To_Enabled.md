@@ -1,5 +1,7 @@
 # C15807844_UPnP_State_Changed_From_Disabled_To_Enabled
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 UPnP 開測試
 
 ---

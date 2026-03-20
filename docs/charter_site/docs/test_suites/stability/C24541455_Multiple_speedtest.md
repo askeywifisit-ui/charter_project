@@ -1,5 +1,7 @@
 # C24541455_Multiple_speedtest
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 多次 Speedtest（Stability）
 
 ---

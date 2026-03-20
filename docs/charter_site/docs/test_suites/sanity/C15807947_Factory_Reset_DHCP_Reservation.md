@@ -1,5 +1,7 @@
 # C15807947_Factory_Reset_DHCP_Reservation
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 DHCP Reservation 重設測試
 
 ---

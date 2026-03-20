@@ -1,5 +1,7 @@
 # C15807173_Test_Upnp_discovery
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 UPnP 探索測試
 
 ---

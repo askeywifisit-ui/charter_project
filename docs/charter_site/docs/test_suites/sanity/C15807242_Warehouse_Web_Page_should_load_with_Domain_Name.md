@@ -1,5 +1,7 @@
 # C15807242_Warehouse_Web_Page_should_load_with_Domain_Name
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 Warehouse 網域測試
 
 ---

@@ -1,5 +1,7 @@
 # C15807061_WAN_IPv6_Connectivity
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 WAN IPv6 連線測試
 
 ---

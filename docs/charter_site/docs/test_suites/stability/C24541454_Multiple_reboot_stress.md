@@ -1,5 +1,7 @@
 # C24541454_Multiple_reboot_stress
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 多次重啟壓力測試（Stability）
 
 ---

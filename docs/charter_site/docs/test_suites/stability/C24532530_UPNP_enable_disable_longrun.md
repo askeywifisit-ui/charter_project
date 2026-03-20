@@ -1,5 +1,7 @@
 # C24532530_UPNP_enable_disable_longrun
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 UPnP 開關長跑（Stability）
 
 ---

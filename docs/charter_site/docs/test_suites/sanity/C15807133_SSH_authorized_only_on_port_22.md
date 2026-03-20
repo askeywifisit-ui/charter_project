@@ -1,5 +1,7 @@
 # C15807133_SSH_authorized_only_on_port_22
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH Port 測試
 
 ---

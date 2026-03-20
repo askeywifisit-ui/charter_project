@@ -1,5 +1,7 @@
 # C15807128_SSH_allowed_local_IP_from_LAN_Client
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH LAN IP 測試
 
 ---

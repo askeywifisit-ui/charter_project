@@ -1,5 +1,7 @@
 # A2435637_Continuously_executing_FactoryReset
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 持續 Factory Reset（Stability）
 
 ---

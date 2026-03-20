@@ -1,5 +1,7 @@
 # C15806945_WiFi_radio_enable_disable_longrun
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 WiFi Radio 開關長跑測試（Stability）
 
 ---

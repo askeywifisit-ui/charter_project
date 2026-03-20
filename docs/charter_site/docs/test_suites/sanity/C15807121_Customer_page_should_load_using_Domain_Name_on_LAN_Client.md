@@ -1,5 +1,7 @@
 # C15807121_Customer_page_should_load_using_Domain_Name_on_LAN_Client
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 Customer Page 網域測試
 
 ---

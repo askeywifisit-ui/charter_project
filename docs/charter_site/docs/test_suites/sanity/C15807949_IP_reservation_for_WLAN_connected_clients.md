@@ -1,5 +1,7 @@
 # C15807949_IP_reservation_for_WLAN_connected_clients
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 WLAN IP Reservation 測試
 
 ---

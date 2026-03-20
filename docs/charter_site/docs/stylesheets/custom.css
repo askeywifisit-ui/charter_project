@@ -1,0 +1,60 @@
+/* Custom Typography for Charter Docs */
+
+/* Root variables for consistent fonts */
+:root {
+    --md-text-font: "PingFang TC", "Microsoft JhengHei", "Heiti TC", "Source Han Sans TC", sans-serif;
+    --md-code-font: "Menlo", "Consolas", "Source Code Pro", monospace;
+}
+
+/* Apply consistent font to all text */
+body, .md-typeset {
+    font-family: var(--md-text-font) !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Headings - consistent weight */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+    font-family: var(--md-text-font) !important;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* Chinese text in headings - same weight */
+.md-typeset h1,
+.md-typeset h2 {
+    font-weight: 700;
+}
+
+/* Code blocks - proper monospace */
+.md-typeset code,
+.md-typeset pre,
+.md-typeset .codehilite {
+    font-family: var(--md-code-font) !important;
+    font-size: 0.875em;
+}
+
+/* Tables - consistent font */
+.md-typeset table {
+    font-family: var(--md-text-font) !important;
+}
+
+/* Links - consistent styling */
+.md-typeset a {
+    color: #0066CC;
+    text-decoration: none;
+}
+
+.md-typeset a:hover {
+    text-decoration: underline;
+}
+
+/* Ensure emoji and icons display properly */
+.md-typeset .emojis {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}

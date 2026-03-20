@@ -1,5 +1,7 @@
 # C00000003_WIFI_basic_test
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 WiFi 基本連線測試
 
 ---

@@ -1,5 +1,7 @@
 # C6376350_WiFi_radio_enable_disable-xtime
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 WiFi Radio 開關長跑（Stability）
 
 ---

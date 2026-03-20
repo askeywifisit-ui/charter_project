@@ -1,5 +1,7 @@
 # C15807129_SSH_allowed_WAN_IP_from_LAN_Client_profile
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH WAN IP 測試
 
 ---

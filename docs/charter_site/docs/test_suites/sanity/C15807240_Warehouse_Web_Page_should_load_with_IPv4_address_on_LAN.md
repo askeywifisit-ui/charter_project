@@ -1,5 +1,7 @@
 # C15807240_Warehouse_Web_Page_should_load_with_IPv4_address_on_LAN
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 Warehouse IPv4 測試
 
 ---

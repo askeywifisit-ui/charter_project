@@ -1,5 +1,7 @@
 # A2435635_Continuously_executing_speedtest
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 持續 Speedtest（Stability）
 
 ---

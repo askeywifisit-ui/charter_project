@@ -1,5 +1,7 @@
 # C15807139_SSH_should_be_allowed_to_WAN_from_operator_facing_client
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH WAN 測試
 
 ---

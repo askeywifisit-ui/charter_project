@@ -1,5 +1,7 @@
 # C15807134_SSH_only_1_session_per_username
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH 單一 Session 測試
 
 ---

@@ -1,5 +1,7 @@
 # Tools（工具模組）
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 Charter 平台工具位於 `/home/da40/charter/tools`。
 
 ---

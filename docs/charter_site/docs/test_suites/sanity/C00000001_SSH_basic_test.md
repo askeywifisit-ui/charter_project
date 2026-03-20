@@ -1,5 +1,7 @@
 # C00000001_SSH_basic_test
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH 行為/權限驗證（allow/deny/port/session/credential 等）
 
 ---

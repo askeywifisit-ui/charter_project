@@ -1,5 +1,7 @@
 # C15806953_Router_resolves_the_DNS_queries_using_IPv4
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 DNS 查詢測試（IPv4）
 
 ---

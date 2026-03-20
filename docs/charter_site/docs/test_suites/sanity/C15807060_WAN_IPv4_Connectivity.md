@@ -1,5 +1,7 @@
 # C15807060_WAN_IPv4_Connectivity
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 WAN IPv4 連線測試
 
 ---

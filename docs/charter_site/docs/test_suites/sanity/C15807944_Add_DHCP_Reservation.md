@@ -1,5 +1,7 @@
 # C15807944_Add_DHCP_Reservation
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 DHCP Reservation 新增測試
 
 ---

@@ -1,5 +1,7 @@
 # C4123492_IPv4_Stability_Test_from_LAN_Client
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 IPv4 穩定性測試（Stability）
 
 ---

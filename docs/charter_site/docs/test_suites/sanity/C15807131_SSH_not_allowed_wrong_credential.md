@@ -1,5 +1,7 @@
 # C15807131_SSH_not_allowed_wrong_credential
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH 錯誤密碼測試
 
 ---

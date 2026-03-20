@@ -1,5 +1,7 @@
 # C15806902_WLAN_Client_connects_successfully_over_Default_SSID
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 WLAN Client 連線測試
 
 ---

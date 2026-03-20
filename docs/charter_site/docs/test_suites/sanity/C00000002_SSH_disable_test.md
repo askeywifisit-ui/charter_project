@@ -1,5 +1,7 @@
 # C00000002_SSH_disable_test
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 SSH 關閉測試
 
 ---

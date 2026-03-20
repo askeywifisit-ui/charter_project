@@ -1,5 +1,7 @@
 # 平台安裝 / 移植
 
+> ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+
 > 本頁說明如何在新機器上安裝 Charter 測試平台。
 
 ---
@@ -21,10 +23,10 @@
 
 | 檔案 | 大小 | 說明 |
 |:-----|:----:|:-----|
-| [📦 charter_api.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_api_20260310_201313.tar.gz) | ~30MB | API 程式 |
-| [📦 charter_web.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_201313.tar.gz) | ~23MB | Web UI 程式 |
-| [📦 charter_tools.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz) | ~264KB | 工具腳本 |
-| [📦 charter_systemd_units.tar.gz](http://172.14.1.140:8000/assets/systemd/charter_systemd_units_11F_140_20260320.tar.gz) | ~2KB | Systemd 設定 |
+| [📦 charter_api.tar.gz](https://github.com/askeywifisit-ui/charter_project/releases/download/v1.0.0/charter_api.tar.gz) | ~30MB | API 程式 |
+| [📦 charter_web.tar.gz](https://github.com/askeywifisit-ui/charter_project/releases/download/v1.0.0/charter_web.tar.gz) | ~23MB | Web UI 程式 |
+| [📦 charter_tools.tar.gz](https://github.com/askeywifisit-ui/charter_project/releases/download/v1.0.0/charter_tools.tar.gz) | ~264KB | 工具腳本 |
+| [📦 charter_systemd_units.tar.gz](https://github.com/askeywifisit-ui/charter_project/releases/download/v1.0.0/charter_systemd_units.tar.gz) | ~2KB | Systemd 設定 |
 
 ### 方式 2：從舊機器複製
 
