@@ -6,19 +6,14 @@
 
 ## 📥 下載交付包
 
-### 方式 1：從 GitHub 下載 ⭐（推薦）
-
-直接點擊下載：
+### 方式 1：從 GitHub 下載（推薦）
 
 | 檔案 | 大小 | 說明 |
 |:-----|:----:|:-----|
 | [📦 charter_api.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_api_20260310_201313.tar.gz) | ~30MB | API 程式 |
 | [📦 charter_web.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_web_20260310_201313.tar.gz) | ~23MB | Web UI 程式 |
 | [📦 charter_tools.tar.gz](https://github.com/askeywifisit-ui/charter_project/raw/main/packages/charter_tools_20260310_201313.tar.gz) | ~264KB | 工具腳本 |
-| [📦 charter_systemd_units.tar.gz](http://172.14.1.140:8000/assets/systemd/charter_systemd_units_11F_140_20260320.tar.gz) | ~2KB | Systemd 設定（含 10-db.conf） |
-| [📄 rg_schema_only.sql](https://github.com/askeywifisit-ui/charter_project/raw/main/database/rg_schema_only.sql) | ~14KB | 資料庫 Schema（從 database 資料夾下載） |
-
----
+| [📦 charter_systemd_units.tar.gz](http://172.14.1.140:8000/assets/systemd/charter_systemd_units_11F_140_20260320.tar.gz) | ~2KB | Systemd 設定 |
 
 ### 方式 2：從舊機器複製
 
@@ -34,8 +29,7 @@ scp -r da40@舊機器IP:/home/da40/charter /home/da40/
 /home/da40/charter/
 ├── apps/
 │   ├── api/                   # FastAPI 後端（含 .venv）
-│   ├── web/                  # Vite Web UI（含 node_modules, src/）
-│   └── ...                   # 其他備份目錄（忽略）
+│   └── web/                  # Vite Web UI（含 node_modules, src/）
 ├── tools/                     # 工具腳本
 │   ├── cpe_console          # CPE Console 工具
 │   ├── cpe_console_serial.py
@@ -77,13 +71,9 @@ sudo apt install -y \
   postgresql postgresql-contrib \
   git unzip curl jq \
   build-essential \
-  postgresql-client
+  postgresql-client \
+  nodejs npm
 
-# 安裝 Node.js（20.x 或 22.x）
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
-
-# 安裝 pnpm
 npm install -g pnpm
 
 # 驗證
@@ -107,31 +97,51 @@ sudo usermod -aG dialout da40   # 序列埠權限
 sudo systemctl enable --now postgresql
 
 # 建立資料庫和用戶
-sudo -iu postgres psql -c "CREATE USER rg WITH PASSWORD 'rg';"
-sudo -iu postgres psql -c "CREATE DATABASE rg OWNER rg;"
-sudo -iu postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE rg TO rg;"
+sudo -iu postgres psql << 'EOF'
+CREATE USER rg WITH PASSWORD 'rg';
+CREATE DATABASE rg OWNER rg;
+GRANT ALL PRIVILEGES ON DATABASE rg TO rg;
+\q
+EOF
 ```
 
 ### Step 4️⃣ - 解壓交付包
 
 ```bash
-cd ~
+cd /home/da40
 mkdir -p charter
 tar -xzf charter_api.tar.gz -C charter/
 tar -xzf charter_web.tar.gz -C charter/
 tar -xzf charter_tools.tar.gz -C charter/
-tar -xzf charter_systemd.tar.gz -C /etc/systemd/system/
-
-# 重新載入 systemd
-sudo systemctl daemon-reload
+tar -xzf charter_systemd_units.tar.gz -C /etc/systemd/system/
 ```
 
-### Step 5️⃣ - 匯入資料庫
+### Step 5️⃣ - 設定 CPE Metrics Agent
+
+> ⚠️ 不同機器的 USB Serial 設備不同！
 
 ```bash
-# 匯入 schema（交付包中已附帶）
-sudo -iu postgres psql -d rg -f ~/charter/tools/rg_schema_only.sql
+# 建立設定檔
+sudo nano /etc/default/cpe-metrics-agent
 ```
+
+內容：
+```ini
+CPE_AGENT_API=http://127.0.0.1:8080
+CPE_BAUD=115200
+CPE_USER=root
+CPE_IFACE=eth0
+INTERVAL=10
+RUN_ID=0
+WITH_WIFI=1
+WITH_RADIO=1
+```
+
+| 參數 | 說明 | 備註 |
+|------|------|------|
+| CPE_SERIAL | USB Serial 設備 | 不設定則自動偵測 |
+| CPE_BAUD | 鮑率 | 預設 115200 |
+| CPE_IFACE | 連接 CPE 的網卡 | 如 eth0, eno2 |
 
 ### Step 6️⃣ - 啟動服務
 
@@ -165,19 +175,6 @@ sudo systemctl restart \
 | Web UI | 5173 | http://新機器IP:5173 |
 | API | 8080 | http://新機器IP:8080 |
 | 文件站 | 8000 | http://新機器IP:8000 |
-| CPE Metrics Agent | - | 收集 CPE 監控數據 |
-| CPE Status Probe | - | 定時探測 CPE 狀態 |
-| PBR Watchdog | - | 維護 PBR 路由表 |
-
----
-
-## ⚠️ 常見問題
-
-| 問題 | 解決方式 |
-|------|----------|
-| 資料庫連線錯誤 | 檢查 PostgreSQL 是否啟動：`sudo systemctl status postgresql` |
-| API 無法啟動 | 檢查 .secrets/noc_profiles.json 是否存在 |
-| Web UI 空白 | 檢查 API 是否正常運作在 port 8080 |
 
 ---
 
@@ -188,15 +185,83 @@ sudo systemctl restart \
 sudo systemctl restart charter-api
 sudo systemctl restart charter-web
 sudo systemctl restart charter-worker
+sudo systemctl restart cpe-metrics-agent
+sudo systemctl restart cpe-status-probe.timer
+sudo systemctl restart pbr-watchdog
 
-# 查看服務狀態
-sudo systemctl status charter-api
-sudo systemctl status charter-web
-sudo systemctl status charter-worker
+# 查看所有服務狀態
+sudo systemctl status charter-api charter-web charter-worker cpe-metrics-agent cpe-status-probe.timer pbr-watchdog
 
 # 查看日誌
 sudo journalctl -u charter-api -f
 sudo journalctl -u charter-web -f
+sudo journalctl -u charter-worker -f
+sudo journalctl -u cpe-metrics-agent -f
+```
+
+---
+
+## 🔧 換環境時需要修改的設定
+
+### 網卡設定（PBR Watchdog）
+
+不同機器的網卡介面不同，修改 `/etc/systemd/system/pbr-watchdog.service.d/override.conf`：
+
+| 機器 | 介面 | SRC IP |
+|------|-------|--------|
+| 131 | enx00e04c6809c3 | 192.168.1.2 |
+| 140 | eno2 | 192.168.1.2 |
+| 200 | enp3s0 | 192.168.1.2 |
+
+```bash
+# 建立 override 目錄
+sudo mkdir -p /etc/systemd/system/pbr-watchdog.service.d
+
+# 編輯設定
+sudo nano /etc/systemd/system/pbr-watchdog.service.d/override.conf
+```
+
+內容：
+```ini
+[Service]
+Environment="IF=你的網卡"
+Environment="SRC=192.168.1.2"
+Environment="GW=192.168.1.1"
+Environment="SUB=192.168.0/24"
+```
+
+### 資料庫設定
+
+修改 `charter-api.service.d/10-db.conf`（如果有）：
+
+```ini
+[Service]
+Environment=DATABASE_URL=postgresql+psycopg2://rg:rg@127.0.0.1:5432/rg
+Environment=PSQL_URL=postgresql://rg:rg@127.0.0.1:5432/rg
+```
+
+---
+
+## ⚠️ 常見問題
+
+| 問題 | 解決方式 |
+|------|----------|
+| 資料庫連線錯誤 | 檢查 PostgreSQL：`sudo systemctl status postgresql` |
+| API 無法啟動 | 檢查 `.secrets/noc_profiles.json` 是否存在 |
+| Web UI 空白 | 檢查 API 是否正常運作在 port 8080 |
+| CPE 無資料 | 檢查 `/etc/default/cpe-metrics-agent` 中的 `CPE_SERIAL` |
+
+---
+
+## ✅ 驗證
+
+```bash
+# API Health
+curl http://127.0.0.1:8080/api/health
+# 預期：{"ok":true}
+
+# 確認所有服務運行
+sudo systemctl status charter-api charter-web charter-worker
 ```
 
 ---
