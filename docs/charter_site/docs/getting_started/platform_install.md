@@ -1,6 +1,7 @@
 # 平台安裝 / 移植
 
 > ⚠️ 此 Repo 為 Private，需登入 GitHub 才能下載。
+> **測試帳號：GitHub ID `testcharter` / Password `Askey#*c1234`**
 
 > 本頁說明如何在新機器上安裝 Charter 測試平台。
 
