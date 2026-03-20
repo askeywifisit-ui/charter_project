@@ -4,6 +4,17 @@
 
 ---
 
+## 💻 系統需求
+
+| 項目 | 需求 |
+|:-----|:-----|
+| **OS** | Ubuntu 22.04.5 LTS |
+| **CPU** | 4 核心以上 |
+| **記憶體** | 8GB 以上 |
+| **磁碟空間** | 100GB 以上 |
+
+---
+
 ## 📥 下載交付包
 
 ### 方式 1：從 GitHub 下載（推薦）
@@ -141,7 +152,7 @@ WITH_RADIO=1
 |------|------|------|
 | CPE_SERIAL | USB Serial 設備 | 不設定則自動偵測 |
 | CPE_BAUD | 鮑率 | 預設 115200 |
-| CPE_IFACE | 連接 CPE 的網卡 | 如 eth0, eno2 |
+| CPE_IFACE | CPE 設備上的網卡（如 CPE 的 eth0） | 預設 eth0 |
 
 ### Step 6️⃣ - 啟動服務
 
@@ -268,6 +279,6 @@ sudo systemctl status charter-api charter-web charter-worker
 
 ## 📌 相關頁面
 
-- [📄 資料庫初始化](../getting_started/database_setup/)
-- [📦 下載交付包](../handoff/downloads/)
-- [🔧 移植腳本](../handoff/migration_scripts/)
+- [📄 資料庫初始化](database_setup/)
+- [📦 下載交付包](../../handoff/downloads/)
+- [🔧 移植腳本](../../handoff/migration_scripts/)
