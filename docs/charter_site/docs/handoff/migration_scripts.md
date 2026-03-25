@@ -10,8 +10,10 @@ nano /home/da40/charter/.secrets/noc_profiles.json
 nano /home/da40/charter/.secrets/dut.env
 ```
 
----
-
+> ✅ **修改 noc_profiles.json 後，需執行以下指令讓新設定生效：**
+> ```bash
+> sudo systemctl restart charter-worker
+> ```
 
 ---
 
