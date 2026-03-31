@@ -296,3 +296,95 @@ sudo systemctl restart charter-worker
 ---
 
 *本文件由 Alice (DA40) 維護*
+
+---
+
+## 📦 Web / API / Tools 模組架構
+
+### 三大模組
+
+| 模組 | 路徑 | Port | 框架 |
+|------|------|------|------|
+| **Web** | `/home/da40/charter/apps/web/` | 5173 | Vite + Node.js |
+| **API** | `/home/da40/charter/apps/api/` | 8080 | FastAPI (Python) |
+| **Tools** | `/home/da40/charter/tools/` | - | Python / Shell |
+
+---
+
+### 🔧 Tools 腳本清單
+
+#### CPE 相關
+| 腳本 | 用途 |
+|------|------|
+| `cpe_console` | CPE Console 序列埠操控 |
+| `cpe_console_serial.py` | CPE Console Python 版 |
+| `cpe_info` | CPE 資訊查詢 |
+| `cpe_ssh.py` | CPE SSH 操控 |
+| `cpe_metrics_agent_serial.py` | CPE Metrics 收集 |
+| `cpe_brwan_capture.py` | CPE BR-WAN 抓包 |
+| `cpe_capture_role.py` | CPE Role 抓包 |
+| `cpe_warehouse_info.py` | CPE Warehouse 資訊 |
+
+#### WiFi 相關
+| 腳本 | 用途 |
+|------|------|
+| `wifi_iwd.py` | WiFi IWD 工具 |
+| `wifi_nm.py` | WiFi NetworkManager 工具 |
+
+#### 網路相關
+| 腳本 | 用途 |
+|------|------|
+| `net_probe.py` | 網路探針 |
+| `lan_macvlan.py` | LAN MACVLAN 設定 |
+| `pbr_cpe.py` | PBR 路由設定 |
+| `pbr_cpe_sshpass.py` | PBR SSH 版本 |
+
+#### PDU 相關
+| 腳本 | 用途 |
+|------|------|
+| `pdu_outlet1.py` | PDU 插座 1 控制 |
+| `pdu_outlet2.py` | PDU 插座 2 控制 |
+
+#### 其他工具
+| 腳本 | 用途 |
+|------|------|
+| `cycle_wrapper.py` | Cycle 包裝工具 |
+| `serial_lock.py` | Serial 鎖檔管理 |
+| `serial_mute.py` | Serial 靜音工具 |
+| `log_rename_add_runid.py` | 日誌重新命名 |
+| `ssh_awlan_tool.py` | AWLAN SSH 工具 |
+| `noc_api_cli.py` | NOC API CLI |
+| `collect_cpe_logs.py` | 收集 CPE 日誌 |
+
+---
+
+### 📂 API 資料庫
+
+| 項目 | 值 |
+|------|---|
+| 資料庫名 | rg |
+| 使用者 | rg |
+| 密碼 | rg |
+| 主機 | 127.0.0.1 |
+| Port | 5432 |
+
+### Schema 匯入
+```bash
+sudo -iu postgres psql -d rg -f rg_schema_only.sql
+```
+
+---
+
+### 🔄 服務重啟順序
+
+```bash
+# 1. API 先行
+sudo systemctl restart charter-api
+
+# 2. 等 API 啟動後再啟 Worker
+sudo systemctl restart charter-worker
+
+# 3. 最後 Web
+sudo systemctl restart charter-web
+```
+
